@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Download, MessageCircle } from 'lucide-react';
@@ -6,7 +5,7 @@ import Header from '../components/Header';
 import Button from '../components/Button';
 import { useCartStore } from '../store/cart-store';
 import { useCheckoutStore } from '../store/checkout-store';
-import { generateInvoiceHTML } from '../utils/invoice';
+import { generateInvoiceHTML, generateInvoiceText, sendInvoiceToWhatsApp, downloadInvoiceHTML } from '../utils/invoice';
 
 const AREAS = [
   { name: 'البوابة الأولى', price: 20 },
@@ -21,6 +20,7 @@ const Confirmation: React.FC = () => {
   const { items, getSubtotal, clearCart } = useCartStore();
   const { customerInfo, paymentMethod, reset } = useCheckoutStore();
   const [orderSent, setOrderSent] = useState(false);
+  const [orderId] = useState(`INV-${Date.now()}`);
 
   const getDeliveryFee = () => {
     const area = AREAS.find(a => a.name === customerInfo.area);
@@ -47,42 +47,30 @@ const Confirmation: React.FC = () => {
     }
   };
 
-  const generateInvoice = () => {
-    const orderData = {
+  const generateOrderData = () => {
+    return {
+      id: orderId,
+      createdAt: new Date(),
       items,
       customerInfo,
-      paymentMethod: getPaymentMethodName(),
+      paymentMethod: paymentMethod === 'cash-on-delivery' ? 'cod' : paymentMethod === 'vodafone-cash' ? 'vodafone_cash' : 'instapay',
       subtotal: getSubtotal(),
       deliveryFee: getDeliveryFee(),
       paymentFee: getPaymentFee(),
-      total: getTotalAmount(),
-      orderDate: new Date().toLocaleDateString('ar-EG')
+      total: getTotalAmount()
     };
-
-    return generateInvoiceHTML(orderData);
   };
 
   const downloadInvoice = () => {
-    const invoiceHTML = generateInvoice();
-    const blob = new Blob([invoiceHTML], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `invoice-${Date.now()}.html`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    const orderData = generateOrderData();
+    downloadInvoiceHTML(orderData);
   };
 
   const sendToWhatsApp = () => {
-    const invoiceHTML = generateInvoice();
-    const blob = new Blob([invoiceHTML], { type: 'text/html;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
+    const orderData = generateOrderData();
+    const invoiceURL = `${window.location.origin}/invoice/${orderId}`;
     
-    // Create a simplified text version for WhatsApp
-    const message = `
-طلب جديد من تفانين ستوديو 📋
+    const message = `طلب جديد من تفانين ستوديو 📋
 
 👤 العميل: ${customerInfo.name}
 📱 الهاتف: ${customerInfo.phone}
@@ -93,14 +81,11 @@ ${items.map(item => `• ${item.product.name} x${item.quantity} = ${item.product
 
 💰 المجموع الفرعي: ${getSubtotal()} جنيه
 🚚 رسوم التوصيل: ${getDeliveryFee()} جنيه
-${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n` : ''}
-💵 المجموع الكلي: ${getTotalAmount()} جنيه
+${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n` : ''}💵 المجموع الكلي: ${getTotalAmount()} جنيه
 
 💳 طريقة الدفع: ${getPaymentMethodName()}
 
----
-للفاتورة المفصلة والمنسقة: ${url}
-    `;
+🔗 رابط الفاتورة المنسقة: ${invoiceURL}`;
 
     const whatsappURL = `https://wa.me/201026274235?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, '_blank');
@@ -214,13 +199,12 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
           </Button>
           
           {orderSent && (
-            <Button
+            <button
               onClick={handleNewOrder}
-              variant="outline"
-              className="w-full border-gray-300 text-gray-600 py-3 rounded-lg"
+              className="w-full border border-gray-300 text-gray-600 py-3 rounded-lg bg-white hover:bg-gray-50"
             >
               طلب جديد
-            </Button>
+            </button>
           )}
         </div>
       </div>

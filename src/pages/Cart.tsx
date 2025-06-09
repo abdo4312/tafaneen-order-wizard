@@ -124,13 +124,12 @@ const Cart: React.FC = () => {
             متابعة إلى الدفع
           </Button>
           
-          <Button
+          <button
             onClick={clearCart}
-            variant="outline"
-            className="w-full border-gray-300 text-gray-600 py-3 rounded-lg"
+            className="w-full border border-gray-300 text-gray-600 py-3 rounded-lg bg-white hover:bg-gray-50"
           >
             إفراغ السلة
-          </Button>
+          </button>
         </div>
       </div>
     </div>
