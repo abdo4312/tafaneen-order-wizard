@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CreditCard, Wallet, DollarSign } from 'lucide-react';
+import { CreditCard, Wallet, DollarSign, AlertCircle } from 'lucide-react';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import { useCheckoutStore } from '../store/checkout-store';
@@ -84,6 +84,24 @@ const Payment: React.FC = () => {
             </div>
           </div>
         </div>
+
+        {/* Payment Instructions for Electronic Methods */}
+        {(selectedMethod === 'vodafone-cash' || selectedMethod === 'ansar-pay') && (
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
+              <div>
+                <h4 className="font-bold text-blue-800 mb-2">تعليمات الدفع الإلكتروني</h4>
+                <div className="text-blue-700 text-sm space-y-2">
+                  <p><strong>1.</strong> قم بتحويل المبلغ المطلوب: <span className="font-bold">{getTotalAmount()} جنيه</span></p>
+                  <p><strong>2.</strong> رقم المحفظة: <span className="font-bold">01066334002</span></p>
+                  <p><strong>3.</strong> بعد التحويل، اضغط "تأكيد الطلب" لإرسال الطلب للمكتبة</p>
+                  <p><strong>4.</strong> تأكد من الاحتفاظ برقم العملية لمراجعتها مع المكتبة</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Payment Methods */}
         <div className="bg-white rounded-lg shadow-md p-4">
@@ -178,7 +196,10 @@ const Payment: React.FC = () => {
           onClick={handleContinue}
           className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg text-lg font-bold"
         >
-          تأكيد الطلب
+          {(selectedMethod === 'vodafone-cash' || selectedMethod === 'ansar-pay') 
+            ? 'تأكيد الطلب (تم التحويل)' 
+            : 'تأكيد الطلب'
+          }
         </Button>
       </div>
     </div>

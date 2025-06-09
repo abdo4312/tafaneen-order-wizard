@@ -24,7 +24,8 @@ const Invoice: React.FC = () => {
             name: 'طباعة بنر',
             description: 'بنر إعلاني عالي الجودة',
             price: 50,
-            image: '/placeholder.svg'
+            image: '/placeholder.svg',
+            category: 'printing'
           },
           quantity: 2,
           color: 'أزرق',
