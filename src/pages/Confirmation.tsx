@@ -1,60 +1,110 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Download, MessageSquare } from 'lucide-react';
+import { CheckCircle, Download, MessageCircle } from 'lucide-react';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import { useCartStore } from '../store/cart-store';
 import { useCheckoutStore } from '../store/checkout-store';
-import { generateInvoiceText, sendInvoiceToWhatsApp, downloadInvoiceHTML } from '../utils/invoice';
-import { DELIVERY_AREAS, PAYMENT_METHODS } from '../constants/locations';
-import { Order } from '../types';
+import { generateInvoiceHTML } from '../utils/invoice';
+
+const AREAS = [
+  { name: 'البوابة الأولى', price: 20 },
+  { name: 'البوابة الثانية', price: 20 },
+  { name: 'البوابة الثالثة', price: 20 },
+  { name: 'البوابة الرابعة', price: 25 },
+  { name: 'مساكن الضباط', price: 30 }
+];
 
 const Confirmation: React.FC = () => {
   const navigate = useNavigate();
   const { items, getSubtotal, clearCart } = useCartStore();
   const { customerInfo, paymentMethod, reset } = useCheckoutStore();
-  
-  const [order, setOrder] = useState<Order | null>(null);
+  const [orderSent, setOrderSent] = useState(false);
 
-  useEffect(() => {
-    if (!customerInfo.name || !paymentMethod) {
-      navigate('/');
-      return;
+  const getDeliveryFee = () => {
+    const area = AREAS.find(a => a.name === customerInfo.area);
+    return area ? area.price : 0;
+  };
+
+  const getPaymentFee = () => {
+    if (paymentMethod === 'vodafone-cash') {
+      return Math.ceil((getSubtotal() + getDeliveryFee()) * 0.01);
     }
+    return 0;
+  };
 
-    const subtotal = getSubtotal();
-    const deliveryArea = DELIVERY_AREAS.find(area => area.name === customerInfo.area);
-    const deliveryFee = deliveryArea ? deliveryArea.price : 0;
-    
-    const selectedPaymentMethod = PAYMENT_METHODS.find(method => method.id === paymentMethod);
-    const paymentFee = selectedPaymentMethod ? Math.round(subtotal * selectedPaymentMethod.feePercentage / 100) : 0;
-    
-    const newOrder: Order = {
-      id: `INV-${Date.now()}`,
-      items,
-      customerInfo,
-      paymentMethod,
-      deliveryFee,
-      paymentFee,
-      subtotal,
-      total: subtotal + deliveryFee + paymentFee,
-      createdAt: new Date()
-    };
+  const getTotalAmount = () => {
+    return getSubtotal() + getDeliveryFee() + getPaymentFee();
+  };
 
-    setOrder(newOrder);
-  }, [customerInfo, paymentMethod, items]);
-
-  const handleSendWhatsApp = () => {
-    if (order) {
-      sendInvoiceToWhatsApp(order);
+  const getPaymentMethodName = () => {
+    switch (paymentMethod) {
+      case 'cash-on-delivery': return 'الدفع عند الاستلام';
+      case 'vodafone-cash': return 'فودافون كاش';
+      case 'ansar-pay': return 'انستا باي';
+      default: return 'غير محدد';
     }
   };
 
-  const handleDownloadInvoice = () => {
-    if (order) {
-      downloadInvoiceHTML(order);
-    }
+  const generateInvoice = () => {
+    const orderData = {
+      items,
+      customerInfo,
+      paymentMethod: getPaymentMethodName(),
+      subtotal: getSubtotal(),
+      deliveryFee: getDeliveryFee(),
+      paymentFee: getPaymentFee(),
+      total: getTotalAmount(),
+      orderDate: new Date().toLocaleDateString('ar-EG')
+    };
+
+    return generateInvoiceHTML(orderData);
+  };
+
+  const downloadInvoice = () => {
+    const invoiceHTML = generateInvoice();
+    const blob = new Blob([invoiceHTML], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `invoice-${Date.now()}.html`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const sendToWhatsApp = () => {
+    const invoiceHTML = generateInvoice();
+    const blob = new Blob([invoiceHTML], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    
+    // Create a simplified text version for WhatsApp
+    const message = `
+طلب جديد من تفانين ستوديو 📋
+
+👤 العميل: ${customerInfo.name}
+📱 الهاتف: ${customerInfo.phone}
+📍 العنوان: ${customerInfo.street}، رقم ${customerInfo.buildingNumber}${customerInfo.floor ? `، الدور ${customerInfo.floor}` : ''}، ${customerInfo.area}
+
+📦 المنتجات:
+${items.map(item => `• ${item.product.name} x${item.quantity} = ${item.product.price * item.quantity} جنيه`).join('\n')}
+
+💰 المجموع الفرعي: ${getSubtotal()} جنيه
+🚚 رسوم التوصيل: ${getDeliveryFee()} جنيه
+${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n` : ''}
+💵 المجموع الكلي: ${getTotalAmount()} جنيه
+
+💳 طريقة الدفع: ${getPaymentMethodName()}
+
+---
+للفاتورة المفصلة والمنسقة: ${url}
+    `;
+
+    const whatsappURL = `https://wa.me/201026274235?text=${encodeURIComponent(message)}`;
+    window.open(whatsappURL, '_blank');
+    setOrderSent(true);
   };
 
   const handleNewOrder = () => {
@@ -63,111 +113,116 @@ const Confirmation: React.FC = () => {
     navigate('/');
   };
 
-  if (!order) {
-    return null;
-  }
-
-  const paymentMethodName = PAYMENT_METHODS.find(method => method.id === paymentMethod)?.name || '';
-
   return (
     <div className="min-h-screen bg-background">
-      <Header title="تأكيد الطلب" />
+      <Header 
+        title="تأكيد الطلب" 
+        onBack={() => navigate('/payment')}
+      />
       
-      <div className="p-6 max-w-md mx-auto">
+      <div className="p-4 space-y-4">
         {/* Success Message */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-6 text-center">
-          <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Check className="w-8 h-8 text-white" />
-          </div>
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+          <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-3" />
           <h2 className="text-xl font-bold text-green-800 mb-2">تم تأكيد طلبك بنجاح!</h2>
-          <p className="text-green-600">رقم الطلب: {order.id}</p>
+          <p className="text-green-600">سيتم التواصل معك قريباً لتأكيد موعد التوصيل</p>
         </div>
 
         {/* Order Details */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">تفاصيل الطلب</h3>
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <h3 className="font-bold text-lg mb-4">تفاصيل الطلب</h3>
           
-          <div className="space-y-2 text-sm mb-4">
-            <div className="flex justify-between">
-              <span>العميل:</span>
-              <span>{customerInfo.name}</span>
+          <div className="space-y-3">
+            <div>
+              <h4 className="font-medium text-gray-700">معلومات العميل</h4>
+              <p className="text-gray-600">{customerInfo.name}</p>
+              <p className="text-gray-600">{customerInfo.phone}</p>
             </div>
-            <div className="flex justify-between">
-              <span>الهاتف:</span>
-              <span>{customerInfo.phone}</span>
+            
+            <div>
+              <h4 className="font-medium text-gray-700">عنوان التوصيل</h4>
+              <p className="text-gray-600">
+                {customerInfo.street}، رقم {customerInfo.buildingNumber}
+                {customerInfo.floor && `، الدور ${customerInfo.floor}`}، {customerInfo.area}
+              </p>
             </div>
-            <div className="flex justify-between">
-              <span>العنوان:</span>
-              <span>{customerInfo.street} - عقار {customerInfo.buildingNumber} - الدور {customerInfo.floor}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>المنطقة:</span>
-              <span>{customerInfo.area}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>طريقة الدفع:</span>
-              <span>{paymentMethodName}</span>
+            
+            <div>
+              <h4 className="font-medium text-gray-700">طريقة الدفع</h4>
+              <p className="text-gray-600">{getPaymentMethodName()}</p>
             </div>
           </div>
+        </div>
 
-          <hr className="my-4" />
+        {/* Order Items */}
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <h3 className="font-bold text-lg mb-4">المنتجات المطلوبة</h3>
+          <div className="space-y-3">
+            {items.map((item) => (
+              <div key={item.product.id} className="flex justify-between items-center">
+                <div>
+                  <p className="font-medium">{item.product.name}</p>
+                  <p className="text-gray-600 text-sm">الكمية: {item.quantity}</p>
+                </div>
+                <p className="font-bold">{item.product.price * item.quantity} جنيه</p>
+              </div>
+            ))}
+          </div>
+        </div>
 
-          <div className="space-y-2 text-sm">
+        {/* Total */}
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <div className="space-y-2">
             <div className="flex justify-between">
-              <span>إجمالي المنتجات:</span>
-              <span>{order.subtotal} جنيه</span>
+              <span>المجموع الفرعي</span>
+              <span>{getSubtotal()} جنيه</span>
             </div>
             <div className="flex justify-between">
-              <span>رسوم التوصيل:</span>
-              <span>{order.deliveryFee} جنيه</span>
+              <span>رسوم التوصيل</span>
+              <span>{getDeliveryFee()} جنيه</span>
             </div>
-            {order.paymentFee > 0 && (
-              <div className="flex justify-between text-red-600">
-                <span>رسوم الدفع:</span>
-                <span>{order.paymentFee} جنيه</span>
+            {getPaymentFee() > 0 && (
+              <div className="flex justify-between text-orange-600">
+                <span>رسوم الدفع الإلكتروني</span>
+                <span>{getPaymentFee()} جنيه</span>
               </div>
             )}
             <hr className="my-2" />
             <div className="flex justify-between font-bold text-lg">
-              <span>الإجمالي:</span>
-              <span className="text-red-600">{order.total} جنيه</span>
+              <span>المجموع الكلي</span>
+              <span>{getTotalAmount()} جنيه</span>
             </div>
           </div>
         </div>
 
-        {/* Invoice Actions */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">إرسال الفاتورة</h3>
+        {/* Actions */}
+        <div className="space-y-3">
+          <Button
+            onClick={downloadInvoice}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg flex items-center justify-center gap-2"
+          >
+            <Download className="w-5 h-5" />
+            تحميل الفاتورة
+          </Button>
           
-          <div className="space-y-3">
-            <Button
-              onClick={handleSendWhatsApp}
-              className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg flex items-center justify-center gap-2"
-            >
-              <MessageSquare className="w-5 h-5" />
-              إرسال إلى المكتبة عبر واتساب
-            </Button>
-            
-            <Button
-              onClick={handleDownloadInvoice}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg flex items-center justify-center gap-2"
-            >
-              <Download className="w-5 h-5" />
-              تحميل الفاتورة (HTML)
-            </Button>
-          </div>
+          <Button
+            onClick={sendToWhatsApp}
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg flex items-center justify-center gap-2"
+          >
+            <MessageCircle className="w-5 h-5" />
+            إرسال الطلب للمكتبة
+          </Button>
           
-          <p className="text-sm text-gray-600 mt-4 text-center">
-            سيتم إرسال الفاتورة بشكل منسق ومفصل للمكتبة
-          </p>
+          {orderSent && (
+            <Button
+              onClick={handleNewOrder}
+              variant="outline"
+              className="w-full border-gray-300 text-gray-600 py-3 rounded-lg"
+            >
+              طلب جديد
+            </Button>
+          )}
         </div>
-
-        <Button
-          onClick={handleNewOrder}
-          className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg"
-        >
-          طلب جديد
-        </Button>
       </div>
     </div>
   );

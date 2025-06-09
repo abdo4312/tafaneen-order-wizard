@@ -1,39 +1,55 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CreditCard, Wallet, DollarSign } from 'lucide-react';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import { useCheckoutStore } from '../store/checkout-store';
 import { useCartStore } from '../store/cart-store';
-import { PAYMENT_METHODS, DELIVERY_AREAS } from '../constants/locations';
+
+const AREAS = [
+  { name: 'البوابة الأولى', price: 20 },
+  { name: 'البوابة الثانية', price: 20 },
+  { name: 'البوابة الثالثة', price: 20 },
+  { name: 'البوابة الرابعة', price: 25 },
+  { name: 'مساكن الضباط', price: 30 }
+];
 
 const Payment: React.FC = () => {
   const navigate = useNavigate();
-  const { customerInfo, setPaymentMethod } = useCheckoutStore();
-  const { items, getSubtotal } = useCartStore();
+  const { customerInfo, paymentMethod, setPaymentMethod } = useCheckoutStore();
+  const { getSubtotal } = useCartStore();
   
-  const [selectedMethod, setSelectedMethod] = useState('');
+  const [selectedMethod, setSelectedMethod] = useState(paymentMethod || '');
 
-  const subtotal = getSubtotal();
-  const deliveryArea = DELIVERY_AREAS.find(area => area.name === customerInfo.area);
-  const deliveryFee = deliveryArea ? deliveryArea.price : 0;
-  
-  const selectedPaymentMethod = PAYMENT_METHODS.find(method => method.id === selectedMethod);
-  const paymentFee = selectedPaymentMethod ? Math.round(subtotal * selectedPaymentMethod.feePercentage / 100) : 0;
-  
-  const total = subtotal + deliveryFee + paymentFee;
-
-  const handleSubmit = () => {
-    if (selectedMethod) {
-      setPaymentMethod(selectedMethod);
-      navigate('/confirmation');
-    }
+  const getDeliveryFee = () => {
+    const area = AREAS.find(a => a.name === customerInfo.area);
+    return area ? area.price : 0;
   };
 
-  if (!customerInfo.name) {
-    navigate('/checkout');
-    return null;
-  }
+  const getPaymentFee = () => {
+    if (selectedMethod === 'vodafone-cash') {
+      return Math.ceil((getSubtotal() + getDeliveryFee()) * 0.01); // 1% fee
+    }
+    return 0;
+  };
+
+  const getTotalAmount = () => {
+    return getSubtotal() + getDeliveryFee() + getPaymentFee();
+  };
+
+  const handlePaymentMethodSelect = (method: string) => {
+    setSelectedMethod(method);
+    setPaymentMethod(method);
+  };
+
+  const handleContinue = () => {
+    if (!selectedMethod) {
+      alert('يرجى اختيار طريقة الدفع');
+      return;
+    }
+    navigate('/confirmation');
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -42,83 +58,128 @@ const Payment: React.FC = () => {
         onBack={() => navigate('/checkout')}
       />
       
-      <div className="p-6 max-w-md mx-auto">
+      <div className="p-4 space-y-4">
         {/* Order Summary */}
-        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">ملخص الطلب</h3>
-          
-          <div className="space-y-2 text-sm">
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <h3 className="font-bold text-lg mb-4">ملخص الطلب</h3>
+          <div className="space-y-2">
             <div className="flex justify-between">
-              <span>إجمالي المنتجات:</span>
-              <span>{subtotal} جنيه</span>
+              <span>المجموع الفرعي</span>
+              <span>{getSubtotal()} جنيه</span>
             </div>
             <div className="flex justify-between">
-              <span>التوصيل إلى ({customerInfo.area}):</span>
-              <span>{deliveryFee} جنيه</span>
+              <span>رسوم التوصيل ({customerInfo.area})</span>
+              <span>{getDeliveryFee()} جنيه</span>
             </div>
-            {paymentFee > 0 && (
-              <div className="flex justify-between text-red-600">
-                <span>رسوم الدفع ({selectedPaymentMethod?.feePercentage}%):</span>
-                <span>{paymentFee} جنيه</span>
+            {getPaymentFee() > 0 && (
+              <div className="flex justify-between text-orange-600">
+                <span>رسوم الدفع الإلكتروني (1%)</span>
+                <span>{getPaymentFee()} جنيه</span>
               </div>
             )}
-            <hr className="my-3" />
+            <hr className="my-2" />
             <div className="flex justify-between font-bold text-lg">
-              <span>الإجمالي:</span>
-              <span className="text-red-600">{total} جنيه</span>
+              <span>المجموع الكلي</span>
+              <span>{getTotalAmount()} جنيه</span>
             </div>
           </div>
         </div>
 
         {/* Payment Methods */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-bold text-gray-800 mb-4">اختر طريقة الدفع</h3>
+        <div className="bg-white rounded-lg shadow-md p-4">
+          <h3 className="font-bold text-lg mb-4">اختر طريقة الدفع</h3>
           
-          <div className="space-y-3 mb-6">
-            {PAYMENT_METHODS.map((method) => (
-              <div key={method.id} className="border rounded-lg p-4">
-                <label className="flex items-center cursor-pointer">
-                  <input
-                    type="radio"
-                    name="paymentMethod"
-                    value={method.id}
-                    checked={selectedMethod === method.id}
-                    onChange={(e) => setSelectedMethod(e.target.value)}
-                    className="ml-3 text-red-600 focus:ring-red-500"
-                  />
-                  <div className="flex items-center gap-3 flex-1">
-                    <span className="text-2xl">{method.icon}</span>
-                    <div>
-                      <div className="font-medium">{method.name}</div>
-                      {method.feePercentage > 0 && (
-                        <div className="text-sm text-red-600">
-                          رسوم إضافية: {method.feePercentage}%
-                        </div>
-                      )}
-                      {method.number && selectedMethod === method.id && (
-                        <div className="text-sm text-gray-600 mt-1">
-                          الرقم: {method.number}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </label>
+          <div className="space-y-3">
+            {/* Cash on Delivery */}
+            <div 
+              onClick={() => handlePaymentMethodSelect('cash-on-delivery')}
+              className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                selectedMethod === 'cash-on-delivery' 
+                  ? 'border-red-500 bg-red-50' 
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <DollarSign className="w-6 h-6 text-green-600" />
+                <div className="flex-1">
+                  <h4 className="font-bold">الدفع عند الاستلام</h4>
+                  <p className="text-gray-600 text-sm">ادفع نقداً عند وصول الطلب</p>
+                </div>
+                <div className={`w-5 h-5 rounded-full border-2 ${
+                  selectedMethod === 'cash-on-delivery' 
+                    ? 'border-red-500 bg-red-500' 
+                    : 'border-gray-300'
+                }`}>
+                  {selectedMethod === 'cash-on-delivery' && (
+                    <div className="w-full h-full rounded-full bg-white scale-50"></div>
+                  )}
+                </div>
               </div>
-            ))}
-          </div>
+            </div>
 
-          <Button
-            onClick={handleSubmit}
-            disabled={!selectedMethod}
-            className={`w-full py-3 rounded-lg font-medium ${
-              selectedMethod 
-                ? 'bg-red-600 hover:bg-red-700 text-white' 
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-          >
-            تأكيد الطلب
-          </Button>
+            {/* Vodafone Cash */}
+            <div 
+              onClick={() => handlePaymentMethodSelect('vodafone-cash')}
+              className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                selectedMethod === 'vodafone-cash' 
+                  ? 'border-red-500 bg-red-50' 
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <Wallet className="w-6 h-6 text-red-600" />
+                <div className="flex-1">
+                  <h4 className="font-bold">فودافون كاش</h4>
+                  <p className="text-gray-600 text-sm">01066334002</p>
+                  <p className="text-orange-600 text-xs">رسوم إضافية 1%</p>
+                </div>
+                <div className={`w-5 h-5 rounded-full border-2 ${
+                  selectedMethod === 'vodafone-cash' 
+                    ? 'border-red-500 bg-red-500' 
+                    : 'border-gray-300'
+                }`}>
+                  {selectedMethod === 'vodafone-cash' && (
+                    <div className="w-full h-full rounded-full bg-white scale-50"></div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Ansar Pay */}
+            <div 
+              onClick={() => handlePaymentMethodSelect('ansar-pay')}
+              className={`p-4 border-2 rounded-lg cursor-pointer transition-colors ${
+                selectedMethod === 'ansar-pay' 
+                  ? 'border-red-500 bg-red-50' 
+                  : 'border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <CreditCard className="w-6 h-6 text-blue-600" />
+                <div className="flex-1">
+                  <h4 className="font-bold">انستا باي</h4>
+                  <p className="text-gray-600 text-sm">01066334002</p>
+                </div>
+                <div className={`w-5 h-5 rounded-full border-2 ${
+                  selectedMethod === 'ansar-pay' 
+                    ? 'border-red-500 bg-red-500' 
+                    : 'border-gray-300'
+                }`}>
+                  {selectedMethod === 'ansar-pay' && (
+                    <div className="w-full h-full rounded-full bg-white scale-50"></div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        <Button
+          onClick={handleContinue}
+          className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg text-lg font-bold"
+        >
+          تأكيد الطلب
+        </Button>
       </div>
     </div>
   );
