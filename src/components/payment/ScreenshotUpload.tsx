@@ -1,13 +1,13 @@
 
 import React, { useState } from 'react';
-import { Upload, Eye } from 'lucide-react';
+import { Upload, Eye, AlertTriangle } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import { useToast } from '../../hooks/use-toast';
 
 interface ScreenshotUploadProps {
   totalAmount: number;
-  onExtractedData: (amount: string, transactionId: string) => void;
+  onExtractedData: (amount: string, transactionId: string, isValid: boolean) => void;
 }
 
 const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
@@ -19,6 +19,12 @@ const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
   const [extractedAmount, setExtractedAmount] = useState<string>('');
   const [extractedTransactionId, setExtractedTransactionId] = useState<string>('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
+
+  const isAmountValid = (amount: string): boolean => {
+    const numericAmount = parseFloat(amount);
+    return numericAmount === totalAmount;
+  };
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -26,25 +32,40 @@ const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
 
     setUploadedImage(file);
     setIsAnalyzing(true);
+    setAnalysisComplete(false);
 
     try {
       const reader = new FileReader();
       reader.onload = async () => {
         const base64Image = reader.result as string;
         
+        // محاكاة تحليل الصورة
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        const mockAmount = totalAmount.toString();
+        // في التطبيق الحقيقي، هنا سيتم استخدام API لتحليل الصورة
+        // الآن سنحاكي نتائج مختلفة للاختبار
+        const mockAmount = Math.random() > 0.5 ? totalAmount.toString() : (totalAmount + 10).toString();
         const mockTransactionId = Math.random().toString(36).substr(2, 9).toUpperCase();
         
         setExtractedAmount(mockAmount);
         setExtractedTransactionId(mockTransactionId);
-        onExtractedData(mockAmount, mockTransactionId);
+        setAnalysisComplete(true);
         
-        toast({
-          title: "تم تحليل الصورة بنجاح",
-          description: `تم استخراج المبلغ: ${mockAmount} جنيه ورقم العملية: ${mockTransactionId}`,
-        });
+        const isValid = isAmountValid(mockAmount);
+        onExtractedData(mockAmount, mockTransactionId, isValid);
+        
+        if (isValid) {
+          toast({
+            title: "تم تحليل الصورة بنجاح",
+            description: `تم استخراج المبلغ: ${mockAmount} جنيه ورقم العملية: ${mockTransactionId}`,
+          });
+        } else {
+          toast({
+            title: "تحذير: عدم تطابق المبلغ",
+            description: `المبلغ في الصورة (${mockAmount}) لا يطابق المبلغ المطلوب (${totalAmount})`,
+            variant: "destructive",
+          });
+        }
       };
       reader.readAsDataURL(file);
     } catch (error) {
@@ -78,7 +99,7 @@ const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
             className="w-full"
           />
           <p className="text-sm text-gray-600 mt-1">
-            سيتم تحليل الصورة تلقائياً لاستخراج المبلغ ورقم العملية
+            سيتم تحليل الصورة تلقائياً لاستخراج المبلغ ورقم العملية والتحقق من صحة المبلغ
           </p>
         </div>
 
@@ -89,23 +110,45 @@ const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
           </div>
         )}
 
-        {uploadedImage && !isAnalyzing && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+        {uploadedImage && analysisComplete && (
+          <div className={`border rounded-lg p-3 ${
+            isAmountValid(extractedAmount) 
+              ? 'bg-green-50 border-green-200' 
+              : 'bg-red-50 border-red-200'
+          }`}>
             <div className="flex items-start gap-3">
-              <Eye className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
+              {isAmountValid(extractedAmount) ? (
+                <Eye className="w-5 h-5 text-green-600 mt-1 flex-shrink-0" />
+              ) : (
+                <AlertTriangle className="w-5 h-5 text-red-600 mt-1 flex-shrink-0" />
+              )}
               <div>
-                <h4 className="font-bold text-blue-800 mb-2">نتائج التحليل</h4>
-                <div className="text-blue-700 text-sm space-y-1">
+                <h4 className={`font-bold mb-2 ${
+                  isAmountValid(extractedAmount) ? 'text-green-800' : 'text-red-800'
+                }`}>
+                  نتائج التحليل
+                </h4>
+                <div className={`text-sm space-y-1 ${
+                  isAmountValid(extractedAmount) ? 'text-green-700' : 'text-red-700'
+                }`}>
                   {extractedAmount && (
                     <p><strong>المبلغ المستخرج:</strong> {extractedAmount} جنيه</p>
                   )}
+                  <p><strong>المبلغ المطلوب:</strong> {totalAmount} جنيه</p>
                   {extractedTransactionId && (
                     <p><strong>رقم العملية:</strong> {extractedTransactionId}</p>
                   )}
-                  {extractedAmount === totalAmount.toString() ? (
-                    <p className="text-green-600 font-bold">✓ المبلغ مطابق</p>
+                  
+                  {isAmountValid(extractedAmount) ? (
+                    <p className="text-green-600 font-bold">✓ المبلغ مطابق - يمكن المتابعة</p>
                   ) : (
-                    <p className="text-red-600 font-bold">⚠ المبلغ غير مطابق</p>
+                    <div className="space-y-1">
+                      <p className="text-red-600 font-bold">⚠ المبلغ غير مطابق</p>
+                      <p className="text-red-600 text-xs">
+                        يجب أن يكون المبلغ مطابقاً تماماً للمبلغ المطلوب. 
+                        لا يمكن المتابعة مع مبلغ مختلف.
+                      </p>
+                    </div>
                   )}
                 </div>
               </div>
