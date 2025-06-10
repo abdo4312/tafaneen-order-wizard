@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CreditCard, Wallet, DollarSign, AlertCircle } from 'lucide-react';
+import { CreditCard, Wallet, DollarSign, AlertCircle, CheckCircle } from 'lucide-react';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import { useCheckoutStore } from '../store/checkout-store';
@@ -21,6 +21,8 @@ const Payment: React.FC = () => {
   const { getSubtotal } = useCartStore();
   
   const [selectedMethod, setSelectedMethod] = useState(paymentMethod || '');
+  const [showPaymentConfirmation, setShowPaymentConfirmation] = useState(false);
+  const [transactionNumber, setTransactionNumber] = useState('');
 
   const getDeliveryFee = () => {
     const area = AREAS.find(a => a.name === customerInfo.area);
@@ -41,6 +43,7 @@ const Payment: React.FC = () => {
   const handlePaymentMethodSelect = (method: string) => {
     setSelectedMethod(method);
     setPaymentMethod(method);
+    setShowPaymentConfirmation(false);
   };
 
   const handleContinue = () => {
@@ -48,8 +51,97 @@ const Payment: React.FC = () => {
       alert('يرجى اختيار طريقة الدفع');
       return;
     }
+
+    // إذا كانت طريقة الدفع إلكترونية، عرض تأكيد الدفع
+    if (selectedMethod === 'vodafone-cash' || selectedMethod === 'ansar-pay') {
+      setShowPaymentConfirmation(true);
+      return;
+    }
+
+    // إذا كان الدفع نقدي، الانتقال مباشرة للتأكيد
     navigate('/confirmation');
   };
+
+  const handlePaymentConfirmation = () => {
+    if (!transactionNumber.trim()) {
+      alert('يرجى إدخال رقم العملية');
+      return;
+    }
+    navigate('/confirmation');
+  };
+
+  // إذا كان في مرحلة تأكيد الدفع الإلكتروني
+  if (showPaymentConfirmation) {
+    return (
+      <div className="min-h-screen bg-background">
+        <Header 
+          title="تأكيد الدفع" 
+          onBack={() => setShowPaymentConfirmation(false)}
+        />
+        
+        <div className="p-4 space-y-4">
+          {/* Payment Confirmation */}
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <CheckCircle className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
+              <div>
+                <h3 className="font-bold text-green-800 text-lg mb-2">تم إرسال تفاصيل الدفع</h3>
+                <div className="text-green-700 space-y-2">
+                  <p><strong>المبلغ المطلوب:</strong> {getTotalAmount()} جنيه</p>
+                  <p><strong>رقم المحفظة:</strong> 01066334002</p>
+                  <p><strong>طريقة الدفع:</strong> {selectedMethod === 'vodafone-cash' ? 'فودافون كاش' : 'إنستاباي'}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Transaction Number Input */}
+          <div className="bg-white rounded-lg shadow-md p-4">
+            <h3 className="font-bold text-lg mb-4">تأكيد الدفع</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  رقم العملية / Transaction ID
+                </label>
+                <input
+                  type="text"
+                  value={transactionNumber}
+                  onChange={(e) => setTransactionNumber(e.target.value)}
+                  placeholder="أدخل رقم العملية هنا"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
+                />
+                <p className="text-sm text-gray-600 mt-1">
+                  يرجى إدخال رقم العملية الذي ظهر لك بعد إتمام التحويل
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Instructions */}
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
+              <div>
+                <h4 className="font-bold text-blue-800 mb-2">تعليمات مهمة</h4>
+                <div className="text-blue-700 text-sm space-y-2">
+                  <p>• تأكد من إتمام التحويل قبل الضغط على "تأكيد الطلب"</p>
+                  <p>• احتفظ برقم العملية لمراجعتها مع المكتبة</p>
+                  <p>• سيتم التحقق من الدفع قبل تجهيز الطلب</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Button
+            onClick={handlePaymentConfirmation}
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-lg font-bold"
+          >
+            تأكيد الطلب والدفع
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -95,7 +187,7 @@ const Payment: React.FC = () => {
                 <div className="text-blue-700 text-sm space-y-2">
                   <p><strong>1.</strong> قم بتحويل المبلغ المطلوب: <span className="font-bold">{getTotalAmount()} جنيه</span></p>
                   <p><strong>2.</strong> رقم المحفظة: <span className="font-bold">01066334002</span></p>
-                  <p><strong>3.</strong> بعد التحويل، اضغط "تأكيد الطلب" لإرسال الطلب للمكتبة</p>
+                  <p><strong>3.</strong> بعد التحويل، اضغط "متابعة" لإدخال رقم العملية</p>
                   <p><strong>4.</strong> تأكد من الاحتفاظ برقم العملية لمراجعتها مع المكتبة</p>
                 </div>
               </div>
@@ -197,7 +289,7 @@ const Payment: React.FC = () => {
           className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg text-lg font-bold"
         >
           {(selectedMethod === 'vodafone-cash' || selectedMethod === 'ansar-pay') 
-            ? 'تأكيد الطلب (تم التحويل)' 
+            ? 'متابعة للدفع' 
             : 'تأكيد الطلب'
           }
         </Button>
