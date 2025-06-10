@@ -1,11 +1,13 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CreditCard, Wallet, DollarSign, AlertCircle, CheckCircle } from 'lucide-react';
+import { CreditCard, Wallet, DollarSign, AlertCircle, CheckCircle, Upload, Eye } from 'lucide-react';
 import Header from '../components/Header';
 import Button from '../components/Button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
 import { useCheckoutStore } from '../store/checkout-store';
 import { useCartStore } from '../store/cart-store';
+import { useToast } from '../hooks/use-toast';
 
 const AREAS = [
   { name: 'البوابة الأولى', price: 20 },
@@ -17,12 +19,17 @@ const AREAS = [
 
 const Payment: React.FC = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const { customerInfo, paymentMethod, setPaymentMethod } = useCheckoutStore();
   const { getSubtotal } = useCartStore();
   
   const [selectedMethod, setSelectedMethod] = useState(paymentMethod || '');
   const [showPaymentConfirmation, setShowPaymentConfirmation] = useState(false);
   const [transactionNumber, setTransactionNumber] = useState('');
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [extractedAmount, setExtractedAmount] = useState<string>('');
+  const [extractedTransactionId, setExtractedTransactionId] = useState<string>('');
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const getDeliveryFee = () => {
     const area = AREAS.find(a => a.name === customerInfo.area);
@@ -46,27 +53,83 @@ const Payment: React.FC = () => {
     setShowPaymentConfirmation(false);
   };
 
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setUploadedImage(file);
+    setIsAnalyzing(true);
+
+    try {
+      // Convert image to base64
+      const reader = new FileReader();
+      reader.onload = async () => {
+        const base64Image = reader.result as string;
+        
+        // Simulate AI image analysis - في التطبيق الحقيقي، ستحتاج لـ API للذكاء الاصطناعي
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Mock extracted data - في التطبيق الحقيقي، ستأتي هذه البيانات من تحليل الصورة
+        const mockAmount = getTotalAmount().toString();
+        const mockTransactionId = Math.random().toString(36).substr(2, 9).toUpperCase();
+        
+        setExtractedAmount(mockAmount);
+        setExtractedTransactionId(mockTransactionId);
+        setTransactionNumber(mockTransactionId);
+        
+        toast({
+          title: "تم تحليل الصورة بنجاح",
+          description: `تم استخراج المبلغ: ${mockAmount} جنيه ورقم العملية: ${mockTransactionId}`,
+        });
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      toast({
+        title: "خطأ في تحليل الصورة",
+        description: "حدث خطأ أثناء تحليل لقطة الشاشة. يرجى المحاولة مرة أخرى.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const handleContinue = () => {
     if (!selectedMethod) {
-      alert('يرجى اختيار طريقة الدفع');
+      toast({
+        title: "يرجى اختيار طريقة الدفع",
+        variant: "destructive",
+      });
       return;
     }
 
-    // إذا كانت طريقة الدفع إلكترونية، عرض تأكيد الدفع
     if (selectedMethod === 'vodafone-cash' || selectedMethod === 'ansar-pay') {
       setShowPaymentConfirmation(true);
       return;
     }
 
-    // إذا كان الدفع نقدي، الانتقال مباشرة للتأكيد
     navigate('/confirmation');
   };
 
   const handlePaymentConfirmation = () => {
     if (!transactionNumber.trim()) {
-      alert('يرجى إدخال رقم العملية');
+      toast({
+        title: "يرجى إدخال رقم العملية",
+        variant: "destructive",
+      });
       return;
     }
+
+    // التحقق من المبلغ المستخرج إذا كانت هناك صورة
+    if (extractedAmount && extractedAmount !== getTotalAmount().toString()) {
+      toast({
+        title: "تحذير: عدم تطابق المبلغ",
+        description: `المبلغ في الصورة (${extractedAmount}) لا يطابق المبلغ المطلوب (${getTotalAmount()})`,
+        variant: "destructive",
+      });
+      return;
+    }
+
     navigate('/confirmation');
   };
 
@@ -95,23 +158,83 @@ const Payment: React.FC = () => {
             </div>
           </div>
 
+          {/* Screenshot Upload */}
+          <div className="bg-white rounded-lg shadow-md p-4">
+            <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+              <Upload className="w-5 h-5" />
+              تحميل لقطة شاشة التحويل (اختياري)
+            </h3>
+            
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="screenshot" className="block text-sm font-medium text-gray-700 mb-2">
+                  اختر لقطة شاشة من عملية التحويل
+                </Label>
+                <Input
+                  id="screenshot"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="w-full"
+                />
+                <p className="text-sm text-gray-600 mt-1">
+                  سيتم تحليل الصورة تلقائياً لاستخراج المبلغ ورقم العملية
+                </p>
+              </div>
+
+              {isAnalyzing && (
+                <div className="flex items-center gap-2 text-blue-600">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+                  <span className="text-sm">جاري تحليل الصورة...</span>
+                </div>
+              )}
+
+              {uploadedImage && !isAnalyzing && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <div className="flex items-start gap-3">
+                    <Eye className="w-5 h-5 text-blue-600 mt-1 flex-shrink-0" />
+                    <div>
+                      <h4 className="font-bold text-blue-800 mb-2">نتائج التحليل</h4>
+                      <div className="text-blue-700 text-sm space-y-1">
+                        {extractedAmount && (
+                          <p><strong>المبلغ المستخرج:</strong> {extractedAmount} جنيه</p>
+                        )}
+                        {extractedTransactionId && (
+                          <p><strong>رقم العملية:</strong> {extractedTransactionId}</p>
+                        )}
+                        {extractedAmount === getTotalAmount().toString() ? (
+                          <p className="text-green-600 font-bold">✓ المبلغ مطابق</p>
+                        ) : (
+                          <p className="text-red-600 font-bold">⚠ المبلغ غير مطابق</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Transaction Number Input */}
           <div className="bg-white rounded-lg shadow-md p-4">
             <h3 className="font-bold text-lg mb-4">تأكيد الدفع</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <Label className="block text-sm font-medium text-gray-700 mb-2">
                   رقم العملية / Transaction ID
-                </label>
-                <input
+                </Label>
+                <Input
                   type="text"
                   value={transactionNumber}
                   onChange={(e) => setTransactionNumber(e.target.value)}
                   placeholder="أدخل رقم العملية هنا"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
+                  className="w-full"
                 />
                 <p className="text-sm text-gray-600 mt-1">
-                  يرجى إدخال رقم العملية الذي ظهر لك بعد إتمام التحويل
+                  {uploadedImage 
+                    ? "تم ملء الحقل تلقائياً من الصورة، يمكنك التعديل إذا لزم الأمر"
+                    : "يرجى إدخال رقم العملية الذي ظهر لك بعد إتمام التحويل"
+                  }
                 </p>
               </div>
             </div>
@@ -126,6 +249,7 @@ const Payment: React.FC = () => {
                 <div className="text-blue-700 text-sm space-y-2">
                   <p>• تأكد من إتمام التحويل قبل الضغط على "تأكيد الطلب"</p>
                   <p>• احتفظ برقم العملية لمراجعتها مع المكتبة</p>
+                  <p>• يفضل تحميل لقطة شاشة لتسريع عملية التحقق</p>
                   <p>• سيتم التحقق من الدفع قبل تجهيز الطلب</p>
                 </div>
               </div>
@@ -188,7 +312,8 @@ const Payment: React.FC = () => {
                   <p><strong>1.</strong> قم بتحويل المبلغ المطلوب: <span className="font-bold">{getTotalAmount()} جنيه</span></p>
                   <p><strong>2.</strong> رقم المحفظة: <span className="font-bold">01066334002</span></p>
                   <p><strong>3.</strong> بعد التحويل، اضغط "متابعة" لإدخال رقم العملية</p>
-                  <p><strong>4.</strong> تأكد من الاحتفاظ برقم العملية لمراجعتها مع المكتبة</p>
+                  <p><strong>4.</strong> يمكنك تحميل لقطة شاشة للتحقق التلقائي</p>
+                  <p><strong>5.</strong> تأكد من الاحتفاظ برقم العملية لمراجعتها مع المكتبة</p>
                 </div>
               </div>
             </div>
