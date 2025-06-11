@@ -1,10 +1,7 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { CheckCircle, AlertCircle } from 'lucide-react';
-import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 import Button from '../Button';
-import { useToast } from '../../hooks/use-toast';
 
 interface PaymentConfirmationProps {
   selectedMethod: string;
@@ -19,21 +16,6 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
   onBack,
   onConfirm
 }) => {
-  const { toast } = useToast();
-  const [transactionNumber, setTransactionNumber] = useState('');
-
-  const handlePaymentConfirmation = () => {
-    if (!transactionNumber.trim()) {
-      toast({
-        title: "يرجى إدخال رقم العملية",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    onConfirm();
-  };
-
   return (
     <div className="p-4 space-y-4">
       {/* Payment Confirmation */}
@@ -47,28 +29,6 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
               <p><strong>رقم المحفظة:</strong> 01066334002</p>
               <p><strong>طريقة الدفع:</strong> {selectedMethod === 'vodafone-cash' ? 'فودافون كاش' : 'إنستاباي'}</p>
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Transaction Number Input */}
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <h3 className="font-bold text-lg mb-4">تأكيد الدفع</h3>
-        <div className="space-y-4">
-          <div>
-            <Label className="block text-sm font-medium text-gray-700 mb-2">
-              رقم العملية / Transaction ID
-            </Label>
-            <Input
-              type="text"
-              value={transactionNumber}
-              onChange={(e) => setTransactionNumber(e.target.value)}
-              placeholder="أدخل رقم العملية هنا"
-              className="w-full"
-            />
-            <p className="text-sm text-gray-600 mt-1">
-              يرجى إدخال رقم العملية الذي ظهر لك بعد إتمام التحويل
-            </p>
           </div>
         </div>
       </div>
@@ -89,7 +49,7 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
       </div>
 
       <Button
-        onClick={handlePaymentConfirmation}
+        onClick={onConfirm}
         className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-lg font-bold"
       >
         تأكيد الطلب والدفع
