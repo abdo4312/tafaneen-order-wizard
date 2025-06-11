@@ -1,10 +1,9 @@
 
 import React, { useState } from 'react';
-import { CheckCircle, AlertCircle, AlertTriangle, X } from 'lucide-react';
+import { CheckCircle, AlertCircle } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import Button from '../Button';
-import ScreenshotUpload from './ScreenshotUpload';
 import { useToast } from '../../hooks/use-toast';
 
 interface PaymentConfirmationProps {
@@ -22,16 +21,6 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
 }) => {
   const { toast } = useToast();
   const [transactionNumber, setTransactionNumber] = useState('');
-  const [extractedAmount, setExtractedAmount] = useState<string>('');
-  const [uploadedImage, setUploadedImage] = useState(false);
-  const [isAmountValid, setIsAmountValid] = useState(true);
-
-  const handleExtractedData = (amount: string, transactionId: string, isValid: boolean) => {
-    setExtractedAmount(amount);
-    setTransactionNumber(transactionId);
-    setUploadedImage(true);
-    setIsAmountValid(isValid);
-  };
 
   const handlePaymentConfirmation = () => {
     if (!transactionNumber.trim()) {
@@ -42,20 +31,8 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
       return;
     }
 
-    // منع المتابعة نهائياً إذا تم تحميل صورة والمبلغ غير صحيح
-    if (uploadedImage && !isAmountValid) {
-      toast({
-        title: "لا يمكن إكمال العملية",
-        description: `المبلغ في الصورة (${extractedAmount}) لا يطابق المبلغ المطلوب (${totalAmount}). يجب أن يكون المبلغ مطابقاً تماماً.`,
-        variant: "destructive",
-      });
-      return;
-    }
-
     onConfirm();
   };
-
-  const canProceed = !uploadedImage || (uploadedImage && isAmountValid);
 
   return (
     <div className="p-4 space-y-4">
@@ -74,30 +51,6 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
         </div>
       </div>
 
-      {/* Screenshot Upload */}
-      <ScreenshotUpload
-        totalAmount={totalAmount}
-        onExtractedData={handleExtractedData}
-      />
-
-      {/* Amount Validation Error */}
-      {uploadedImage && !isAmountValid && (
-        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-          <div className="flex items-start gap-3">
-            <X className="w-5 h-5 text-red-600 mt-1 flex-shrink-0" />
-            <div>
-              <h4 className="font-bold text-red-800 mb-2">خطأ: عدم تطابق المبلغ</h4>
-              <div className="text-red-700 text-sm space-y-2">
-                <p>المبلغ في لقطة الشاشة لا يطابق المبلغ المطلوب تماماً.</p>
-                <p><strong>المبلغ المطلوب:</strong> {totalAmount} جنيه</p>
-                <p><strong>المبلغ في الصورة:</strong> {extractedAmount} جنيه</p>
-                <p className="font-bold text-red-800">لا يمكن المتابعة. يرجى التحويل بالمبلغ الصحيح وإعادة المحاولة.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Transaction Number Input */}
       <div className="bg-white rounded-lg shadow-md p-4">
         <h3 className="font-bold text-lg mb-4">تأكيد الدفع</h3>
@@ -112,16 +65,9 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
               onChange={(e) => setTransactionNumber(e.target.value)}
               placeholder="أدخل رقم العملية هنا"
               className="w-full"
-              disabled={uploadedImage && !isAmountValid}
             />
             <p className="text-sm text-gray-600 mt-1">
-              {uploadedImage 
-                ? (isAmountValid 
-                    ? "تم ملء الحقل تلقائياً من الصورة، يمكنك التعديل إذا لزم الأمر"
-                    : "لا يمكن المتابعة - المبلغ غير مطابق"
-                  )
-                : "يرجى إدخال رقم العملية الذي ظهر لك بعد إتمام التحويل"
-              }
+              يرجى إدخال رقم العملية الذي ظهر لك بعد إتمام التحويل
             </p>
           </div>
         </div>
@@ -137,7 +83,6 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
               <p>• يجب تحويل المبلغ بالضبط: <strong>{totalAmount} جنيه</strong></p>
               <p>• أي مبلغ مختلف (أكثر أو أقل) سيؤدي إلى رفض الطلب</p>
               <p>• احتفظ برقم العملية لمراجعتها مع المكتبة</p>
-              <p>• تحميل لقطة الشاشة سيساعد في التحقق السريع</p>
             </div>
           </div>
         </div>
@@ -145,14 +90,9 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
 
       <Button
         onClick={handlePaymentConfirmation}
-        disabled={!canProceed}
-        className={`w-full py-3 rounded-lg text-lg font-bold ${
-          canProceed 
-            ? 'bg-green-600 hover:bg-green-700 text-white' 
-            : 'bg-gray-400 text-gray-200 cursor-not-allowed'
-        }`}
+        className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-lg font-bold"
       >
-        {canProceed ? 'تأكيد الطلب والدفع' : 'لا يمكن المتابعة - يجب تطابق المبلغ'}
+        تأكيد الطلب والدفع
       </Button>
     </div>
   );
