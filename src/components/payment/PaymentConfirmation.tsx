@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { CheckCircle, AlertCircle, AlertTriangle } from 'lucide-react';
+import { CheckCircle, AlertCircle, AlertTriangle, X } from 'lucide-react';
 import { Input } from '../ui/input';
 import { Label } from '../ui/label';
 import Button from '../Button';
@@ -42,21 +42,11 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
       return;
     }
 
-    // التحقق من صحة المبلغ إذا تم تحميل صورة
-    if (extractedAmount && !isAmountValid) {
+    // منع المتابعة نهائياً إذا تم تحميل صورة والمبلغ غير صحيح
+    if (uploadedImage && !isAmountValid) {
       toast({
         title: "لا يمكن إكمال العملية",
         description: `المبلغ في الصورة (${extractedAmount}) لا يطابق المبلغ المطلوب (${totalAmount}). يجب أن يكون المبلغ مطابقاً تماماً.`,
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // إذا تم تحميل صورة والمبلغ غير صحيح، منع المتابعة
-    if (uploadedImage && extractedAmount && parseFloat(extractedAmount) !== totalAmount) {
-      toast({
-        title: "عذراً، لا يمكن المتابعة",
-        description: "المبلغ المحول غير مطابق للمبلغ المطلوب. يجب أن يكون المبلغ مطابقاً تماماً للمتابعة.",
         variant: "destructive",
       });
       return;
@@ -74,7 +64,7 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
         <div className="flex items-start gap-3">
           <CheckCircle className="w-6 h-6 text-green-600 mt-1 flex-shrink-0" />
           <div>
-            <h3 className="font-bold text-green-800 text-lg mb-2">تم إرسال تفاصيل الدفع</h3>
+            <h3 className="font-bold text-green-800 text-lg mb-2">تفاصيل الدفع</h3>
             <div className="text-green-700 space-y-2">
               <p><strong>المبلغ المطلوب:</strong> {totalAmount} جنيه</p>
               <p><strong>رقم المحفظة:</strong> 01066334002</p>
@@ -90,18 +80,18 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
         onExtractedData={handleExtractedData}
       />
 
-      {/* Amount Validation Warning */}
+      {/* Amount Validation Error */}
       {uploadedImage && !isAmountValid && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-red-600 mt-1 flex-shrink-0" />
+            <X className="w-5 h-5 text-red-600 mt-1 flex-shrink-0" />
             <div>
-              <h4 className="font-bold text-red-800 mb-2">تحذير: عدم تطابق المبلغ</h4>
+              <h4 className="font-bold text-red-800 mb-2">خطأ: عدم تطابق المبلغ</h4>
               <div className="text-red-700 text-sm space-y-2">
-                <p>المبلغ في لقطة الشاشة لا يطابق المبلغ المطلوب.</p>
+                <p>المبلغ في لقطة الشاشة لا يطابق المبلغ المطلوب تماماً.</p>
                 <p><strong>المبلغ المطلوب:</strong> {totalAmount} جنيه</p>
-                <p><strong>المبلغ الموجود:</strong> {extractedAmount} جنيه</p>
-                <p className="font-bold">لا يمكن المتابعة حتى يتم تحويل المبلغ الصحيح.</p>
+                <p><strong>المبلغ في الصورة:</strong> {extractedAmount} جنيه</p>
+                <p className="font-bold text-red-800">لا يمكن المتابعة. يرجى التحويل بالمبلغ الصحيح وإعادة المحاولة.</p>
               </div>
             </div>
           </div>
@@ -144,11 +134,10 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
           <div>
             <h4 className="font-bold text-blue-800 mb-2">تعليمات مهمة</h4>
             <div className="text-blue-700 text-sm space-y-2">
-              <p>• تأكد من إتمام التحويل بالمبلغ الصحيح: <strong>{totalAmount} جنيه</strong></p>
-              <p>• يجب أن يكون المبلغ مطابقاً تماماً - لا أكثر ولا أقل</p>
+              <p>• يجب تحويل المبلغ بالضبط: <strong>{totalAmount} جنيه</strong></p>
+              <p>• أي مبلغ مختلف (أكثر أو أقل) سيؤدي إلى رفض الطلب</p>
               <p>• احتفظ برقم العملية لمراجعتها مع المكتبة</p>
-              <p>• يفضل تحميل لقطة شاشة لتسريع عملية التحقق</p>
-              <p>• سيتم التحقق من الدفع قبل تجهيز الطلب</p>
+              <p>• تحميل لقطة الشاشة سيساعد في التحقق السريع</p>
             </div>
           </div>
         </div>
@@ -163,7 +152,7 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
             : 'bg-gray-400 text-gray-200 cursor-not-allowed'
         }`}
       >
-        {canProceed ? 'تأكيد الطلب والدفع' : 'لا يمكن المتابعة - المبلغ غير مطابق'}
+        {canProceed ? 'تأكيد الطلب والدفع' : 'لا يمكن المتابعة - يجب تطابق المبلغ'}
       </Button>
     </div>
   );

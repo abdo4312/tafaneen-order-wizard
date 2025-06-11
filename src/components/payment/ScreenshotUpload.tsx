@@ -61,8 +61,8 @@ const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
           });
         } else {
           toast({
-            title: "تحذير: عدم تطابق المبلغ",
-            description: `المبلغ في الصورة (${mockAmount}) لا يطابق المبلغ المطلوب (${totalAmount})`,
+            title: "فشل في التحقق: عدم تطابق المبلغ",
+            description: `المبلغ في الصورة (${mockAmount}) لا يطابق المبلغ المطلوب (${totalAmount}). لا يمكن المتابعة.`,
             variant: "destructive",
           });
         }
@@ -143,10 +143,10 @@ const ScreenshotUpload: React.FC<ScreenshotUploadProps> = ({
                     <p className="text-green-600 font-bold">✓ المبلغ مطابق - يمكن المتابعة</p>
                   ) : (
                     <div className="space-y-1">
-                      <p className="text-red-600 font-bold">⚠ المبلغ غير مطابق</p>
+                      <p className="text-red-600 font-bold">⚠ المبلغ غير مطابق - لا يمكن المتابعة</p>
                       <p className="text-red-600 text-xs">
-                        يجب أن يكون المبلغ مطابقاً تماماً للمبلغ المطلوب. 
-                        لا يمكن المتابعة مع مبلغ مختلف.
+                        يجب أن يكون المبلغ مطابقاً تماماً للمبلغ المطلوب ({totalAmount} جنيه).
+                        المبلغ الحالي: {extractedAmount} جنيه
                       </p>
                     </div>
                   )}
