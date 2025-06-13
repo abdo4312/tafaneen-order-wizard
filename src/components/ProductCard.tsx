@@ -1,31 +1,69 @@
 
 import React from 'react';
-import { Product } from '../types';
+import { ShoppingCart, Star } from 'lucide-react';
+import { useCartStore } from '../store/cart-store';
+import { Product } from '../store/products-store';
+import { Badge } from './ui/badge';
+import Button from './Button';
 
 interface ProductCardProps {
   product: Product;
-  onAddToCart: () => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+  const { addItem } = useCartStore();
+
+  const handleAddToCart = () => {
+    addItem(product);
+    console.log('تم إضافة المنتج للسلة:', product.name);
+  };
+
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-      <img 
-        src={product.image} 
-        alt={product.name}
-        className="w-full h-48 object-cover"
-      />
+    <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+      <div className="relative">
+        <img 
+          src={product.image} 
+          alt={product.name}
+          className="w-full h-48 object-cover"
+        />
+        {product.isNew && (
+          <Badge className="absolute top-2 right-2 bg-green-500 text-white">
+            جديد
+          </Badge>
+        )}
+        {product.featured && (
+          <Badge className="absolute top-2 left-2 bg-yellow-500 text-white">
+            مميز
+          </Badge>
+        )}
+      </div>
+      
       <div className="p-4">
-        <h3 className="font-bold text-lg mb-2">{product.name}</h3>
-        <p className="text-gray-600 text-sm mb-3">{product.description}</p>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-bold text-lg">{product.name}</h3>
+          <div className="flex items-center gap-1">
+            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+            <span className="text-sm text-gray-600">{product.rating}</span>
+          </div>
+        </div>
+        
+        <p className="text-gray-600 text-sm mb-2">{product.description}</p>
+        <p className="text-xs text-gray-500 mb-3">الماركة: {product.brand}</p>
+        
         <div className="flex items-center justify-between">
-          <span className="text-red-600 font-bold text-lg">{product.price} جنيه</span>
-          <button
-            onClick={onAddToCart}
-            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+          <div className="flex flex-col">
+            <span className="text-blue-600 font-bold text-lg">{product.price} جنيه</span>
+            <span className="text-xs text-gray-500">تم بيع {product.salesCount} قطعة</span>
+          </div>
+          
+          <Button
+            onClick={handleAddToCart}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            disabled={!product.inStock}
           >
-            إضافة للسلة
-          </button>
+            <ShoppingCart className="w-4 h-4" />
+            {product.inStock ? 'إضافة للسلة' : 'غير متوفر'}
+          </Button>
         </div>
       </div>
     </div>

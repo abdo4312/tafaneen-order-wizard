@@ -24,7 +24,7 @@ const UserMenu: React.FC = () => {
           <span className="hidden md:inline">{user.name}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56" dir="rtl">
+      <DropdownMenuContent align="end" className="w-56">
         <div className="px-2 py-1.5">
           <p className="text-sm font-medium">{user.name}</p>
           <p className="text-xs text-gray-500">{user.email}</p>

@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Search, ShoppingCart, User, Star, TrendingUp, Sparkles } from 'lucide-react';
+import { Search, ShoppingCart, User, Star, TrendingUp, Sparkles, Eye } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { useCartStore } from '../store/cart-store';
 import { useAuthStore } from '../store/auth-store';
@@ -13,11 +14,12 @@ import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 
 const Index = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   
-  const { items } = useCartStore();
+  const { items, getTotalItems } = useCartStore();
   const { isAuthenticated, user } = useAuthStore();
   const { 
     getFeaturedProducts, 
@@ -36,23 +38,28 @@ const Index = () => {
 
   const categories = [
     { id: 'all', name: 'الكل', icon: '📚' },
-    { id: 'pens-ballpoint-rotq', name: 'أقلام روتق', icon: '🖊️' },
-    { id: 'pens-ballpoint-bravo', name: 'أقلام برافو', icon: '✒️' },
-    { id: 'pens-ballpoint-prima', name: 'أقلام بريما', icon: '🖋️' },
-    { id: 'pens-pencil-faber', name: 'أقلام فابر كاستل', icon: '✏️' },
-    { id: 'pens-pencil-doms', name: 'أقلام دومز', icon: '📝' },
+    { id: 'pens-ballpoint-roto', name: 'أقلام روتو الجافة', icon: '🖊️' },
+    { id: 'pens-ballpoint-bravo', name: 'أقلام برافو الجافة', icon: '✒️' },
+    { id: 'pens-ballpoint-prima', name: 'أقلام بريما الجافة', icon: '🖋️' },
+    { id: 'pens-pencil-faber-castell', name: 'أقلام فابر كاستل الرصاص', icon: '✏️' },
+    { id: 'pens-pencil-doms', name: 'أقلام دومز الرصاص', icon: '📝' },
   ];
 
   const getFilteredProducts = () => {
     if (selectedCategory === 'all') return [];
     
-    const [category, subcategory, brand] = selectedCategory.split('-');
+    const [category, subcategory, ...brandParts] = selectedCategory.split('-');
+    const brand = brandParts.join('-');
     const products = getProductsByCategory(category, subcategory);
     
     if (brand) {
       return products.filter(p => p.brand === brand);
     }
     return products;
+  };
+
+  const handleCartClick = () => {
+    navigate('/cart');
   };
 
   return (
@@ -62,7 +69,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-blue-600">مكتبة الطلاب</h1>
+              <h1 className="text-2xl font-bold text-blue-600">مكتبة تفانين</h1>
             </div>
             
             <div className="flex-1 max-w-lg mx-8">
@@ -79,11 +86,11 @@ const Index = () => {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="relative">
+              <div className="relative cursor-pointer" onClick={handleCartClick}>
                 <ShoppingCart className="w-6 h-6 text-gray-600" />
-                {items.length > 0 && (
+                {getTotalItems() > 0 && (
                   <Badge className="absolute -top-2 -left-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    {items.length}
+                    {getTotalItems()}
                   </Badge>
                 )}
               </div>
@@ -127,13 +134,13 @@ const Index = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="text-3xl font-bold mb-2">
-                    {isAuthenticated ? `مرحباً ${user?.name}!` : 'مرحباً بك في مكتبة الطلاب'}
+                    {isAuthenticated ? `مرحباً ${user?.name}!` : 'مرحباً بك في مكتبة تفانين'}
                   </h1>
                   <p className="text-blue-100 text-lg">
                     {isAuthenticated ? 'اكتشف المنتجات المقترحة خصيصاً لك' : 'انضم إلينا لتجربة تسوق مخصصة'}
                   </p>
                 </div>
-                <div className="text-6xl">📚</div>
+                <div className="text-6xl">🖊️</div>
               </div>
             </div>
 
@@ -217,7 +224,7 @@ const Index = () => {
               <TabsContent value="bestsellers" className="mt-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {bestSellers.map((product) => (
-                    <ProductCard key={product.id}product={product} />
+                    <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
               </TabsContent>
