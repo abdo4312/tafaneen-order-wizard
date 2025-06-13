@@ -6,6 +6,7 @@ import { Label } from '../ui/label';
 import Button from '../Button';
 import { useToast } from '../../hooks/use-toast';
 import { Mail, ArrowRight, RefreshCw } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 
 interface EmailVerificationModalProps {
   isOpen: boolean;
@@ -26,24 +27,58 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
   const [resendCooldown, setResendCooldown] = useState(0);
   const { toast } = useToast();
 
+  // إعدادات EmailJS - يجب على المستخدم تعديل هذه القيم
+  const EMAILJS_CONFIG = {
+    SERVICE_ID: 'your_service_id', // استبدل بـ Service ID الخاص بك
+    TEMPLATE_ID: 'your_template_id', // استبدل بـ Template ID الخاص بك
+    PUBLIC_KEY: 'your_public_key' // استبدل بـ Public Key الخاص بك
+  };
+
   const generateVerificationCode = () => {
     return Math.floor(100000 + Math.random() * 900000).toString();
   };
 
   const sendVerificationEmail = async () => {
+    setLoading(true);
     const code = generateVerificationCode();
     setSentCode(code);
     
-    // محاكاة إرسال الإيميل - في التطبيق الحقيقي ستحتاج EmailJS أو خدمة أخرى
-    console.log(`رمز التحقق المرسل إلى ${email}: ${code}`);
-    
-    toast({
-      title: "تم إرسال رمز التحقق",
-      description: `تم إرسال رمز مكون من 6 أرقام إلى ${email}`,
-    });
+    try {
+      // إرسال الإيميل باستخدام EmailJS
+      const templateParams = {
+        to_email: email,
+        verification_code: code,
+        user_name: email,
+        message: `رمز التحقق الخاص بك هو: ${code}`
+      };
 
-    // بدء العد التنازلي لإعادة الإرسال
-    setResendCooldown(60);
+      await emailjs.send(
+        EMAILJS_CONFIG.SERVICE_ID,
+        EMAILJS_CONFIG.TEMPLATE_ID,
+        templateParams,
+        EMAILJS_CONFIG.PUBLIC_KEY
+      );
+
+      toast({
+        title: "تم إرسال رمز التحقق",
+        description: `تم إرسال رمز مكون من 6 أرقام إلى ${email}`,
+      });
+
+      // بدء العد التنازلي لإعادة الإرسال
+      setResendCooldown(60);
+    } catch (error) {
+      console.error('خطأ في إرسال الإيميل:', error);
+      toast({
+        title: "خطأ في إرسال الإيميل",
+        description: "يرجى التحقق من إعدادات EmailJS والمحاولة مرة أخرى",
+        variant: "destructive"
+      });
+      
+      // في حالة الخطأ، استخدم المحاكاة
+      console.log(`رمز التحقق للاختبار: ${code}`);
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -71,7 +106,6 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
 
     setLoading(true);
 
-    // محاكاة التحقق - في التطبيق الحقيقي ستتحقق من الكود مع الخادم
     if (verificationCode === sentCode) {
       toast({
         title: "تم التحقق بنجاح",
@@ -147,7 +181,7 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
             <p className="text-gray-600 text-sm mb-2">لم يصلك الرمز؟</p>
             <Button
               onClick={handleResend}
-              disabled={resendCooldown > 0}
+              disabled={resendCooldown > 0 || loading}
               className="text-red-600 hover:text-red-800 font-medium bg-transparent border-0 hover:bg-transparent"
             >
               {resendCooldown > 0 
@@ -155,6 +189,12 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
                 : 'إعادة إرسال الرمز'
               }
             </Button>
+          </div>
+
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+            <p className="text-xs text-yellow-800">
+              <strong>ملاحظة:</strong> يرجى تكوين إعدادات EmailJS في الكود لإرسال رسائل حقيقية
+            </p>
           </div>
         </div>
       </DialogContent>

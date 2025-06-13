@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, ShoppingCart, User, Star, TrendingUp, Sparkles, Eye } from 'lucide-react';
+import { Search, ShoppingCart, User, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { useCartStore } from '../store/cart-store';
@@ -87,7 +87,7 @@ const Index = () => {
 
             <div className="flex items-center gap-4">
               <div className="relative cursor-pointer" onClick={handleCartClick}>
-                <ShoppingCart className="w-6 h-6 text-gray-600" />
+                <ShoppingCart className="w-6 h-6 text-gray-600 hover:text-red-600 transition-colors" />
                 {getTotalItems() > 0 && (
                   <Badge className="absolute -top-2 -left-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                     {getTotalItems()}
@@ -100,10 +100,10 @@ const Index = () => {
               ) : (
                 <Button 
                   onClick={() => setShowAuthModal(true)}
-                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700"
+                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white"
                 >
                   <User className="w-4 h-4" />
-                  تسجيل الدخول
+                  <span className="hidden sm:inline">تسجيل الدخول</span>
                 </Button>
               )}
             </div>
@@ -117,11 +117,11 @@ const Index = () => {
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-6">نتائج البحث عن "{searchQuery}"</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {searchResults.map((product) => (
+              {searchProducts(searchQuery).map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
-            {searchResults.length === 0 && (
+            {searchProducts(searchQuery).length === 0 && (
               <p className="text-center text-gray-500 py-8">لم يتم العثور على منتجات مطابقة</p>
             )}
           </div>
@@ -137,8 +137,14 @@ const Index = () => {
                     {isAuthenticated ? `مرحباً ${user?.name}!` : 'مرحباً بك في مكتبة تفانين'}
                   </h1>
                   <p className="text-red-100 text-lg">
-                    {isAuthenticated ? 'اكتشف المنتجات المقترحة خصيصاً لك' : 'انضم إلينا لتجربة تسوق مخصصة'}
+                    {isAuthenticated ? 'اكتشف المنتجات المقترحة خصيصاً لك' : 'سجل الآن لتجربة تسوق مخصصة'}
                   </p>
+                  {isAuthenticated && (
+                    <div className="mt-3 flex items-center gap-4 text-sm text-red-200">
+                      <span>عدد الطلبات السابقة: {user?.purchaseHistory.length || 0}</span>
+                      <span>عضو منذ: {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('ar-EG') : ''}</span>
+                    </div>
+                  )}
                 </div>
                 <div className="text-6xl">🖊️</div>
               </div>
