@@ -69,7 +69,7 @@ const Index = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <h1 className="text-2xl font-bold text-blue-600">مكتبة تفانين</h1>
+              <h1 className="text-2xl font-bold text-red-600">مكتبة تفانين</h1>
             </div>
             
             <div className="flex-1 max-w-lg mx-8">
@@ -100,7 +100,7 @@ const Index = () => {
               ) : (
                 <Button 
                   onClick={() => setShowAuthModal(true)}
-                  className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700"
+                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700"
                 >
                   <User className="w-4 h-4" />
                   تسجيل الدخول
@@ -130,13 +130,13 @@ const Index = () => {
         {!searchQuery && (
           <>
             {/* Welcome Section */}
-            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white mb-8">
+            <div className="bg-gradient-to-r from-red-600 to-red-800 rounded-2xl p-8 text-white mb-8">
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="text-3xl font-bold mb-2">
                     {isAuthenticated ? `مرحباً ${user?.name}!` : 'مرحباً بك في مكتبة تفانين'}
                   </h1>
-                  <p className="text-blue-100 text-lg">
+                  <p className="text-red-100 text-lg">
                     {isAuthenticated ? 'اكتشف المنتجات المقترحة خصيصاً لك' : 'انضم إلينا لتجربة تسوق مخصصة'}
                   </p>
                 </div>
@@ -157,7 +157,7 @@ const Index = () => {
                     onClick={() => setSelectedCategory(category.id)}
                     className={`flex items-center gap-2 whitespace-nowrap ${
                       selectedCategory === category.id
-                        ? 'bg-blue-600 text-white'
+                        ? 'bg-red-600 text-white hover:bg-red-700'
                         : 'bg-white text-gray-700 hover:bg-gray-100'
                     }`}
                   >

@@ -52,13 +52,13 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
-            <span className="text-blue-600 font-bold text-lg">{product.price} جنيه</span>
+            <span className="text-red-600 font-bold text-lg">{product.price} جنيه</span>
             <span className="text-xs text-gray-500">تم بيع {product.salesCount} قطعة</span>
           </div>
           
           <Button
             onClick={handleAddToCart}
-            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
             disabled={!product.inStock}
           >
             <ShoppingCart className="w-4 h-4" />

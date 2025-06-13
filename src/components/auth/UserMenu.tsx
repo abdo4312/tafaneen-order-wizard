@@ -19,7 +19,7 @@ const UserMenu: React.FC = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700">
+        <Button className="flex items-center gap-2 bg-red-600 hover:bg-red-700">
           <User className="w-4 h-4" />
           <span className="hidden md:inline">{user.name}</span>
         </Button>
