@@ -34,7 +34,7 @@ const UserProfile: React.FC = () => {
           <span className="hidden md:inline font-medium">{user.name}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-72" dir="rtl">
+      <DropdownMenuContent align="end" className="w-72 text-right" style={{ direction: 'rtl' }}>
         <div className="px-4 py-3 bg-red-50">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
