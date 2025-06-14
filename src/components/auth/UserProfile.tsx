@@ -39,8 +39,9 @@ const UserProfile: React.FC = () => {
           <span className="hidden md:inline font-medium">{displayName}</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-72 text-right" style={{ direction: 'rtl' }}>
-        <div className="px-4 py-3 bg-red-50">
+      <DropdownMenuContent align="end" className="w-80 text-right bg-white shadow-lg border" style={{ direction: 'rtl' }}>
+        {/* User Info Header */}
+        <div className="px-4 py-3 bg-red-50 border-b">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center">
               <User className="w-6 h-6 text-white" />
@@ -59,35 +60,35 @@ const UserProfile: React.FC = () => {
           </div>
         </div>
         
-        <DropdownMenuSeparator />
-        
-        <div className="px-2 py-1">
-          <DropdownMenuItem className="flex items-center gap-3 py-3 cursor-pointer hover:bg-gray-50">
+        {/* Menu Items */}
+        <div className="py-2">
+          <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 focus:bg-gray-50">
             <ShoppingBag className="w-5 h-5 text-gray-600" />
-            <div>
-              <p className="font-medium">طلباتي السابقة</p>
-              <p className="text-xs text-gray-500">عرض الطلبات</p>
+            <div className="text-right">
+              <p className="font-medium text-gray-900">طلباتي السابقة</p>
+              <p className="text-xs text-gray-500">عرض تاريخ الطلبات</p>
             </div>
           </DropdownMenuItem>
           
-          <DropdownMenuItem className="flex items-center gap-3 py-3 cursor-pointer hover:bg-gray-50">
+          <DropdownMenuItem className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-gray-50 focus:bg-gray-50">
             <Settings className="w-5 h-5 text-gray-600" />
-            <div>
-              <p className="font-medium">إعدادات الحساب</p>
-              <p className="text-xs text-gray-500">إدارة تفضيلاتك</p>
+            <div className="text-right">
+              <p className="font-medium text-gray-900">إعدادات الحساب</p>
+              <p className="text-xs text-gray-500">إدارة بياناتك الشخصية</p>
             </div>
           </DropdownMenuItem>
         </div>
         
         <DropdownMenuSeparator />
         
+        {/* Logout */}
         <div className="p-2">
           <DropdownMenuItem 
-            className="flex items-center gap-3 py-3 cursor-pointer text-red-600 hover:bg-red-50 focus:bg-red-50"
+            className="flex items-center gap-3 px-4 py-3 cursor-pointer text-red-600 hover:bg-red-50 focus:bg-red-50 rounded-md"
             onClick={logout}
           >
             <LogOut className="w-5 h-5" />
-            <div>
+            <div className="text-right">
               <p className="font-medium">تسجيل الخروج</p>
               <p className="text-xs text-red-500">الخروج من حسابك</p>
             </div>
