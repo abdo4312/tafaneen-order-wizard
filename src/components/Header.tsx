@@ -1,44 +1,71 @@
 
 import React from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ShoppingCart, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { useCartStore } from '../store/cart-store';
+import { useAuthStore } from '../store/auth-store';
+import UserMenu from './auth/UserMenu';
+import UserAccountMenu from './auth/UserAccountMenu';
 
-interface HeaderProps {
-  title: string;
-  onBack?: () => void;
-  showLogo?: boolean;
-}
+const Header: React.FC = () => {
+  const navigate = useNavigate();
+  const { items } = useCartStore();
+  const { isAuthenticated } = useAuthStore();
+  
+  const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
-const Header: React.FC<HeaderProps> = ({ title, onBack, showLogo = false }) => {
   return (
-    <div className="bg-gradient-to-r from-red-600 to-red-700 text-white p-4 shadow-lg">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          {onBack && (
-            <button 
-              onClick={onBack}
-              className="p-2 hover:bg-red-500 rounded-lg transition-colors"
-            >
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          )}
-          {showLogo && (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-white rounded-full flex items-center justify-center">
-                <span className="text-red-600 font-bold text-sm">T</span>
-              </div>
+    <header className="bg-white shadow-sm border-b sticky top-0 z-40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div 
+            className="flex items-center cursor-pointer"
+            onClick={() => navigate('/')}
+          >
+            <div className="bg-red-600 text-white px-3 py-2 rounded-lg font-bold text-xl">
+              مكتبة تفانين
             </div>
-          )}
-          <h1 className="text-lg font-bold">{title}</h1>
-        </div>
-        
-        {showLogo && (
-          <div className="text-right">
-            <div className="text-xs opacity-90">STUDIO & PRINT</div>
-            <div className="font-bold">TAFANEEN</div>
           </div>
-        )}
+
+          {/* Search Bar */}
+          <div className="flex-1 max-w-lg mx-8">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="البحث عن المنتجات..."
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                style={{ direction: 'rtl' }}
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            </div>
+          </div>
+
+          {/* Navigation Icons */}
+          <div className="flex items-center gap-4">
+            {/* Cart */}
+            <button
+              onClick={() => navigate('/cart')}
+              className="relative p-2 text-gray-600 hover:text-red-600 transition-colors"
+            >
+              <ShoppingCart className="w-6 h-6" />
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                  {totalItems}
+                </span>
+              )}
+            </button>
+
+            {/* User Account */}
+            {isAuthenticated ? (
+              <UserAccountMenu />
+            ) : (
+              <UserMenu />
+            )}
+          </div>
+        </div>
       </div>
-    </div>
+    </header>
   );
 };
 
