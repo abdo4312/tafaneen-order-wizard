@@ -12,9 +12,12 @@ import {
 import Button from '../Button';
 
 const UserProfile: React.FC = () => {
-  const { user, logout } = useAuthStore();
+  const { user, profile, logout } = useAuthStore();
 
   if (!user) return null;
+
+  const displayName = profile?.name || user.email?.split('@')[0] || 'المستخدم';
+  const userEmail = user.email || '';
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ar-EG', {
@@ -24,6 +27,8 @@ const UserProfile: React.FC = () => {
     });
   };
 
+  const createdAt = profile?.created_at || user.created_at || new Date().toISOString();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -31,7 +36,7 @@ const UserProfile: React.FC = () => {
           <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
             <User className="w-4 h-4" />
           </div>
-          <span className="hidden md:inline font-medium">{user.name}</span>
+          <span className="hidden md:inline font-medium">{displayName}</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-72 text-right" style={{ direction: 'rtl' }}>
@@ -41,14 +46,14 @@ const UserProfile: React.FC = () => {
               <User className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="font-bold text-lg text-red-900">{user.name}</p>
+              <p className="font-bold text-lg text-red-900">{displayName}</p>
               <div className="flex items-center gap-1 text-sm text-red-700">
                 <Mail className="w-3 h-3" />
-                <span>{user.email}</span>
+                <span>{userEmail}</span>
               </div>
               <div className="flex items-center gap-1 text-xs text-red-600 mt-1">
                 <Calendar className="w-3 h-3" />
-                <span>عضو منذ {formatDate(user.createdAt)}</span>
+                <span>عضو منذ {formatDate(createdAt)}</span>
               </div>
             </div>
           </div>
@@ -61,7 +66,7 @@ const UserProfile: React.FC = () => {
             <ShoppingBag className="w-5 h-5 text-gray-600" />
             <div>
               <p className="font-medium">طلباتي السابقة</p>
-              <p className="text-xs text-gray-500">{user.purchaseHistory.length} طلب</p>
+              <p className="text-xs text-gray-500">عرض الطلبات</p>
             </div>
           </DropdownMenuItem>
           
