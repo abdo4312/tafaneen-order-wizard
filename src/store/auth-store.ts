@@ -20,6 +20,8 @@ interface AuthState {
   loading: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signup: (name: string, email: string, password: string) => Promise<{ success: boolean; error?: string; needsVerification?: boolean }>;
+  signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
+  signInWithFacebook: () => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   initialize: () => Promise<void>;
   fetchProfile: () => Promise<void>;
@@ -150,6 +152,52 @@ export const useAuthStore = create<AuthState>()(
               success: true, 
               needsVerification: true 
             };
+          }
+          
+          return { success: true };
+        } catch (error) {
+          return { success: false, error: 'حدث خطأ غير متوقع' };
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      signInWithGoogle: async () => {
+        try {
+          set({ loading: true });
+          
+          const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'google',
+            options: {
+              redirectTo: `${window.location.origin}/`
+            }
+          });
+          
+          if (error) {
+            return { success: false, error: error.message };
+          }
+          
+          return { success: true };
+        } catch (error) {
+          return { success: false, error: 'حدث خطأ غير متوقع' };
+        } finally {
+          set({ loading: false });
+        }
+      },
+
+      signInWithFacebook: async () => {
+        try {
+          set({ loading: true });
+          
+          const { data, error } = await supabase.auth.signInWithOAuth({
+            provider: 'facebook',
+            options: {
+              redirectTo: `${window.location.origin}/`
+            }
+          });
+          
+          if (error) {
+            return { success: false, error: error.message };
           }
           
           return { success: true };
