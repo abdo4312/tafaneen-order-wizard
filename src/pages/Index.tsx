@@ -8,6 +8,7 @@ import { useAuthStore } from '../store/auth-store';
 import { useProductsStore } from '../store/products-store';
 import AuthModal from '../components/auth/AuthModal';
 import UserMenu from '../components/auth/UserMenu';
+import UserAccountMenu from '../components/auth/UserAccountMenu';
 import Button from '../components/Button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
@@ -93,7 +94,7 @@ const Index = () => {
               </div>
               
               {isAuthenticated ? (
-                <UserMenu />
+                <UserAccountMenu />
               ) : (
                 <Button 
                   onClick={() => setShowAuthModal(true)}
