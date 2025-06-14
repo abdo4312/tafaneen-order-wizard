@@ -20,12 +20,11 @@ const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   
   const { items, getTotalItems } = useCartStore();
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated, user, profile } = useAuthStore();
   const { 
     getFeaturedProducts, 
     getNewProducts, 
     getBestSellers, 
-    getRecommendedProducts,
     searchProducts,
     getProductsByCategory
   } = useProductsStore();
@@ -33,8 +32,6 @@ const Index = () => {
   const featuredProducts = getFeaturedProducts();
   const newProducts = getNewProducts();
   const bestSellers = getBestSellers();
-  const recommendedProducts = user ? getRecommendedProducts(user.preferences) : [];
-  const searchResults = searchQuery ? searchProducts(searchQuery) : [];
 
   const categories = [
     { id: 'all', name: 'الكل', icon: '📚' },
@@ -134,15 +131,14 @@ const Index = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <h1 className="text-3xl font-bold mb-2">
-                    {isAuthenticated ? `مرحباً ${user?.name}!` : 'مرحباً بك في مكتبة تفانين'}
+                    {isAuthenticated ? `مرحباً ${profile?.name || user?.email?.split('@')[0]}!` : 'مرحباً بك في مكتبة تفانين'}
                   </h1>
                   <p className="text-red-100 text-lg">
-                    {isAuthenticated ? 'اكتشف المنتجات المقترحة خصيصاً لك' : 'سجل الآن لتجربة تسوق مخصصة'}
+                    {isAuthenticated ? 'استمتع بتجربة التسوق' : 'سجل الآن لتجربة تسوق مخصصة'}
                   </p>
                   {isAuthenticated && (
                     <div className="mt-3 flex items-center gap-4 text-sm text-red-200">
-                      <span>عدد الطلبات السابقة: {user?.purchaseHistory.length || 0}</span>
-                      <span>عضو منذ: {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('ar-EG') : ''}</span>
+                      <span>عضو منذ: {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('ar-EG') : ''}</span>
                     </div>
                   )}
                 </div>
@@ -182,21 +178,6 @@ const Index = () => {
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {getFilteredProducts().map((product) => (
-                    <ProductCard key={product.id} product={product} />
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Recommended Products (for authenticated users) */}
-            {isAuthenticated && recommendedProducts.length > 0 && (
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                  <Star className="w-6 h-6 text-yellow-500" />
-                  مقترح خصيصاً لك
-                </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {recommendedProducts.map((product) => (
                     <ProductCard key={product.id} product={product} />
                   ))}
                 </div>
