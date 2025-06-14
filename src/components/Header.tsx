@@ -37,7 +37,7 @@ const Header: React.FC<HeaderProps> = ({ title, onBack }) => {
               <h1 className="text-xl font-bold text-gray-900">{title}</h1>
             </div>
             
-            {/* User Account */}
+            {/* User Account - Now shows UserAccountMenu for authenticated users */}
             <div className="flex items-center gap-4">
               {isAuthenticated ? (
                 <UserAccountMenu />
