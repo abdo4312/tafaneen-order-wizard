@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Search, ShoppingCart, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -9,6 +8,7 @@ import Button from '../components/Button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import ProductAssistant from '../components/ProductAssistant';
 
 const Index = () => {
   const navigate = useNavigate();
@@ -201,6 +201,9 @@ const Index = () => {
           </>
         )}
       </div>
+      
+      {/* Add Product Assistant */}
+      <ProductAssistant />
     </div>
   );
 };
