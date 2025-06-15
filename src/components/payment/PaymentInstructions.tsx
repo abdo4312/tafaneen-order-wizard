@@ -24,9 +24,6 @@ const PaymentInstructions: React.FC<PaymentInstructionsProps> = ({
           <div className="text-blue-700 text-sm space-y-2">
             <p><strong>1.</strong> قم بتحويل المبلغ المطلوب: <span className="font-bold">{totalAmount} جنيه</span></p>
             <p><strong>2.</strong> رقم المحفظة: <span className="font-bold">01066334002</span></p>
-            <p><strong>3.</strong> بعد التحويل، اضغط "متابعة" لإدخال رقم العملية</p>
-            <p><strong>4.</strong> يمكنك تحميل لقطة شاشة للتحقق التلقائي</p>
-            <p><strong>5.</strong> تأكد من الاحتفاظ برقم العملية لمراجعتها مع المكتبة</p>
           </div>
         </div>
       </div>
