@@ -41,7 +41,6 @@ const PaymentConfirmation: React.FC<PaymentConfirmationProps> = ({
             <h4 className="font-bold text-blue-800 mb-2">تعليمات مهمة</h4>
             <div className="text-blue-700 text-sm space-y-2">
               <p>• يجب تحويل المبلغ بالضبط: <strong>{totalAmount} جنيه</strong></p>
-              <p>• أي مبلغ مختلف (أكثر أو أقل) سيؤدي إلى رفض الطلب</p>
               <p>• احتفظ برقم العملية لمراجعتها مع المكتبة</p>
             </div>
           </div>
