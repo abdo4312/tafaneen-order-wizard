@@ -15,11 +15,7 @@ serve(async (req) => {
 
   try {
     const { message, products } = await req.json();
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-
-    if (!OPENAI_API_KEY) {
-      throw new Error('مفتاح OpenAI غير موجود');
-    }
+    const DEEPSEEK_API_KEY = 'sk-48b5981674e9420b9684c35e6c10e412';
 
     const systemPrompt = `أنت مساعد ذكي في مكتبة تفانين المصرية. أجب على أسئلة العملاء باللغة العربية بطريقة ودودة ومفيدة.
 
@@ -37,14 +33,14 @@ ${JSON.stringify(products, null, 2)}
 إذا سأل العميل عن منتج غير موجود، اقترح بدائل مشابهة من المنتجات المتوفرة.
 كن ودودًا ومساعدًا كما لو كنت موظف حقيقي في المكتبة.`;
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENAI_API_KEY}`,
+        'Authorization': `Bearer ${DEEPSEEK_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'deepseek-chat',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: message }
