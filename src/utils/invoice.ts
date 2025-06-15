@@ -140,6 +140,24 @@ export const generateInvoiceHTML = (order: Order): string => {
             color: #6c757d;
             font-size: 14px;
         }
+        .contact-info {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .contact-info h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .contact-info p {
+            color: #856404;
+            margin: 5px 0;
+            font-size: 14px;
+        }
         @media print {
             body { background: white; }
             .invoice-container { box-shadow: none; }
@@ -242,6 +260,12 @@ export const generateInvoiceHTML = (order: Order): string => {
                 المبلغ المطلوب: ${order.total} جنيه
             </div>
             ` : ''}
+
+            <div class="contact-info">
+                <h4>📞 في حالة تأخير الطلب</h4>
+                <p>لو الأوردر اتأخر تقدر تكلم الفرع على: <strong>01026274235</strong></p>
+                <p>و احنا هنتواصل معاك في أسرع وقت</p>
+            </div>
         </div>
 
         <div class="footer">
