@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Download, MessageCircle } from 'lucide-react';
@@ -103,50 +104,6 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
     clearCart();
     reset();
     navigate('/');
-  };
-
-  const getDeliveryFee = () => {
-    const area = AREAS.find(a => a.name === customerInfo.area);
-    return area ? area.price : 0;
-  };
-
-  const getPaymentFee = () => {
-    if (paymentMethod === 'vodafone-cash') {
-      return Math.ceil((getSubtotal() + getDeliveryFee()) * 0.01);
-    }
-    return 0;
-  };
-
-  const getTotalAmount = () => {
-    return getSubtotal() + getDeliveryFee() + getPaymentFee();
-  };
-
-  const getPaymentMethodName = () => {
-    switch (paymentMethod) {
-      case 'cash-on-delivery': return 'الدفع عند الاستلام';
-      case 'vodafone-cash': return 'فودافون كاش';
-      case 'ansar-pay': return 'انستا باي';
-      default: return 'غير محدد';
-    }
-  };
-
-  const generateOrderData = () => {
-    return {
-      id: orderId,
-      createdAt: new Date(),
-      items,
-      customerInfo,
-      paymentMethod: paymentMethod === 'cash-on-delivery' ? 'cod' : paymentMethod === 'vodafone-cash' ? 'vodafone_cash' : 'instapay',
-      subtotal: getSubtotal(),
-      deliveryFee: getDeliveryFee(),
-      paymentFee: getPaymentFee(),
-      total: getTotalAmount()
-    };
-  };
-
-  const downloadInvoice = () => {
-    const orderData = generateOrderData();
-    downloadInvoiceHTML(orderData);
   };
 
   return (
