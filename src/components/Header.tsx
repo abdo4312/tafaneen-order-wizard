@@ -3,9 +3,6 @@ import React from 'react';
 import { ShoppingCart, Search, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/cart-store';
-import { useAuthStore } from '../store/auth-store';
-import UserMenu from './auth/UserMenu';
-import UserAccountMenu from './auth/UserAccountMenu';
 
 interface HeaderProps {
   title?: string;
@@ -15,7 +12,6 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ title, onBack }) => {
   const navigate = useNavigate();
   const { items } = useCartStore();
-  const { isAuthenticated } = useAuthStore();
   
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
@@ -37,13 +33,19 @@ const Header: React.FC<HeaderProps> = ({ title, onBack }) => {
               <h1 className="text-xl font-bold text-gray-900">{title}</h1>
             </div>
             
-            {/* User Account - Now shows UserAccountMenu for authenticated users */}
-            <div className="flex items-center gap-4">
-              {isAuthenticated ? (
-                <UserAccountMenu />
-              ) : (
-                <UserMenu />
-              )}
+            {/* Cart Icon */}
+            <div className="flex items-center">
+              <button
+                onClick={() => navigate('/cart')}
+                className="relative p-2 text-gray-600 hover:text-red-600 transition-colors"
+              >
+                <ShoppingCart className="w-6 h-6" />
+                {totalItems > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {totalItems}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -79,9 +81,8 @@ const Header: React.FC<HeaderProps> = ({ title, onBack }) => {
             </div>
           </div>
 
-          {/* Navigation Icons */}
-          <div className="flex items-center gap-4">
-            {/* Cart */}
+          {/* Cart */}
+          <div className="flex items-center">
             <button
               onClick={() => navigate('/cart')}
               className="relative p-2 text-gray-600 hover:text-red-600 transition-colors"
@@ -93,13 +94,6 @@ const Header: React.FC<HeaderProps> = ({ title, onBack }) => {
                 </span>
               )}
             </button>
-
-            {/* User Account */}
-            {isAuthenticated ? (
-              <UserAccountMenu />
-            ) : (
-              <UserMenu />
-            )}
           </div>
         </div>
       </div>

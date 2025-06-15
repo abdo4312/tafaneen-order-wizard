@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Download, MessageCircle } from 'lucide-react';
 import Header from '../components/Header';
 import Button from '../components/Button';
+import FeedbackModal from '../components/feedback/FeedbackModal';
 import { useCartStore } from '../store/cart-store';
 import { useCheckoutStore } from '../store/checkout-store';
 import { generateInvoiceHTML, generateInvoiceText, sendInvoiceToWhatsApp, downloadInvoiceHTML } from '../utils/invoice';
@@ -20,6 +21,7 @@ const Confirmation: React.FC = () => {
   const { items, getSubtotal, clearCart } = useCartStore();
   const { customerInfo, paymentMethod, reset } = useCheckoutStore();
   const [orderSent, setOrderSent] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [orderId] = useState(`INV-${Date.now()}`);
 
   const getDeliveryFee = () => {
@@ -90,12 +92,61 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
     const whatsappURL = `https://wa.me/201026274235?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, '_blank');
     setOrderSent(true);
+    
+    // Show feedback modal after order is sent
+    setTimeout(() => {
+      setShowFeedback(true);
+    }, 2000);
   };
 
   const handleNewOrder = () => {
     clearCart();
     reset();
     navigate('/');
+  };
+
+  const getDeliveryFee = () => {
+    const area = AREAS.find(a => a.name === customerInfo.area);
+    return area ? area.price : 0;
+  };
+
+  const getPaymentFee = () => {
+    if (paymentMethod === 'vodafone-cash') {
+      return Math.ceil((getSubtotal() + getDeliveryFee()) * 0.01);
+    }
+    return 0;
+  };
+
+  const getTotalAmount = () => {
+    return getSubtotal() + getDeliveryFee() + getPaymentFee();
+  };
+
+  const getPaymentMethodName = () => {
+    switch (paymentMethod) {
+      case 'cash-on-delivery': return 'الدفع عند الاستلام';
+      case 'vodafone-cash': return 'فودافون كاش';
+      case 'ansar-pay': return 'انستا باي';
+      default: return 'غير محدد';
+    }
+  };
+
+  const generateOrderData = () => {
+    return {
+      id: orderId,
+      createdAt: new Date(),
+      items,
+      customerInfo,
+      paymentMethod: paymentMethod === 'cash-on-delivery' ? 'cod' : paymentMethod === 'vodafone-cash' ? 'vodafone_cash' : 'instapay',
+      subtotal: getSubtotal(),
+      deliveryFee: getDeliveryFee(),
+      paymentFee: getPaymentFee(),
+      total: getTotalAmount()
+    };
+  };
+
+  const downloadInvoice = () => {
+    const orderData = generateOrderData();
+    downloadInvoiceHTML(orderData);
   };
 
   return (
@@ -208,6 +259,11 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
           )}
         </div>
       </div>
+
+      <FeedbackModal 
+        isOpen={showFeedback} 
+        onClose={() => setShowFeedback(false)} 
+      />
     </div>
   );
 };

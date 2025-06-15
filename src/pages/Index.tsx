@@ -1,14 +1,10 @@
 
 import React, { useState } from 'react';
-import { Search, ShoppingCart, User, Star, TrendingUp, Sparkles } from 'lucide-react';
+import { Search, ShoppingCart, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { useCartStore } from '../store/cart-store';
-import { useAuthStore } from '../store/auth-store';
 import { useProductsStore } from '../store/products-store';
-import AuthModal from '../components/auth/AuthModal';
-import UserMenu from '../components/auth/UserMenu';
-import UserAccountMenu from '../components/auth/UserAccountMenu';
 import Button from '../components/Button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
@@ -17,11 +13,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 const Index = () => {
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
-  const [showAuthModal, setShowAuthModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('all');
   
   const { items, getTotalItems } = useCartStore();
-  const { isAuthenticated, user, profile } = useAuthStore();
   const { 
     getFeaturedProducts, 
     getNewProducts, 
@@ -83,7 +77,7 @@ const Index = () => {
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center">
               <div className="relative cursor-pointer" onClick={handleCartClick}>
                 <ShoppingCart className="w-6 h-6 text-gray-600 hover:text-red-600 transition-colors" />
                 {getTotalItems() > 0 && (
@@ -92,18 +86,6 @@ const Index = () => {
                   </Badge>
                 )}
               </div>
-              
-              {isAuthenticated ? (
-                <UserAccountMenu />
-              ) : (
-                <Button 
-                  onClick={() => setShowAuthModal(true)}
-                  className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white"
-                >
-                  <User className="w-4 h-4" />
-                  <span className="hidden sm:inline">تسجيل الدخول</span>
-                </Button>
-              )}
             </div>
           </div>
         </div>
@@ -131,17 +113,8 @@ const Index = () => {
             <div className="bg-gradient-to-r from-red-600 to-red-800 rounded-2xl p-8 text-white mb-8">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-3xl font-bold mb-2">
-                    {isAuthenticated ? `مرحباً ${profile?.name || user?.email?.split('@')[0]}!` : 'مرحباً بك في مكتبة تفانين'}
-                  </h1>
-                  <p className="text-red-100 text-lg">
-                    {isAuthenticated ? 'استمتع بتجربة التسوق' : 'سجل الآن لتجربة تسوق مخصصة'}
-                  </p>
-                  {isAuthenticated && (
-                    <div className="mt-3 flex items-center gap-4 text-sm text-red-200">
-                      <span>عضو منذ: {profile?.created_at ? new Date(profile.created_at).toLocaleDateString('ar-EG') : ''}</span>
-                    </div>
-                  )}
+                  <h1 className="text-3xl font-bold mb-2">مرحباً بك في مكتبة تفانين</h1>
+                  <p className="text-red-100 text-lg">كل اللي محتاجه في مكان واحد</p>
                 </div>
                 <div className="text-6xl">🖊️</div>
               </div>
@@ -228,8 +201,6 @@ const Index = () => {
           </>
         )}
       </div>
-
-      <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
   );
 };
