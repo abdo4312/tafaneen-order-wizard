@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { CreditCard, Wallet, DollarSign } from 'lucide-react';
+import { CreditCard, Wallet, DollarSign, ExternalLink } from 'lucide-react';
 
 interface PaymentMethodSelectorProps {
   selectedMethod: string;
@@ -22,17 +21,19 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
     {
       id: 'vodafone-cash',
       title: 'فودافون كاش',
-      description: '01066334002',
+      description: 'دفع إلكتروني آمن',
       icon: Wallet,
       iconColor: 'text-red-600',
-      extraInfo: 'رسوم إضافية 1%'
+      extraInfo: 'رسوم إضافية 1%',
+      hasLink: true
     },
     {
       id: 'ansar-pay',
       title: 'انستا باي',
-      description: '01066334002',
+      description: 'دفع إلكتروني سريع',
       icon: CreditCard,
-      iconColor: 'text-blue-600'
+      iconColor: 'text-blue-600',
+      hasLink: true
     }
   ];
 
@@ -56,7 +57,12 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
               <div className="flex items-center gap-3">
                 <IconComponent className={`w-6 h-6 ${method.iconColor}`} />
                 <div className="flex-1">
-                  <h4 className="font-bold">{method.title}</h4>
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold">{method.title}</h4>
+                    {method.hasLink && (
+                      <ExternalLink className="w-4 h-4 text-gray-400" />
+                    )}
+                  </div>
                   <p className="text-gray-600 text-sm">{method.description}</p>
                   {method.extraInfo && (
                     <p className="text-orange-600 text-xs">{method.extraInfo}</p>
@@ -75,6 +81,14 @@ const PaymentMethodSelector: React.FC<PaymentMethodSelectorProps> = ({
             </div>
           );
         })}
+      </div>
+
+      {/* Payment Security Notice */}
+      <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-3">
+        <div className="flex items-center gap-2 text-blue-700 text-sm">
+          <CreditCard className="w-4 h-4" />
+          <span>جميع المدفوعات الإلكترونية آمنة ومحمية</span>
+        </div>
       </div>
     </div>
   );

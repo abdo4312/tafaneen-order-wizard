@@ -31,7 +31,37 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
 
   const handleRemoveFile = () => {
     onFileSelect(null);
+    // Reset the input value to allow selecting the same file again
+    const fileInput = document.getElementById('file-upload') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.value = '';
+    }
   };
+
+  const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    const droppedFile = event.dataTransfer.files?.[0];
+    if (droppedFile) {
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'image/jpeg',
+        'image/jpg',
+        'image/png'
+      ];
+      
+      if (allowedTypes.includes(droppedFile.type)) {
+        onFileSelect(droppedFile);
+      } else {
+        alert('نوع الملف غير مدعوم. يرجى اختيار ملف PDF أو Word أو صورة');
+      }
+    }
+  }, [onFileSelect]);
+
+  const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+  }, []);
 
   const formatFileSize = (bytes: number) => {
     if (bytes === 0) return '0 Bytes';
@@ -49,7 +79,12 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
       </h3>
       
       {!file ? (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors">
+        <div 
+          className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-blue-400 transition-colors cursor-pointer"
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          onClick={() => document.getElementById('file-upload')?.click()}
+        >
           <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <p className="text-gray-600 mb-4">اسحب الملف هنا أو اضغط لاختيار ملف</p>
           <p className="text-sm text-gray-500 mb-4">
@@ -62,11 +97,9 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
             className="hidden"
             id="file-upload"
           />
-          <label htmlFor="file-upload">
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer">
-              اختيار ملف
-            </Button>
-          </label>
+          <Button className="bg-blue-600 hover:bg-blue-700 text-white cursor-pointer">
+            اختيار ملف
+          </Button>
         </div>
       ) : (
         <div className="bg-gray-50 rounded-lg p-4 flex items-center justify-between">
