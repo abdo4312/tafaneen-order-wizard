@@ -1,4 +1,3 @@
-
 import { Order } from '../types';
 
 export const generateInvoiceHTML = (order: Order): string => {
@@ -10,6 +9,15 @@ export const generateInvoiceHTML = (order: Order): string => {
       hour: '2-digit',
       minute: '2-digit'
     }).format(date);
+  };
+
+  const getPaymentMethodName = (method: string) => {
+    switch (method) {
+      case 'cod': return 'الدفع عند الاستلام';
+      case 'vodafone_cash': return 'فودافون كاش';
+      case 'instapay': return 'انستا باي';
+      default: return 'غير محدد';
+    }
   };
 
   return `
@@ -167,9 +175,9 @@ export const generateInvoiceHTML = (order: Order): string => {
 <body>
     <div class="invoice-container">
         <div class="invoice-header">
-            <div class="logo">تفانين ستوديو</div>
-            <div class="subtitle">TAFANEEN STUDIO & PRINT</div>
-            <div class="subtitle">إنتاج إعلامي - استشارات - فعاليات - إعلان - تسويق</div>
+            <div class="logo">مكتبة تفانين</div>
+            <div class="subtitle">TAFANEEN LIBRARY & STATIONERY</div>
+            <div class="subtitle">أدوات مكتبية - قرطاسية - طباعة - خدمات طلابية</div>
         </div>
         
         <div class="invoice-info">
@@ -178,8 +186,7 @@ export const generateInvoiceHTML = (order: Order): string => {
                 <strong>التاريخ:</strong> ${formatDate(order.createdAt)}
             </div>
             <div>
-                <strong>حالة الدفع:</strong> ${order.paymentMethod === 'cod' ? 'دفع عند الاستلام' : 
-                  order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}
+                <strong>حالة الدفع:</strong> ${getPaymentMethodName(order.paymentMethod)}
             </div>
         </div>
 
@@ -196,7 +203,7 @@ export const generateInvoiceHTML = (order: Order): string => {
                 </div>
                 <div class="info-row">
                     <span class="info-label">العنوان:</span>
-                    <span>${order.customerInfo.street} - عقار رقم ${order.customerInfo.buildingNumber} - الدور ${order.customerInfo.floor}</span>
+                    <span>${order.customerInfo.street}، رقم العقار ${order.customerInfo.buildingNumber}${order.customerInfo.floor ? `، الدور ${order.customerInfo.floor}` : ''}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">المنطقة:</span>
@@ -211,9 +218,7 @@ export const generateInvoiceHTML = (order: Order): string => {
                         <th>م</th>
                         <th>اسم المنتج</th>
                         <th>الكمية</th>
-                        <th>اللون</th>
-                        <th>المقاس</th>
-                        <th>السعر</th>
+                        <th>السعر الوحدة</th>
                         <th>الإجمالي</th>
                     </tr>
                 </thead>
@@ -223,8 +228,6 @@ export const generateInvoiceHTML = (order: Order): string => {
                             <td>${index + 1}</td>
                             <td>${item.product.name}</td>
                             <td>${item.quantity}</td>
-                            <td>${item.color || '-'}</td>
-                            <td>${item.size || '-'}</td>
                             <td>${item.product.price} جنيه</td>
                             <td>${item.product.price * item.quantity} جنيه</td>
                         </tr>
@@ -238,12 +241,12 @@ export const generateInvoiceHTML = (order: Order): string => {
                     <span>${order.subtotal} جنيه</span>
                 </div>
                 <div class="total-row">
-                    <span>رسوم التوصيل:</span>
+                    <span>رسوم التوصيل (${order.customerInfo.area}):</span>
                     <span>${order.deliveryFee} جنيه</span>
                 </div>
                 ${order.paymentFee > 0 ? `
                 <div class="total-row">
-                    <span>رسوم الدفع (${order.paymentMethod === 'vodafone_cash' ? '1%' : '0%'}):</span>
+                    <span>رسوم الدفع الإلكتروني (1%):</span>
                     <span>${order.paymentFee} جنيه</span>
                 </div>
                 ` : ''}
@@ -255,22 +258,24 @@ export const generateInvoiceHTML = (order: Order): string => {
 
             ${order.paymentMethod !== 'cod' ? `
             <div class="payment-info">
-                <strong>معلومات الدفع:</strong><br>
-                رقم ${order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}: 01066334002<br>
-                المبلغ المطلوب: ${order.total} جنيه
+                <strong>معلومات الدفع الإلكتروني:</strong><br>
+                ${order.paymentMethod === 'vodafone_cash' ? 'رقم فودافون كاش' : 'رقم انستا باي'}: 01066334002<br>
+                المبلغ المطلوب: ${order.total} جنيه<br>
+                <small>يرجى الاحتفاظ بإيصال المعاملة</small>
             </div>
             ` : ''}
 
             <div class="contact-info">
-                <h4>📞 في حالة تأخير الطلب</h4>
-                <p>لو الأوردر اتأخر تقدر تكلم الفرع على: <strong>01026274235</strong></p>
-                <p>و احنا هنتواصل معاك في أسرع وقت</p>
+                <h4>📞 للاستفسارات والمتابعة</h4>
+                <p>رقم المكتبة: <strong>01066334002</strong></p>
+                <p>في حالة تأخير الطلب أو أي استفسار، تواصل معنا</p>
+                <p>ساعات العمل: من 9 صباحاً حتى 9 مساءً</p>
             </div>
         </div>
 
         <div class="footer">
-            شكراً لاختياركم تفانين ستوديو<br>
-            للاستفسارات: 01026274235
+            شكراً لاختياركم مكتبة تفانين<br>
+            نتطلع لخدمتكم مرة أخرى
         </div>
     </div>
 </body>
@@ -288,7 +293,16 @@ export const generateInvoiceText = (order: Order): string => {
     }).format(date);
   };
 
-  return `🏪 *تفانين ستوديو - فاتورة جديدة*
+  const getPaymentMethodName = (method: string) => {
+    switch (method) {
+      case 'cod': return 'الدفع عند الاستلام';
+      case 'vodafone_cash': return 'فودافون كاش';
+      case 'instapay': return 'انستا باي';
+      default: return 'غير محدد';
+    }
+  };
+
+  return `🏪 *مكتبة تفانين - فاتورة جديدة*
 
 📋 *رقم الفاتورة:* ${order.id}
 📅 *التاريخ:* ${formatDate(order.createdAt)}
@@ -296,33 +310,37 @@ export const generateInvoiceText = (order: Order): string => {
 👤 *بيانات العميل:*
 • الاسم: ${order.customerInfo.name}
 • الهاتف: ${order.customerInfo.phone}
-• العنوان: ${order.customerInfo.street} - عقار رقم ${order.customerInfo.buildingNumber} - الدور ${order.customerInfo.floor}
+• العنوان: ${order.customerInfo.street}، رقم العقار ${order.customerInfo.buildingNumber}${order.customerInfo.floor ? `، الدور ${order.customerInfo.floor}` : ''}
 • المنطقة: ${order.customerInfo.area}
 
 🛍️ *تفاصيل الطلب:*
 ${order.items.map((item, index) => 
   `${index + 1}. ${item.product.name}
    - الكمية: ${item.quantity}
-   - اللون: ${item.color || 'غير محدد'}
-   - المقاس: ${item.size || 'غير محدد'}
-   - السعر: ${item.product.price * item.quantity} جنيه`
-).join('\n')}
+   - السعر: ${item.product.price} جنيه للقطعة
+   - الإجمالي: ${item.product.price * item.quantity} جنيه`
+).join('\n\n')}
 
 💰 *الحساب:*
 • إجمالي المنتجات: ${order.subtotal} جنيه
-• رسوم التوصيل: ${order.deliveryFee} جنيه
-${order.paymentFee > 0 ? `• رسوم الدفع: ${order.paymentFee} جنيه\n` : ''}• *الإجمالي: ${order.total} جنيه*
+• رسوم التوصيل (${order.customerInfo.area}): ${order.deliveryFee} جنيه
+${order.paymentFee > 0 ? `• رسوم الدفع الإلكتروني (1%): ${order.paymentFee} جنيه\n` : ''}• *الإجمالي النهائي: ${order.total} جنيه*
 
-💳 *طريقة الدفع:* ${order.paymentMethod === 'cod' ? 'دفع عند الاستلام' : 
-  order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}
+💳 *طريقة الدفع:* ${getPaymentMethodName(order.paymentMethod)}
 
-${order.paymentMethod !== 'cod' ? `💰 *رقم الدفع:* 01066334002` : ''}
+${order.paymentMethod !== 'cod' ? `
+💰 *معلومات الدفع:*
+رقم ${order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}: 01066334002
+المبلغ المطلوب: ${order.total} جنيه
+` : ''}
+📞 *للاستفسارات:* 01066334002
 
-شكراً لاختياركم تفانين ستوديو! 🙏`;
+شكراً لاختياركم مكتبة تفانين! 🙏
+نتطلع لخدمتكم مرة أخرى`;
 };
 
 export const sendInvoiceToWhatsApp = (order: Order) => {
-  const phoneNumber = '201026274235';
+  const phoneNumber = '201066334002';
   const invoiceText = generateInvoiceText(order);
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(invoiceText)}`;
   window.open(whatsappUrl, '_blank');
@@ -334,7 +352,7 @@ export const downloadInvoiceHTML = (order: Order) => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
   link.href = url;
-  link.download = `invoice-${order.id}.html`;
+  link.download = `فاتورة-${order.id}.html`;
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);

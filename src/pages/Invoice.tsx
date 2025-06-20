@@ -1,7 +1,6 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { Download, MessageCircle } from 'lucide-react';
+import { Download, MessageCircle, ArrowLeft } from 'lucide-react';
 import Button from '../components/Button';
 import { generateInvoiceHTML, downloadInvoiceHTML, sendInvoiceToWhatsApp } from '../utils/invoice';
 import { Order } from '../types';
@@ -13,38 +12,36 @@ const Invoice: React.FC = () => {
 
   useEffect(() => {
     // في التطبيق الحقيقي، ستحصل على بيانات الطلب من قاعدة البيانات
-    // هنا سنستخدم بيانات تجريبية
+    // هنا سنستخدم بيانات تجريبية محدثة وواقعية
     const mockOrder: Order = {
-      id: orderId || `INV-${Date.now()}`,
+      id: orderId || `TFN-${Date.now()}`,
       createdAt: new Date(),
       items: [
         {
           product: {
-            id: '1',
-            name: 'طباعة بنر',
-            description: 'بنر إعلاني عالي الجودة',
-            price: 50,
+            id: '8',
+            name: 'قلم رصاص فابر كاستل HB كلاسيك',
+            description: 'قلم رصاص عالي الجودة من فابر كاستل، مثالي للكتابة والرسم',
+            price: 12,
             image: '/placeholder.svg',
-            category: 'printing'
+            category: 'pens'
           },
-          quantity: 2,
-          color: 'أزرق',
-          size: '2x1 متر'
+          quantity: 2
         }
       ],
       customerInfo: {
-        name: 'أحمد محمد',
-        phone: '01234567890',
-        street: 'شارع الهرم',
-        buildingNumber: '123',
+        name: 'أحمد محمد علي',
+        phone: '01026274235',
+        street: 'شارع الجامعة',
+        buildingNumber: '15',
         floor: '2',
         area: 'البوابة الأولى'
       },
-      paymentMethod: 'cod',
-      subtotal: 100,
+      paymentMethod: 'vodafone_cash',
+      subtotal: 24,
       deliveryFee: 20,
-      paymentFee: 0,
-      total: 120
+      paymentFee: 1,
+      total: 45
     };
 
     setOrder(mockOrder);
@@ -64,22 +61,39 @@ const Invoice: React.FC = () => {
     }
   };
 
+  const handleGoBack = () => {
+    window.history.back();
+  };
+
   if (!order) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">جاري تحميل الفاتورة...</h1>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
+          <h1 className="text-xl font-bold text-gray-800 mb-2">جاري تحميل الفاتورة...</h1>
+          <p className="text-gray-600">يرجى الانتظار</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" dir="rtl">
       {/* Header */}
-      <div className="bg-white shadow-sm p-4 mb-6">
+      <div className="bg-white shadow-sm p-4 mb-6 sticky top-0 z-10">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-gray-800">فاتورة رقم {order.id}</h1>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={handleGoBack}
+              className="p-2 text-gray-600 hover:text-red-600 transition-colors rounded-lg hover:bg-gray-100"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </button>
+            <div>
+              <h1 className="text-xl font-bold text-gray-800">فاتورة رقم {order.id}</h1>
+              <p className="text-sm text-gray-600">مكتبة تفانين</p>
+            </div>
+          </div>
           <div className="flex gap-2">
             <Button
               onClick={handleDownload}
@@ -101,10 +115,34 @@ const Invoice: React.FC = () => {
 
       {/* Invoice Preview */}
       <div className="p-4">
-        <div 
-          className="bg-white rounded-lg shadow-lg overflow-hidden"
-          dangerouslySetInnerHTML={{ __html: invoiceHTML }}
-        />
+        <div className="max-w-4xl mx-auto">
+          <div 
+            className="bg-white rounded-lg shadow-lg overflow-hidden"
+            dangerouslySetInnerHTML={{ __html: invoiceHTML }}
+          />
+          
+          {/* Additional Actions */}
+          <div className="mt-6 bg-white rounded-lg shadow-md p-4">
+            <h3 className="font-bold text-lg mb-4">إجراءات إضافية</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-bold text-blue-800 mb-2">📞 للاستفسارات</h4>
+                <p className="text-blue-700 text-sm">
+                  رقم المكتبة: <strong>01066334002</strong><br>
+                  ساعات العمل: 9 ص - 9 م
+                </p>
+              </div>
+              
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <h4 className="font-bold text-green-800 mb-2">✅ حالة الطلب</h4>
+                <p className="text-green-700 text-sm">
+                  تم تأكيد الطلب بنجاح<br>
+                  سيتم التواصل معك قريباً
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

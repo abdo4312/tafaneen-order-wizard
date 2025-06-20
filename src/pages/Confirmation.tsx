@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { CheckCircle, Download, MessageCircle } from 'lucide-react';
@@ -23,7 +22,7 @@ const Confirmation: React.FC = () => {
   const { customerInfo, paymentMethod, reset } = useCheckoutStore();
   const [orderSent, setOrderSent] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [orderId] = useState(`INV-${Date.now()}`);
+  const [orderId] = useState(`TFN-${Date.now()}`);
 
   const getDeliveryFee = () => {
     const area = AREAS.find(a => a.name === customerInfo.area);
@@ -73,14 +72,14 @@ const Confirmation: React.FC = () => {
     const orderData = generateOrderData();
     const invoiceURL = `${window.location.origin}/invoice/${orderId}`;
     
-    const message = `طلب جديد من تفانين ستوديو 📋
+    const message = `طلب جديد من مكتبة تفانين 📋
 
 👤 العميل: ${customerInfo.name}
 📱 الهاتف: ${customerInfo.phone}
-📍 العنوان: ${customerInfo.street}، رقم ${customerInfo.buildingNumber}${customerInfo.floor ? `، الدور ${customerInfo.floor}` : ''}، ${customerInfo.area}
+📍 العنوان: ${customerInfo.street}، رقم العقار ${customerInfo.buildingNumber}${customerInfo.floor ? `، الدور ${customerInfo.floor}` : ''}، ${customerInfo.area}
 
 📦 المنتجات:
-${items.map(item => `• ${item.product.name} x${item.quantity} = ${item.product.price * item.quantity} جنيه`).join('\n')}
+${items.map(item => `• ${item.product.name} × ${item.quantity} = ${item.product.price * item.quantity} جنيه`).join('\n')}
 
 💰 المجموع الفرعي: ${getSubtotal()} جنيه
 🚚 رسوم التوصيل: ${getDeliveryFee()} جنيه
@@ -90,7 +89,7 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
 
 🔗 رابط الفاتورة المنسقة: ${invoiceURL}`;
 
-    const whatsappURL = `https://wa.me/201026274235?text=${encodeURIComponent(message)}`;
+    const whatsappURL = `https://wa.me/201066334002?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, '_blank');
     setOrderSent(true);
     
@@ -119,6 +118,7 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
           <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-3" />
           <h2 className="text-xl font-bold text-green-800 mb-2">تم تأكيد طلبك بنجاح!</h2>
           <p className="text-green-600">سيتم التواصل معك قريباً لتأكيد موعد التوصيل</p>
+          <p className="text-sm text-green-600 mt-2">رقم الطلب: {orderId}</p>
         </div>
 
         {/* Order Details */}
@@ -135,7 +135,7 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
             <div>
               <h4 className="font-medium text-gray-700">عنوان التوصيل</h4>
               <p className="text-gray-600">
-                {customerInfo.street}، رقم {customerInfo.buildingNumber}
+                {customerInfo.street}، رقم العقار {customerInfo.buildingNumber}
                 {customerInfo.floor && `، الدور ${customerInfo.floor}`}، {customerInfo.area}
               </p>
             </div>
@@ -155,7 +155,7 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
               <div key={item.product.id} className="flex justify-between items-center">
                 <div>
                   <p className="font-medium">{item.product.name}</p>
-                  <p className="text-gray-600 text-sm">الكمية: {item.quantity}</p>
+                  <p className="text-gray-600 text-sm">الكمية: {item.quantity} × {item.product.price} جنيه</p>
                 </div>
                 <p className="font-bold">{item.product.price * item.quantity} جنيه</p>
               </div>
@@ -171,12 +171,12 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
               <span>{getSubtotal()} جنيه</span>
             </div>
             <div className="flex justify-between">
-              <span>رسوم التوصيل</span>
+              <span>رسوم التوصيل ({customerInfo.area})</span>
               <span>{getDeliveryFee()} جنيه</span>
             </div>
             {getPaymentFee() > 0 && (
               <div className="flex justify-between text-orange-600">
-                <span>رسوم الدفع الإلكتروني</span>
+                <span>رسوم الدفع الإلكتروني (1%)</span>
                 <span>{getPaymentFee()} جنيه</span>
               </div>
             )}
