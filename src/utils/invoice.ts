@@ -182,7 +182,7 @@ export const generateInvoiceHTML = (order: Order): string => {
         
         <div class="invoice-info">
             <div>
-                <strong>رقم الفاتورة:</strong> ${order.id}<br>
+                <strong>رقم الفاتورة:</strong> ${order.id}<br />
                 <strong>التاريخ:</strong> ${formatDate(order.createdAt)}
             </div>
             <div>
@@ -258,9 +258,9 @@ export const generateInvoiceHTML = (order: Order): string => {
 
             ${order.paymentMethod !== 'cod' ? `
             <div class="payment-info">
-                <strong>معلومات الدفع الإلكتروني:</strong><br>
-                ${order.paymentMethod === 'vodafone_cash' ? 'رقم فودافون كاش' : 'رقم انستا باي'}: 01066334002<br>
-                المبلغ المطلوب: ${order.total} جنيه<br>
+                <strong>معلومات الدفع الإلكتروني:</strong><br />
+                ${order.paymentMethod === 'vodafone_cash' ? 'رقم فودافون كاش' : 'رقم انستا باي'}: 01066334002<br />
+                المبلغ المطلوب: ${order.total} جنيه<br />
                 <small>يرجى الاحتفاظ بإيصال المعاملة</small>
             </div>
             ` : ''}
@@ -274,7 +274,7 @@ export const generateInvoiceHTML = (order: Order): string => {
         </div>
 
         <div class="footer">
-            شكراً لاختياركم مكتبة تفانين<br>
+            شكراً لاختياركم مكتبة تفانين<br />
             نتطلع لخدمتكم مرة أخرى
         </div>
     </div>
