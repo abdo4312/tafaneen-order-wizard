@@ -128,7 +128,7 @@ const Invoice: React.FC = () => {
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h4 className="font-bold text-blue-800 mb-2">📞 للاستفسارات</h4>
                 <p className="text-blue-700 text-sm">
-                  رقم المكتبة: <strong>01066334002</strong><br>
+                  رقم المكتبة: <strong>01066334002</strong><br />
                   ساعات العمل: 9 ص - 9 م
                 </p>
               </div>
@@ -136,7 +136,7 @@ const Invoice: React.FC = () => {
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <h4 className="font-bold text-green-800 mb-2">✅ حالة الطلب</h4>
                 <p className="text-green-700 text-sm">
-                  تم تأكيد الطلب بنجاح<br>
+                  تم تأكيد الطلب بنجاح<br />
                   سيتم التواصل معك قريباً
                 </p>
               </div>
@@ -149,5 +149,3 @@ const Invoice: React.FC = () => {
 };
 
 export default Invoice;
-  )
-}

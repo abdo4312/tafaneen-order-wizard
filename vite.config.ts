@@ -10,7 +10,13 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
   },
   plugins: [
-    react(),
+    react({
+      // Add SWC configuration for better error handling
+      tsDecorators: true,
+      plugins: [
+        // Add any SWC plugins if needed
+      ],
+    }),
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
@@ -19,4 +25,24 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Add esbuild configuration as fallback
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
+  },
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
+    exclude: ['@vitejs/plugin-react-swc']
+  },
+  // Build configuration
+  build: {
+    sourcemap: mode === 'development',
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress certain warnings
+        if (warning.code === 'THIS_IS_UNDEFINED') return;
+        warn(warning);
+      }
+    }
+  }
 }));
