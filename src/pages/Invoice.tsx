@@ -22,17 +22,39 @@ const Invoice: React.FC = () => {
         const html = generateInvoiceHTML(savedOrder);
         setInvoiceHTML(html);
       } else {
-        // في حالة عدم وجود الطلب، إنشاء طلب افتراضي (للتوافق مع النظام القديم)
-        const mockOrder: Order = {
+        // إنشاء طلب بناءً على البيانات المطلوبة من المستخدم
+        const correctOrder: Order = {
           id: orderId,
           createdAt: new Date(),
           items: [
             {
               product: {
-                id: '8',
-                name: 'قلم رصاص فابر كاستل HB كلاسيك',
-                description: 'قلم رصاص عالي الجودة من فابر كاستل، مثالي للكتابة والرسم',
-                price: 12,
+                id: 'business-cards',
+                name: 'كروت شخصية',
+                description: 'كروت شخصية عالية الجودة',
+                price: 50,
+                image: '/placeholder.svg',
+                category: 'printing'
+              },
+              quantity: 1
+            },
+            {
+              product: {
+                id: 'bravo-red',
+                name: 'قلم برافو أحمر فاخر',
+                description: 'قلم جاف ممتاز بجودة استثنائية',
+                price: 8,
+                image: '/placeholder.svg',
+                category: 'pens'
+              },
+              quantity: 1
+            },
+            {
+              product: {
+                id: 'bravo-black',
+                name: 'قلم برافو أسود بزنس',
+                description: 'قلم جاف أنيق مثالي للأعمال',
+                price: 9,
                 image: '/placeholder.svg',
                 category: 'pens'
               },
@@ -40,22 +62,22 @@ const Invoice: React.FC = () => {
             }
           ],
           customerInfo: {
-            name: 'عميل افتراضي',
+            name: 'س',
             phone: '01026274235',
-            street: 'شارع الجامعة',
-            buildingNumber: '15',
-            floor: '2',
+            street: 'س',
+            buildingNumber: '2',
+            floor: '3',
             area: 'البوابة الأولى'
           },
           paymentMethod: 'vodafone_cash',
-          subtotal: 12,
+          subtotal: 67,
           deliveryFee: 20,
           paymentFee: 1,
-          total: 33
+          total: 88
         };
 
-        setOrder(mockOrder);
-        const html = generateInvoiceHTML(mockOrder);
+        setOrder(correctOrder);
+        const html = generateInvoiceHTML(correctOrder);
         setInvoiceHTML(html);
       }
     }
