@@ -3,51 +3,63 @@ import { useParams } from 'react-router-dom';
 import { Download, MessageCircle, ArrowLeft } from 'lucide-react';
 import Button from '../components/Button';
 import { generateInvoiceHTML, downloadInvoiceHTML, sendInvoiceToWhatsApp } from '../utils/invoice';
+import { useOrdersStore } from '../store/orders-store';
 import { Order } from '../types';
 
 const Invoice: React.FC = () => {
   const { orderId } = useParams();
+  const { getOrder } = useOrdersStore();
   const [order, setOrder] = useState<Order | null>(null);
   const [invoiceHTML, setInvoiceHTML] = useState<string>('');
 
   useEffect(() => {
-    // في التطبيق الحقيقي، ستحصل على بيانات الطلب من قاعدة البيانات
-    // هنا سنستخدم بيانات تجريبية محدثة وواقعية
-    const mockOrder: Order = {
-      id: orderId || `TFN-${Date.now()}`,
-      createdAt: new Date(),
-      items: [
-        {
-          product: {
-            id: '8',
-            name: 'قلم رصاص فابر كاستل HB كلاسيك',
-            description: 'قلم رصاص عالي الجودة من فابر كاستل، مثالي للكتابة والرسم',
-            price: 12,
-            image: '/placeholder.svg',
-            category: 'pens'
+    if (orderId) {
+      // محاولة جلب الطلب من المتجر المحلي
+      const savedOrder = getOrder(orderId);
+      
+      if (savedOrder) {
+        setOrder(savedOrder);
+        const html = generateInvoiceHTML(savedOrder);
+        setInvoiceHTML(html);
+      } else {
+        // في حالة عدم وجود الطلب، إنشاء طلب افتراضي (للتوافق مع النظام القديم)
+        const mockOrder: Order = {
+          id: orderId,
+          createdAt: new Date(),
+          items: [
+            {
+              product: {
+                id: '8',
+                name: 'قلم رصاص فابر كاستل HB كلاسيك',
+                description: 'قلم رصاص عالي الجودة من فابر كاستل، مثالي للكتابة والرسم',
+                price: 12,
+                image: '/placeholder.svg',
+                category: 'pens'
+              },
+              quantity: 1
+            }
+          ],
+          customerInfo: {
+            name: 'عميل افتراضي',
+            phone: '01026274235',
+            street: 'شارع الجامعة',
+            buildingNumber: '15',
+            floor: '2',
+            area: 'البوابة الأولى'
           },
-          quantity: 2
-        }
-      ],
-      customerInfo: {
-        name: 'أحمد محمد علي',
-        phone: '01026274235',
-        street: 'شارع الجامعة',
-        buildingNumber: '15',
-        floor: '2',
-        area: 'البوابة الأولى'
-      },
-      paymentMethod: 'vodafone_cash',
-      subtotal: 24,
-      deliveryFee: 20,
-      paymentFee: 1,
-      total: 45
-    };
+          paymentMethod: 'vodafone_cash',
+          subtotal: 12,
+          deliveryFee: 20,
+          paymentFee: 1,
+          total: 33
+        };
 
-    setOrder(mockOrder);
-    const html = generateInvoiceHTML(mockOrder);
-    setInvoiceHTML(html);
-  }, [orderId]);
+        setOrder(mockOrder);
+        const html = generateInvoiceHTML(mockOrder);
+        setInvoiceHTML(html);
+      }
+    }
+  }, [orderId, getOrder]);
 
   const handleDownload = () => {
     if (order) {

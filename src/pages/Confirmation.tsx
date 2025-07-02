@@ -6,6 +6,7 @@ import Button from '../components/Button';
 import FeedbackModal from '../components/feedback/FeedbackModal';
 import { useCartStore } from '../store/cart-store';
 import { useCheckoutStore } from '../store/checkout-store';
+import { useOrdersStore } from '../store/orders-store';
 import { generateInvoiceHTML, generateInvoiceText, sendInvoiceToWhatsApp, downloadInvoiceHTML } from '../utils/invoice';
 
 const AREAS = [
@@ -20,6 +21,7 @@ const Confirmation: React.FC = () => {
   const navigate = useNavigate();
   const { items, getSubtotal, clearCart } = useCartStore();
   const { customerInfo, paymentMethod, reset } = useCheckoutStore();
+  const { addOrder } = useOrdersStore();
   const [orderSent, setOrderSent] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [orderId] = useState(`TFN-${Date.now()}`);
@@ -50,7 +52,7 @@ const Confirmation: React.FC = () => {
   };
 
   const generateOrderData = () => {
-    return {
+    const orderData = {
       id: orderId,
       createdAt: new Date(),
       items,
@@ -61,6 +63,11 @@ const Confirmation: React.FC = () => {
       paymentFee: getPaymentFee(),
       total: getTotalAmount()
     };
+    
+    // حفظ الطلب في المتجر
+    addOrder(orderData);
+    
+    return orderData;
   };
 
   const downloadInvoice = () => {
