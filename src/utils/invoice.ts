@@ -259,7 +259,7 @@ export const generateInvoiceHTML = (order: Order): string => {
             ${order.paymentMethod !== 'cod' ? `
             <div class="payment-info">
                 <strong>معلومات الدفع الإلكتروني:</strong><br />
-                ${order.paymentMethod === 'vodafone_cash' ? 'رقم فودافون كاش' : 'رقم انستا باي'}: 01066334002<br />
+                ${order.paymentMethod === 'vodafone_cash' ? 'رقم فودافون كاش' : 'رقم انستا باي'}: 0166334002<br />
                 المبلغ المطلوب: ${order.total} جنيه<br />
                 <small>يرجى الاحتفاظ بإيصال المعاملة</small>
             </div>
@@ -267,7 +267,7 @@ export const generateInvoiceHTML = (order: Order): string => {
 
             <div class="contact-info">
                 <h4>📞 للاستفسارات والمتابعة</h4>
-                <p>رقم المكتبة: <strong>01066334002</strong><br />
+                <p>رقم المكتبة: <strong>0166334002</strong><br />
                 في حالة تأخير الطلب أو أي استفسار، تواصل معنا<br />
                 ساعات العمل: من 9 صباحاً حتى 9 مساءً</p>
             </div>
@@ -330,17 +330,17 @@ ${order.paymentFee > 0 ? `• رسوم الدفع الإلكتروني (1%): ${o
 
 ${order.paymentMethod !== 'cod' ? `
 💰 *معلومات الدفع:*
-رقم ${order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}: 01066334002
+رقم ${order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}: 0166334002
 المبلغ المطلوب: ${order.total} جنيه
 ` : ''}
-📞 *للاستفسارات:* 01066334002
+📞 *للاستفسارات:* 0166334002
 
 شكراً لاختياركم مكتبة تفانين! 🙏
 نتطلع لخدمتكم مرة أخرى`;
 };
 
 export const sendInvoiceToWhatsApp = (order: Order) => {
-  const phoneNumber = '201066334002';
+  const phoneNumber = '20166334002';
   const invoiceText = generateInvoiceText(order);
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(invoiceText)}`;
   window.open(whatsappUrl, '_blank');
