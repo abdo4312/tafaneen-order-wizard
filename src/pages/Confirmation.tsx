@@ -6,7 +6,6 @@ import Button from '../components/Button';
 import FeedbackModal from '../components/feedback/FeedbackModal';
 import { useCartStore } from '../store/cart-store';
 import { useCheckoutStore } from '../store/checkout-store';
-import { useOrdersStore } from '../store/orders-store';
 import { generateInvoiceHTML, generateInvoiceText, sendInvoiceToWhatsApp, downloadInvoiceHTML } from '../utils/invoice';
 
 const AREAS = [
@@ -21,7 +20,6 @@ const Confirmation: React.FC = () => {
   const navigate = useNavigate();
   const { items, getSubtotal, clearCart } = useCartStore();
   const { customerInfo, paymentMethod, reset } = useCheckoutStore();
-  const { addOrder } = useOrdersStore();
   const [orderSent, setOrderSent] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [orderId] = useState(`TFN-${Date.now()}`);
@@ -52,7 +50,7 @@ const Confirmation: React.FC = () => {
   };
 
   const generateOrderData = () => {
-    const orderData = {
+    return {
       id: orderId,
       createdAt: new Date(),
       items,
@@ -63,11 +61,6 @@ const Confirmation: React.FC = () => {
       paymentFee: getPaymentFee(),
       total: getTotalAmount()
     };
-    
-    // حفظ الطلب في المتجر
-    addOrder(orderData);
-    
-    return orderData;
   };
 
   const downloadInvoice = () => {
@@ -96,7 +89,7 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
 
 🔗 رابط الفاتورة المنسقة: ${invoiceURL}`;
 
-    const whatsappURL = `https://wa.me/2${customerInfo.phone}?text=${encodeURIComponent(message)}`;
+    const whatsappURL = `https://wa.me/201066334002?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, '_blank');
     setOrderSent(true);
     

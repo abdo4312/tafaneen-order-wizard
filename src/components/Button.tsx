@@ -1,14 +1,13 @@
-
 import React from 'react';
-import { Button as ShadcnButton, ButtonProps as ShadcnButtonProps } from './ui/button';
+import { Button as ShadcnButton } from './ui/button';
 
-interface ButtonProps extends ShadcnButtonProps {
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
 }
 
-const Button: React.FC<ButtonProps> = ({ children, className, variant, ...props }) => {
+const Button: React.FC<ButtonProps> = ({ children, className, ...props }) => {
   return (
-    <ShadcnButton className={className} variant={variant} {...props}>
+    <ShadcnButton className={className} {...props}>
       {children}
     </ShadcnButton>
   );

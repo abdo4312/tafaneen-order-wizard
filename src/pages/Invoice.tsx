@@ -3,85 +3,51 @@ import { useParams } from 'react-router-dom';
 import { Download, MessageCircle, ArrowLeft } from 'lucide-react';
 import Button from '../components/Button';
 import { generateInvoiceHTML, downloadInvoiceHTML, sendInvoiceToWhatsApp } from '../utils/invoice';
-import { useOrdersStore } from '../store/orders-store';
 import { Order } from '../types';
 
 const Invoice: React.FC = () => {
   const { orderId } = useParams();
-  const { getOrder } = useOrdersStore();
   const [order, setOrder] = useState<Order | null>(null);
   const [invoiceHTML, setInvoiceHTML] = useState<string>('');
 
   useEffect(() => {
-    if (orderId) {
-      // محاولة جلب الطلب من المتجر المحلي
-      const savedOrder = getOrder(orderId);
-      
-      if (savedOrder) {
-        setOrder(savedOrder);
-        const html = generateInvoiceHTML(savedOrder);
-        setInvoiceHTML(html);
-      } else {
-        // إنشاء طلب بناءً على البيانات المطلوبة من المستخدم
-        const correctOrder: Order = {
-          id: orderId,
-          createdAt: new Date(),
-          items: [
-            {
-              product: {
-                id: 'business-cards',
-                name: 'كروت شخصية',
-                description: 'كروت شخصية عالية الجودة',
-                price: 50,
-                image: '/placeholder.svg',
-                category: 'printing'
-              },
-              quantity: 1
-            },
-            {
-              product: {
-                id: 'bravo-red',
-                name: 'قلم برافو أحمر فاخر',
-                description: 'قلم جاف ممتاز بجودة استثنائية',
-                price: 8,
-                image: '/placeholder.svg',
-                category: 'pens'
-              },
-              quantity: 1
-            },
-            {
-              product: {
-                id: 'bravo-black',
-                name: 'قلم برافو أسود بزنس',
-                description: 'قلم جاف أنيق مثالي للأعمال',
-                price: 9,
-                image: '/placeholder.svg',
-                category: 'pens'
-              },
-              quantity: 1
-            }
-          ],
-          customerInfo: {
-            name: 'س',
-            phone: '01026274235',
-            street: 'س',
-            buildingNumber: '2',
-            floor: '3',
-            area: 'البوابة الأولى'
+    // في التطبيق الحقيقي، ستحصل على بيانات الطلب من قاعدة البيانات
+    // هنا سنستخدم بيانات تجريبية محدثة وواقعية
+    const mockOrder: Order = {
+      id: orderId || `TFN-${Date.now()}`,
+      createdAt: new Date(),
+      items: [
+        {
+          product: {
+            id: '8',
+            name: 'قلم رصاص فابر كاستل HB كلاسيك',
+            description: 'قلم رصاص عالي الجودة من فابر كاستل، مثالي للكتابة والرسم',
+            price: 12,
+            image: '/placeholder.svg',
+            category: 'pens'
           },
-          paymentMethod: 'vodafone_cash',
-          subtotal: 67,
-          deliveryFee: 20,
-          paymentFee: 1,
-          total: 88
-        };
+          quantity: 2
+        }
+      ],
+      customerInfo: {
+        name: 'أحمد محمد علي',
+        phone: '01026274235',
+        street: 'شارع الجامعة',
+        buildingNumber: '15',
+        floor: '2',
+        area: 'البوابة الأولى'
+      },
+      paymentMethod: 'vodafone_cash',
+      subtotal: 24,
+      deliveryFee: 20,
+      paymentFee: 1,
+      total: 45
+    };
 
-        setOrder(correctOrder);
-        const html = generateInvoiceHTML(correctOrder);
-        setInvoiceHTML(html);
-      }
-    }
-  }, [orderId, getOrder]);
+    setOrder(mockOrder);
+    const html = generateInvoiceHTML(mockOrder);
+    setInvoiceHTML(html);
+  }, [orderId]);
 
   const handleDownload = () => {
     if (order) {

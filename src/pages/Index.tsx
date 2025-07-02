@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ShoppingCart, Star, TrendingUp, Sparkles, Printer, FileText } from 'lucide-react';
+import { Search, ShoppingCart, Star, TrendingUp, Sparkles, Printer } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { useCartStore } from '../store/cart-store';
@@ -151,31 +151,7 @@ const Index = () => {
                   </Button>
                 </div>
 
-                {/* Invoice Generator Service */}
-                <div 
-                  onClick={() => navigate('/invoice-generator')}
-                  className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-green-200"
-                >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="bg-green-100 p-3 rounded-full">
-                      <FileText className="w-8 h-8 text-green-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-800">إنشاء فاتورة مخصصة</h3>
-                      <p className="text-gray-600">أنشئ فواتير احترافية بسهولة</p>
-                    </div>
-                  </div>
-                  <div className="text-sm text-gray-500 space-y-1">
-                    <p>• فواتير مخصصة لأي طلب</p>
-                    <p>• حساب تلقائي للتكاليف</p>
-                    <p>• إرسال مباشر عبر واتساب</p>
-                  </div>
-                  <Button className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white">
-                    إنشاء فاتورة
-                  </Button>
-                </div>
-
-                {/* Other services placeholder */}
+                {/* Other services can be added here */}
                 <div className="bg-white rounded-lg shadow-md p-6 opacity-50">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="bg-gray-100 p-3 rounded-full">
