@@ -340,7 +340,7 @@ ${order.paymentMethod !== 'cod' ? `
 };
 
 export const sendInvoiceToWhatsApp = (order: Order) => {
-  const phoneNumber = '20166334002';
+  const phoneNumber = `2${order.customerInfo.phone}`;
   const invoiceText = generateInvoiceText(order);
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(invoiceText)}`;
   window.open(whatsappUrl, '_blank');

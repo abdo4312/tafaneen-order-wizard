@@ -89,7 +89,7 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
 
 🔗 رابط الفاتورة المنسقة: ${invoiceURL}`;
 
-    const whatsappURL = `https://wa.me/20166334002?text=${encodeURIComponent(message)}`;
+    const whatsappURL = `https://wa.me/2${customerInfo.phone}?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, '_blank');
     setOrderSent(true);
     
