@@ -203,7 +203,7 @@ export const generateInvoiceHTML = (order: Order): string => {
                 </div>
                 <div class="info-row">
                     <span class="info-label">العنوان:</span>
-                    <span>${order.customerInfo.street}، رقم العقار ${order.customerInfo.buildingNumber}${order.customerInfo.floor ? `، الدور ${order.customerInfo.floor}` : ''}</span>
+                    <span>${order.customerInfo.street ? `${order.customerInfo.street}، ` : ''}${order.customerInfo.buildingNumber ? `رقم العقار ${order.customerInfo.buildingNumber}` : ''}${order.customerInfo.floor ? `، الدور ${order.customerInfo.floor}` : ''}</span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">المنطقة:</span>
@@ -217,6 +217,7 @@ export const generateInvoiceHTML = (order: Order): string => {
                     <tr>
                         <th>م</th>
                         <th>اسم المنتج</th>
+                        <th>الوصف</th>
                         <th>الكمية</th>
                         <th>السعر الوحدة</th>
                         <th>الإجمالي</th>
@@ -227,9 +228,10 @@ export const generateInvoiceHTML = (order: Order): string => {
                         <tr>
                             <td>${index + 1}</td>
                             <td>${item.product.name}</td>
+                            <td>${item.product.description || '-'}</td>
                             <td>${item.quantity}</td>
-                            <td>${item.product.price} جنيه</td>
-                            <td>${item.product.price * item.quantity} جنيه</td>
+                            <td>${item.product.price.toFixed(2)} جنيه</td>
+                            <td>${(item.product.price * item.quantity).toFixed(2)} جنيه</td>
                         </tr>
                     `).join('')}
                 </tbody>
@@ -238,36 +240,36 @@ export const generateInvoiceHTML = (order: Order): string => {
             <div class="total-section">
                 <div class="total-row">
                     <span>إجمالي المنتجات:</span>
-                    <span>${order.subtotal} جنيه</span>
+                    <span>${order.subtotal.toFixed(2)} جنيه</span>
                 </div>
                 <div class="total-row">
                     <span>رسوم التوصيل (${order.customerInfo.area}):</span>
-                    <span>${order.deliveryFee} جنيه</span>
+                    <span>${order.deliveryFee.toFixed(2)} جنيه</span>
                 </div>
                 ${order.paymentFee > 0 ? `
                 <div class="total-row">
                     <span>رسوم الدفع الإلكتروني (1%):</span>
-                    <span>${order.paymentFee} جنيه</span>
+                    <span>${order.paymentFee.toFixed(2)} جنيه</span>
                 </div>
                 ` : ''}
                 <div class="total-row final">
                     <span>الإجمالي النهائي:</span>
-                    <span>${order.total} جنيه</span>
+                    <span>${order.total.toFixed(2)} جنيه</span>
                 </div>
             </div>
 
             ${order.paymentMethod !== 'cod' ? `
             <div class="payment-info">
                 <strong>معلومات الدفع الإلكتروني:</strong><br />
-                ${order.paymentMethod === 'vodafone_cash' ? 'رقم فودافون كاش' : 'رقم انستا باي'}: 0166334002<br />
-                المبلغ المطلوب: ${order.total} جنيه<br />
+                ${order.paymentMethod === 'vodafone_cash' ? 'رقم فودافون كاش' : 'رقم انستا باي'}: 01066334002<br />
+                المبلغ المطلوب: ${order.total.toFixed(2)} جنيه<br />
                 <small>يرجى الاحتفاظ بإيصال المعاملة</small>
             </div>
             ` : ''}
 
             <div class="contact-info">
                 <h4>📞 للاستفسارات والمتابعة</h4>
-                <p>رقم المكتبة: <strong>0166334002</strong><br />
+                <p>رقم المكتبة: <strong>01066334002</strong><br />
                 في حالة تأخير الطلب أو أي استفسار، تواصل معنا<br />
                 ساعات العمل: من 9 صباحاً حتى 9 مساءً</p>
             </div>
@@ -310,37 +312,38 @@ export const generateInvoiceText = (order: Order): string => {
 👤 *بيانات العميل:*
 • الاسم: ${order.customerInfo.name}
 • الهاتف: ${order.customerInfo.phone}
-• العنوان: ${order.customerInfo.street}، رقم العقار ${order.customerInfo.buildingNumber}${order.customerInfo.floor ? `، الدور ${order.customerInfo.floor}` : ''}
+• العنوان: ${order.customerInfo.street ? `${order.customerInfo.street}، ` : ''}${order.customerInfo.buildingNumber ? `رقم العقار ${order.customerInfo.buildingNumber}` : ''}${order.customerInfo.floor ? `، الدور ${order.customerInfo.floor}` : ''}
 • المنطقة: ${order.customerInfo.area}
 
 🛍️ *تفاصيل الطلب:*
 ${order.items.map((item, index) => 
   `${index + 1}. ${item.product.name}
+   ${item.product.description ? `- ${item.product.description}` : ''}
    - الكمية: ${item.quantity}
-   - السعر: ${item.product.price} جنيه للقطعة
-   - الإجمالي: ${item.product.price * item.quantity} جنيه`
+   - السعر: ${item.product.price.toFixed(2)} جنيه للقطعة
+   - الإجمالي: ${(item.product.price * item.quantity).toFixed(2)} جنيه`
 ).join('\n\n')}
 
 💰 *الحساب:*
-• إجمالي المنتجات: ${order.subtotal} جنيه
-• رسوم التوصيل (${order.customerInfo.area}): ${order.deliveryFee} جنيه
-${order.paymentFee > 0 ? `• رسوم الدفع الإلكتروني (1%): ${order.paymentFee} جنيه\n` : ''}• *الإجمالي النهائي: ${order.total} جنيه*
+• إجمالي المنتجات: ${order.subtotal.toFixed(2)} جنيه
+• رسوم التوصيل (${order.customerInfo.area}): ${order.deliveryFee.toFixed(2)} جنيه
+${order.paymentFee > 0 ? `• رسوم الدفع الإلكتروني (1%): ${order.paymentFee.toFixed(2)} جنيه\n` : ''}• *الإجمالي النهائي: ${order.total.toFixed(2)} جنيه*
 
 💳 *طريقة الدفع:* ${getPaymentMethodName(order.paymentMethod)}
 
 ${order.paymentMethod !== 'cod' ? `
 💰 *معلومات الدفع:*
-رقم ${order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}: 0166334002
-المبلغ المطلوب: ${order.total} جنيه
+رقم ${order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}: 01066334002
+المبلغ المطلوب: ${order.total.toFixed(2)} جنيه
 ` : ''}
-📞 *للاستفسارات:* 0166334002
+📞 *للاستفسارات:* 01066334002
 
 شكراً لاختياركم مكتبة تفانين! 🙏
 نتطلع لخدمتكم مرة أخرى`;
 };
 
 export const sendInvoiceToWhatsApp = (order: Order) => {
-  const phoneNumber = `2${order.customerInfo.phone}`;
+  const phoneNumber = `2${order.customerInfo.phone.replace(/^0/, '')}`;
   const invoiceText = generateInvoiceText(order);
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(invoiceText)}`;
   window.open(whatsappUrl, '_blank');

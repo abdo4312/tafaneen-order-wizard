@@ -10,6 +10,7 @@ import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
 import Invoice from "./pages/Invoice";
 import DocumentPrinting from "./pages/DocumentPrinting";
+import InvoiceGenerator from "./pages/InvoiceGenerator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
           <Route path="/confirmation" element={<Confirmation />} />
           <Route path="/invoice/:orderId" element={<Invoice />} />
           <Route path="/document-printing" element={<DocumentPrinting />} />
+          <Route path="/invoice-generator" element={<InvoiceGenerator />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
