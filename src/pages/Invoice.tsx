@@ -11,10 +11,12 @@ const Invoice: React.FC = () => {
   const [invoiceHTML, setInvoiceHTML] = useState<string>('');
 
   useEffect(() => {
-    if (orderId) {
-      // محاولة الحصول على الطلب من المتجر المحلي
-      const savedOrders = localStorage.getItem('orders');
-      if (savedOrders) {
+    if (!orderId) return;
+
+    // محاولة الحصول على الطلب من المتجر المحلي
+    const savedOrders = localStorage.getItem('orders');
+    if (savedOrders) {
+      try {
         const orders = JSON.parse(savedOrders);
         const foundOrder = orders.find((o: Order) => o.id === orderId);
         
@@ -24,12 +26,48 @@ const Invoice: React.FC = () => {
           setInvoiceHTML(html);
           return;
         }
+      } catch (error) {
+        console.error('Error parsing saved orders:', error);
       }
     }
 
-    // إذا لم يوجد الطلب، عرض رسالة خطأ
-    console.error('Order not found with ID:', orderId);
-    return;
+    // إذا لم يتم العثور على الطلب، استخدم البيانات الافتراضية مع تحذير
+    console.warn('Order not found in localStorage, creating fallback order for invoice ID:', orderId);
+    
+    const fallbackOrder: Order = {
+      id: orderId,
+      createdAt: new Date(),
+      items: [
+        {
+          product: {
+            id: '1',
+            name: 'لم يتم العثور على بيانات الطلب الأصلية',
+            description: 'تم إنشاء فاتورة افتراضية',
+            price: 0,
+            image: '/placeholder.svg',
+            category: 'misc'
+          },
+          quantity: 1
+        }
+      ],
+      customerInfo: {
+        name: 'عميل',
+        phone: 'للاستفسار: 01066334002',
+        street: 'العنوان غير متوفر',
+        buildingNumber: '---',
+        floor: '',
+        area: 'غير محدد'
+      },
+      paymentMethod: 'cod',
+      subtotal: 0,
+      deliveryFee: 0,
+      paymentFee: 0,
+      total: 0
+    };
+
+    setOrder(fallbackOrder);
+    const html = generateInvoiceHTML(fallbackOrder);
+    setInvoiceHTML(html);
   }, [orderId]);
 
   const handleDownload = () => {
