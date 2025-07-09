@@ -70,6 +70,13 @@ const Confirmation: React.FC = () => {
 
   const sendToWhatsApp = () => {
     const orderData = generateOrderData();
+    
+    // حفظ الطلب في المتجر المحلي
+    const existingOrders = localStorage.getItem('orders');
+    const orders = existingOrders ? JSON.parse(existingOrders) : [];
+    orders.push(orderData);
+    localStorage.setItem('orders', JSON.stringify(orders));
+    
     const invoiceURL = `${window.location.origin}/invoice/${orderId}`;
     
     const message = `طلب جديد من مكتبة تفانين 📋
@@ -89,7 +96,8 @@ ${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n
 
 🔗 رابط الفاتورة المنسقة: ${invoiceURL}`;
 
-    const whatsappURL = `https://wa.me/201066334002?text=${encodeURIComponent(message)}`;
+    // إرسال الطلب إلى رقم العميل بدلاً من رقم المكتبة
+    const whatsappURL = `https://wa.me/${customerInfo.phone}?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, '_blank');
     setOrderSent(true);
     
