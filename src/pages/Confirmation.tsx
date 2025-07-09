@@ -77,27 +77,11 @@ const Confirmation: React.FC = () => {
     orders.push(orderData);
     localStorage.setItem('orders', JSON.stringify(orders));
     
-    const invoiceURL = `${window.location.origin}/invoice/${orderId}`;
-    
-    const message = `طلب جديد من مكتبة تفانين 📋
+    // استخدام نفس دالة إنشاء الرسالة المستخدمة في الفاتورة
+    const message = generateInvoiceText(orderData);
 
-👤 العميل: ${customerInfo.name}
-📱 الهاتف: ${customerInfo.phone}
-📍 العنوان: ${customerInfo.street}، رقم العقار ${customerInfo.buildingNumber}${customerInfo.floor ? `، الدور ${customerInfo.floor}` : ''}، ${customerInfo.area}
-
-📦 المنتجات:
-${items.map(item => `• ${item.product.name} × ${item.quantity} = ${item.product.price * item.quantity} جنيه`).join('\n')}
-
-💰 المجموع الفرعي: ${getSubtotal()} جنيه
-🚚 رسوم التوصيل: ${getDeliveryFee()} جنيه
-${getPaymentFee() > 0 ? `💳 رسوم الدفع: ${getPaymentFee()} جنيه\n` : ''}💵 المجموع الكلي: ${getTotalAmount()} جنيه
-
-💳 طريقة الدفع: ${getPaymentMethodName()}
-
-🔗 رابط الفاتورة المنسقة: ${invoiceURL}`;
-
-    // إرسال الطلب إلى رقم العميل بدلاً من رقم المكتبة
-    const whatsappURL = `https://wa.me/${customerInfo.phone}?text=${encodeURIComponent(message)}`;
+    // إرسال الطلب إلى رقم المكتبة
+    const whatsappURL = `https://wa.me/201066334002?text=${encodeURIComponent(message)}`;
     window.open(whatsappURL, '_blank');
     setOrderSent(true);
     
