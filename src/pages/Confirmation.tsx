@@ -6,7 +6,7 @@ import Button from '../components/Button';
 import FeedbackModal from '../components/feedback/FeedbackModal';
 import { useCartStore } from '../store/cart-store';
 import { useCheckoutStore } from '../store/checkout-store';
-import { generateInvoiceHTML, generateInvoiceText, sendInvoiceToWhatsApp, downloadInvoiceHTML } from '../utils/invoice';
+import { generateInvoiceHTML, generateInvoiceText, sendInvoiceToWhatsApp, downloadInvoiceHTML, validateAndSaveOrder } from '../utils/invoice';
 
 const AREAS = [
   { name: 'البوابة الأولى', price: 20 },
@@ -65,6 +65,10 @@ const Confirmation: React.FC = () => {
 
   const downloadInvoice = () => {
     const orderData = generateOrderData();
+    
+    // حفظ البيانات قبل التحميل
+    validateAndSaveOrder(orderData);
+    
     downloadInvoiceHTML(orderData);
   };
 
@@ -77,11 +81,13 @@ const Confirmation: React.FC = () => {
     console.log('Items:', orderData.items);
     console.log('Total:', orderData.total);
     
-    // حفظ الطلب في المتجر المحلي
-    const existingOrders = localStorage.getItem('orders');
-    const orders = existingOrders ? JSON.parse(existingOrders) : [];
-    orders.push(orderData);
-    localStorage.setItem('orders', JSON.stringify(orders));
+    // التحقق من صحة البيانات وحفظها
+    const saveSuccess = validateAndSaveOrder(orderData);
+    if (!saveSuccess) {
+      console.error('فشل في حفظ بيانات الطلب');
+      alert('حدث خطأ في حفظ بيانات الطلب. يرجى المحاولة مرة أخرى.');
+      return;
+    }
     
     // التحقق من حفظ البيانات
     console.log('Saved orders:', JSON.parse(localStorage.getItem('orders') || '[]'));

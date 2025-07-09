@@ -2,7 +2,7 @@
 import React from 'react';
 import { ShoppingCart, Star } from 'lucide-react';
 import { useCartStore } from '../store/cart-store';
-import { Product } from '../store/products-store';
+import { Product } from '../types';
 import { Badge } from './ui/badge';
 import Button from './Button';
 
@@ -15,7 +15,12 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   const handleAddToCart = () => {
     addItem(product);
-    console.log('تم إضافة المنتج للسلة:', product.name);
+    console.log('تم إضافة المنتج للسلة:', {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      category: product.category
+    });
   };
 
   return (
@@ -41,28 +46,34 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
       <div className="p-4">
         <div className="flex items-center justify-between mb-2">
           <h3 className="font-bold text-lg">{product.name}</h3>
-          <div className="flex items-center gap-1">
+          {product.rating && (
+            <div className="flex items-center gap-1">
             <Star className="w-4 h-4 text-yellow-400 fill-current" />
             <span className="text-sm text-gray-600">{product.rating}</span>
-          </div>
+            </div>
+          )}
         </div>
         
         <p className="text-gray-600 text-sm mb-2">{product.description}</p>
-        <p className="text-xs text-gray-500 mb-3">الماركة: {product.brand}</p>
+        {product.brand && (
+          <p className="text-xs text-gray-500 mb-3">الماركة: {product.brand}</p>
+        )}
         
         <div className="flex items-center justify-between">
           <div className="flex flex-col">
             <span className="text-red-600 font-bold text-lg">{product.price} جنيه</span>
-            <span className="text-xs text-gray-500">تم بيع {product.salesCount} قطعة</span>
+            {product.salesCount && (
+              <span className="text-xs text-gray-500">تم بيع {product.salesCount} قطعة</span>
+            )}
           </div>
           
           <Button
             onClick={handleAddToCart}
             className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-            disabled={!product.inStock}
+            disabled={product.inStock === false}
           >
             <ShoppingCart className="w-4 h-4" />
-            {product.inStock ? 'إضافة للسلة' : 'غير متوفر'}
+            {product.inStock !== false ? 'إضافة للسلة' : 'غير متوفر'}
           </Button>
         </div>
       </div>

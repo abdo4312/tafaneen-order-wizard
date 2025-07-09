@@ -1,10 +1,19 @@
 export interface Product {
   id: string;
   name: string;
+  nameEn?: string;
   price: number;
   image: string;
   description: string;
   category: string;
+  subcategory?: string;
+  brand?: string;
+  inStock?: boolean;
+  featured?: boolean;
+  isNew?: boolean;
+  salesCount?: number;
+  rating?: number;
+  tags?: string[];
 }
 
 export interface CartItem {

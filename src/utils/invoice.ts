@@ -1,5 +1,85 @@
 import { Order } from '../types';
 
+// دالة حفظ البيانات مع نسخ احتياطية متعددة
+export const saveInvoiceData = (order: Order): void => {
+  try {
+    console.log('حفظ بيانات الفاتورة:', order.id);
+    
+    // حفظ في localStorage الرئيسي
+    const existingOrders = localStorage.getItem('orders');
+    const orders = existingOrders ? JSON.parse(existingOrders) : [];
+    
+    // إزالة الطلب القديم إذا كان موجوداً
+    const filteredOrders = orders.filter((o: Order) => o.id !== order.id);
+    filteredOrders.push(order);
+    
+    localStorage.setItem('orders', JSON.stringify(filteredOrders));
+    
+    // حفظ نسخة احتياطية بمعرف مخصص
+    localStorage.setItem(`invoice_${order.id}`, JSON.stringify(order));
+    
+    // حفظ في sessionStorage للجلسة الحالية
+    sessionStorage.setItem('currentInvoice', JSON.stringify(order));
+    
+    // حفظ معلومات إضافية للتشخيص
+    const debugInfo = {
+      orderId: order.id,
+      timestamp: new Date().toISOString(),
+      customerName: order.customerInfo.name,
+      customerPhone: order.customerInfo.phone,
+      itemsCount: order.items.length,
+      total: order.total
+    };
+    localStorage.setItem(`debug_${order.id}`, JSON.stringify(debugInfo));
+    
+    console.log('تم حفظ بيانات الفاتورة بنجاح');
+  } catch (error) {
+    console.error('خطأ في حفظ بيانات الفاتورة:', error);
+  }
+};
+
+// دالة التحقق من صحة البيانات قبل الحفظ
+export const validateAndSaveOrder = (order: Order): boolean => {
+  try {
+    // التحقق من البيانات الأساسية
+    if (!order.id || !order.customerInfo?.name || !order.items?.length) {
+      console.error('بيانات الطلب غير مكتملة:', {
+        hasId: !!order.id,
+        hasCustomerName: !!order.customerInfo?.name,
+        hasItems: !!order.items?.length
+      });
+      return false;
+    }
+    
+    // التحقق من صحة بيانات العميل
+    if (order.customerInfo.name === 'عميل' || 
+        order.customerInfo.phone.includes('للاستفسار') ||
+        order.customerInfo.area === 'غير محدد') {
+      console.warn('بيانات العميل تحتوي على قيم افتراضية:', order.customerInfo);
+    }
+    
+    // التحقق من صحة المنتجات
+    const hasValidProducts = order.items.every(item => 
+      item.product?.name && 
+      !item.product.name.includes('لم يتم العثور') &&
+      item.quantity > 0 &&
+      item.product.price > 0
+    );
+    
+    if (!hasValidProducts) {
+      console.warn('بعض المنتجات تحتوي على بيانات غير صحيحة');
+    }
+    
+    // حفظ البيانات
+    saveInvoiceData(order);
+    return true;
+    
+  } catch (error) {
+    console.error('خطأ في التحقق من صحة البيانات:', error);
+    return false;
+  }
+};
+
 export const generateInvoiceHTML = (order: Order): string => {
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('ar-EG', {
@@ -303,7 +383,8 @@ export const generateInvoiceText = (order: Order): string => {
   };
 
   // إنشاء رابط الفاتورة
-  const invoiceLink = `https://9bb2a87e-a936-42b5-8f31-521e5e0e4105.lovableproject.com/invoice/${order.id}`;
+  const currentDomain = window.location.origin;
+  const invoiceLink = `${currentDomain}/invoice/${order.id}`;
 
   return `🏪 *مكتبة تفانين - فاتورة جديدة*
 
@@ -348,6 +429,10 @@ ${invoiceLink}
 export const sendInvoiceToWhatsApp = (order: Order) => {
   const phoneNumber = '201066334002';
   const invoiceText = generateInvoiceText(order);
+  
+  // حفظ البيانات قبل الإرسال
+  validateAndSaveOrder(order);
+  
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(invoiceText)}`;
   window.open(whatsappUrl, '_blank');
 };
