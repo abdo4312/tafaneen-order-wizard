@@ -11,37 +11,74 @@ const Invoice: React.FC = () => {
   const [invoiceHTML, setInvoiceHTML] = useState<string>('');
 
   useEffect(() => {
-    // في التطبيق الحقيقي، ستحصل على بيانات الطلب من قاعدة البيانات
-    // هنا سنستخدم بيانات تجريبية محدثة وواقعية
+    if (orderId) {
+      // محاولة الحصول على الطلب من المتجر المحلي
+      const savedOrders = localStorage.getItem('orders');
+      if (savedOrders) {
+        const orders = JSON.parse(savedOrders);
+        const foundOrder = orders.find((o: Order) => o.id === orderId);
+        
+        if (foundOrder) {
+          setOrder(foundOrder);
+          const html = generateInvoiceHTML(foundOrder);
+          setInvoiceHTML(html);
+          return;
+        }
+      }
+    }
+
+    // إذا لم يوجد الطلب، استخدم البيانات التجريبية
     const mockOrder: Order = {
       id: orderId || `TFN-${Date.now()}`,
       createdAt: new Date(),
       items: [
         {
           product: {
-            id: '8',
+            id: '1',
+            name: 'كروت شخصية',
+            description: 'كروت شخصية عالية الجودة',
+            price: 50,
+            image: '/placeholder.svg',
+            category: 'cards'
+          },
+          quantity: 1
+        },
+        {
+          product: {
+            id: '2',
             name: 'قلم رصاص فابر كاستل HB كلاسيك',
-            description: 'قلم رصاص عالي الجودة من فابر كاستل، مثالي للكتابة والرسم',
+            description: 'قلم رصاص عالي الجودة من فابر كاستل',
             price: 12,
             image: '/placeholder.svg',
             category: 'pens'
           },
-          quantity: 2
+          quantity: 1
+        },
+        {
+          product: {
+            id: '3',
+            name: 'قلم برافو أسود بزنس',
+            description: 'قلم برافو أسود عالي الجودة',
+            price: 9,
+            image: '/placeholder.svg',
+            category: 'pens'
+          },
+          quantity: 1
         }
       ],
       customerInfo: {
-        name: 'أحمد محمد علي',
+        name: 's',
         phone: '01026274235',
-        street: 'شارع الجامعة',
-        buildingNumber: '15',
-        floor: '2',
+        street: '2',
+        buildingNumber: '3',
+        floor: '4',
         area: 'البوابة الأولى'
       },
       paymentMethod: 'vodafone_cash',
-      subtotal: 24,
+      subtotal: 71,
       deliveryFee: 20,
       paymentFee: 1,
-      total: 45
+      total: 92
     };
 
     setOrder(mockOrder);
