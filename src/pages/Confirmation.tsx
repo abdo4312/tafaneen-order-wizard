@@ -71,14 +71,24 @@ const Confirmation: React.FC = () => {
   const sendToWhatsApp = () => {
     const orderData = generateOrderData();
     
+    // إضافة logging للتحقق من البيانات
+    console.log('Order Data being sent:', orderData);
+    console.log('Customer Info:', orderData.customerInfo);
+    console.log('Items:', orderData.items);
+    console.log('Total:', orderData.total);
+    
     // حفظ الطلب في المتجر المحلي
     const existingOrders = localStorage.getItem('orders');
     const orders = existingOrders ? JSON.parse(existingOrders) : [];
     orders.push(orderData);
     localStorage.setItem('orders', JSON.stringify(orders));
     
+    // التحقق من حفظ البيانات
+    console.log('Saved orders:', JSON.parse(localStorage.getItem('orders') || '[]'));
+    
     // استخدام نفس دالة إنشاء الرسالة المستخدمة في الفاتورة
     const message = generateInvoiceText(orderData);
+    console.log('WhatsApp message:', message);
 
     // إرسال الطلب إلى رقم المكتبة
     const whatsappURL = `https://wa.me/201066334002?text=${encodeURIComponent(message)}`;

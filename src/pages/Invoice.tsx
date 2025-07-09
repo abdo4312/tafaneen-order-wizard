@@ -27,63 +27,9 @@ const Invoice: React.FC = () => {
       }
     }
 
-    // إذا لم يوجد الطلب، استخدم البيانات التجريبية
-    const mockOrder: Order = {
-      id: orderId || `TFN-${Date.now()}`,
-      createdAt: new Date(),
-      items: [
-        {
-          product: {
-            id: '1',
-            name: 'كروت شخصية',
-            description: 'كروت شخصية عالية الجودة',
-            price: 50,
-            image: '/placeholder.svg',
-            category: 'cards'
-          },
-          quantity: 1
-        },
-        {
-          product: {
-            id: '2',
-            name: 'قلم رصاص فابر كاستل HB كلاسيك',
-            description: 'قلم رصاص عالي الجودة من فابر كاستل',
-            price: 12,
-            image: '/placeholder.svg',
-            category: 'pens'
-          },
-          quantity: 1
-        },
-        {
-          product: {
-            id: '3',
-            name: 'قلم برافو أسود بزنس',
-            description: 'قلم برافو أسود عالي الجودة',
-            price: 9,
-            image: '/placeholder.svg',
-            category: 'pens'
-          },
-          quantity: 1
-        }
-      ],
-      customerInfo: {
-        name: 's',
-        phone: '01026274235',
-        street: '2',
-        buildingNumber: '3',
-        floor: '4',
-        area: 'البوابة الأولى'
-      },
-      paymentMethod: 'vodafone_cash',
-      subtotal: 71,
-      deliveryFee: 20,
-      paymentFee: 1,
-      total: 92
-    };
-
-    setOrder(mockOrder);
-    const html = generateInvoiceHTML(mockOrder);
-    setInvoiceHTML(html);
+    // إذا لم يوجد الطلب، عرض رسالة خطأ
+    console.error('Order not found with ID:', orderId);
+    return;
   }, [orderId]);
 
   const handleDownload = () => {
@@ -106,9 +52,15 @@ const Invoice: React.FC = () => {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto mb-4"></div>
-          <h1 className="text-xl font-bold text-gray-800 mb-2">جاري تحميل الفاتورة...</h1>
-          <p className="text-gray-600">يرجى الانتظار</p>
+          <div className="text-red-600 text-6xl mb-4">⚠️</div>
+          <h1 className="text-xl font-bold text-gray-800 mb-2">لم يتم العثور على الفاتورة</h1>
+          <p className="text-gray-600 mb-4">رقم الفاتورة غير صحيح أو انتهت صلاحيتها</p>
+          <button 
+            onClick={handleGoBack}
+            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
+          >
+            العودة للصفحة السابقة
+          </button>
         </div>
       </div>
     );
