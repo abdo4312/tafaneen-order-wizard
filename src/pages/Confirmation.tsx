@@ -81,7 +81,7 @@ const Confirmation: React.FC = () => {
     console.log('Items:', orderData.items);
     console.log('Total:', orderData.total);
     
-    // التحقق من صحة البيانات وحفظها
+    // التحقق من صحة البيانات وحفظها - الآن بطرق متعددة
     const saveSuccess = validateAndSaveOrder(orderData);
     if (!saveSuccess) {
       console.error('فشل في حفظ بيانات الطلب');
@@ -89,15 +89,40 @@ const Confirmation: React.FC = () => {
       return;
     }
     
+    // حفظ إضافي متقدم للبيانات
+    try {
+      // حفظ مخصص بمعرف الفاتورة
+      localStorage.setItem(`invoice_${orderData.id}`, JSON.stringify(orderData));
+      
+      // حفظ في sessionStorage للجلسة الحالية
+      sessionStorage.setItem('currentInvoice', JSON.stringify(orderData));
+      
+      // حفظ آخر فاتورة
+      localStorage.setItem('lastInvoiceData', JSON.stringify(orderData));
+      
+      console.log('تم حفظ البيانات بنجاح في جميع المواقع');
+    } catch (error) {
+      console.error('خطأ في الحفظ الإضافي:', error);
+    }
+    
     // التحقق من حفظ البيانات
     console.log('Saved orders:', JSON.parse(localStorage.getItem('orders') || '[]'));
+    
+    // إنشاء رابط الفاتورة
+    const invoiceUrl = `${window.location.origin}/invoice/${orderData.id}`;
     
     // استخدام نفس دالة إنشاء الرسالة المستخدمة في الفاتورة
     const message = generateInvoiceText(orderData);
     console.log('WhatsApp message:', message);
 
-    // إرسال الطلب إلى رقم المكتبة
-    const whatsappURL = `https://wa.me/201066334002?text=${encodeURIComponent(message)}`;
+    // إضافة رابط الفاتورة للرسالة
+    const messageWithInvoice = `${message}
+
+🧾 رابط الفاتورة الإلكترونية:
+${invoiceUrl}`;
+
+    // إرسال الطلب إلى رقم المكتبة مع رابط الفاتورة
+    const whatsappURL = `https://wa.me/201066334002?text=${encodeURIComponent(messageWithInvoice)}`;
     window.open(whatsappURL, '_blank');
     setOrderSent(true);
     

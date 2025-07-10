@@ -96,22 +96,18 @@ const Invoice: React.FC = () => {
     };
   };
 
-  // دالة تحميل البيانات من localStorage
+  // دالة تحميل البيانات من localStorage محسنة
   const loadFromLocalStorage = (invoiceId: string): Order | null => {
     try {
       console.log('محاولة تحميل البيانات من localStorage للفاتورة:', invoiceId);
       
-      // محاولة 1: البحث بالمعرف المباشر
-      const savedOrders = localStorage.getItem('orders');
-      if (savedOrders) {
-        const orders = JSON.parse(savedOrders);
-        console.log('الطلبات المحفوظة:', orders.length);
-        
-        const foundOrder = orders.find((o: Order) => o.id === invoiceId);
-        if (foundOrder) {
-          console.log('تم العثور على الطلب في localStorage:', foundOrder);
-          return foundOrder;
-        }
+      // محاولة 1: البحث بالمعرف المخصص (الطريقة الجديدة)
+      const customKey = `invoice_${invoiceId}`;
+      const customOrder = localStorage.getItem(customKey);
+      if (customOrder) {
+        const parsedOrder = JSON.parse(customOrder);
+        console.log('تم العثور على الطلب بالمعرف المخصص:', parsedOrder);
+        return parsedOrder;
       }
 
       // محاولة 2: البحث في sessionStorage
@@ -124,16 +120,30 @@ const Invoice: React.FC = () => {
         }
       }
 
-      // محاولة 3: البحث بمعرف مخصص
-      const customKey = `invoice_${invoiceId}`;
-      const customOrder = localStorage.getItem(customKey);
-      if (customOrder) {
-        const parsedOrder = JSON.parse(customOrder);
-        console.log('تم العثور على الطلب بالمعرف المخصص:', parsedOrder);
-        return parsedOrder;
+      // محاولة 3: البحث في آخر فاتورة محفوظة
+      const lastInvoice = localStorage.getItem('lastInvoiceData');
+      if (lastInvoice) {
+        const parsedOrder = JSON.parse(lastInvoice);
+        if (parsedOrder.id === invoiceId) {
+          console.log('تم العثور على الطلب في آخر فاتورة محفوظة:', parsedOrder);
+          return parsedOrder;
+        }
+      }
+      
+      // محاولة 4: البحث بالمعرف المباشر في قائمة الطلبات
+      const savedOrders = localStorage.getItem('orders');
+      if (savedOrders) {
+        const orders = JSON.parse(savedOrders);
+        console.log('الطلبات المحفوظة:', orders.length);
+        
+        const foundOrder = orders.find((o: Order) => o.id === invoiceId);
+        if (foundOrder) {
+          console.log('تم العثور على الطلب في localStorage:', foundOrder);
+          return foundOrder;
+        }
       }
 
-      console.warn('لم يتم العثور على الطلب في localStorage');
+      console.warn('لم يتم العثور على الطلب في localStorage بالمعرف:', invoiceId);
       return null;
     } catch (error) {
       console.error('خطأ في تحميل البيانات من localStorage:', error);
