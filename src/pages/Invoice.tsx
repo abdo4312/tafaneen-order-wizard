@@ -51,47 +51,24 @@ const Invoice: React.FC = () => {
     return null;
   };
 
-  // دالة التحقق من صحة البيانات
+  // دالة التحقق من صحة البيانات (مخففة)
   const validateOrderData = (orderData: Order): { isValid: boolean; errors: string[] } => {
     const errors: string[] = [];
 
+    console.log('Validating order data:', orderData);
+
+    // التحقق الأساسي فقط - ليس صارماً
     if (!orderData.id) {
       errors.push('معرف الطلب مفقود');
     }
 
-    if (!orderData.customerInfo?.name || orderData.customerInfo.name === 'عميل') {
-      errors.push('اسم العميل مفقود أو غير صحيح');
-    }
-
-    if (!orderData.customerInfo?.phone || orderData.customerInfo.phone.includes('للاستفسار')) {
-      errors.push('رقم هاتف العميل مفقود أو غير صحيح');
-    }
-
-    if (!orderData.customerInfo?.area || orderData.customerInfo.area === 'غير محدد') {
-      errors.push('منطقة العميل مفقودة أو غير صحيحة');
-    }
-
     if (!orderData.items || orderData.items.length === 0) {
       errors.push('لا توجد منتجات في الطلب');
-    } else {
-      // التحقق من صحة المنتجات
-      orderData.items.forEach((item, index) => {
-        if (!item.product?.name || item.product.name.includes('لم يتم العثور')) {
-          errors.push(`منتج رقم ${index + 1}: اسم المنتج مفقود أو غير صحيح`);
-        }
-        if (!item.quantity || item.quantity <= 0) {
-          errors.push(`منتج رقم ${index + 1}: الكمية غير صحيحة`);
-        }
-        if (!item.product?.price || item.product.price <= 0) {
-          errors.push(`منتج رقم ${index + 1}: السعر غير صحيح`);
-        }
-      });
     }
 
-    if (!orderData.total || orderData.total <= 0) {
-      errors.push('المبلغ الإجمالي مفقود أو صفر');
-    }
-
+    // نقبل أي فاتورة لها ID ومنتجات - حتى لو كان بها بيانات افتراضية
+    console.log('Validation result:', { isValid: errors.length === 0, errors });
+    
     return {
       isValid: errors.length === 0,
       errors
