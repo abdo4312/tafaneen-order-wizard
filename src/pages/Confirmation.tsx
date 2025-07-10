@@ -49,8 +49,53 @@ const Confirmation: React.FC = () => {
     }
   };
 
+  // دالة التحقق من صحة البيانات قبل إنشاء الطلب
+  const validateInvoiceData = (invoiceData: any): { isValid: boolean; errors: string[] } => {
+    const errors: string[] = [];
+    
+    // التحقق من بيانات العميل
+    if (!invoiceData.customerInfo?.name || invoiceData.customerInfo.name.includes('يرجى التواصل')) {
+      errors.push('اسم العميل مطلوب ولا يمكن أن يكون فارغاً');
+    }
+    
+    if (!invoiceData.customerInfo?.phone || invoiceData.customerInfo.phone === '01066334002') {
+      errors.push('رقم هاتف العميل مطلوب ولا يمكن أن يكون رقم المكتبة');
+    }
+    
+    if (!invoiceData.customerInfo?.street || invoiceData.customerInfo.street.includes('غير متوفر')) {
+      errors.push('عنوان العميل مطلوب');
+    }
+    
+    if (!invoiceData.customerInfo?.area || invoiceData.customerInfo.area === 'غير محدد') {
+      errors.push('منطقة العميل مطلوبة');
+    }
+    
+    // التحقق من المنتجات
+    if (!invoiceData.items || invoiceData.items.length === 0) {
+      errors.push('يجب إضافة منتج واحد على الأقل');
+    } else {
+      invoiceData.items.forEach((item: any, index: number) => {
+        if (!item.product?.name || item.product.name.includes('غير محدد')) {
+          errors.push(`اسم المنتج ${index + 1} مطلوب`);
+        }
+        if (!item.product?.price || item.product.price <= 0) {
+          errors.push(`سعر المنتج ${index + 1} يجب أن يكون أكبر من صفر`);
+        }
+        if (!item.quantity || item.quantity <= 0) {
+          errors.push(`كمية المنتج ${index + 1} يجب أن تكون أكبر من صفر`);
+        }
+      });
+    }
+    
+    if (!invoiceData.total || invoiceData.total <= 0) {
+      errors.push('المجموع الإجمالي يجب أن يكون أكبر من صفر');
+    }
+    
+    return { isValid: errors.length === 0, errors };
+  };
+
   const generateOrderData = () => {
-    return {
+    const orderData = {
       id: orderId,
       createdAt: new Date(),
       items,
@@ -61,6 +106,16 @@ const Confirmation: React.FC = () => {
       paymentFee: getPaymentFee(),
       total: getTotalAmount()
     };
+
+    // التحقق من صحة البيانات قبل الإرجاع
+    const validation = validateInvoiceData(orderData);
+    if (!validation.isValid) {
+      console.error('أخطاء في بيانات الفاتورة:', validation.errors);
+      // يمكن إظهار رسالة تحذير للمستخدم هنا
+      alert('تحذير: توجد أخطاء في بيانات الفاتورة:\n' + validation.errors.join('\n'));
+    }
+
+    return orderData;
   };
 
   const downloadInvoice = () => {

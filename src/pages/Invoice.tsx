@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Download, MessageCircle, ArrowLeft, RefreshCw, AlertCircle } from 'lucide-react';
 import Button from '../components/Button';
+import InvoiceValidation from '../components/InvoiceValidation';
 import { generateInvoiceHTML, downloadInvoiceHTML, sendInvoiceToWhatsApp } from '../utils/invoice';
 import { Order } from '../types';
 
@@ -16,6 +17,7 @@ const Invoice: React.FC = () => {
   const navigate = useNavigate();
   const [order, setOrder] = useState<Order | null>(null);
   const [invoiceHTML, setInvoiceHTML] = useState<string>('');
+  const [validationResult, setValidationResult] = useState<{ isValid: boolean; errors: string[] }>({ isValid: true, errors: [] });
   const [loadingState, setLoadingState] = useState<LoadingState>({
     isLoading: true,
     error: null,
@@ -151,40 +153,12 @@ const Invoice: React.FC = () => {
     }
   };
 
-  // دالة إنشاء طلب احتياطي مع بيانات أفضل
+  // دالة إنشاء طلب احتياطي - تم تحسينها لتجنب البيانات الخاطئة
   const createFallbackOrder = (invoiceId: string): Order => {
-    console.warn('إنشاء طلب احتياطي للفاتورة:', invoiceId);
+    console.error('⚠️ لم يتم العثور على بيانات الفاتورة:', invoiceId);
     
-    return {
-      id: invoiceId,
-      createdAt: new Date(),
-      items: [
-        {
-          product: {
-            id: 'fallback-1',
-            name: 'منتج غير محدد - يرجى التواصل مع المكتبة',
-            description: 'لم يتم العثور على تفاصيل المنتج الأصلية',
-            price: 0,
-            image: '/placeholder.svg',
-            category: 'misc'
-          },
-          quantity: 1
-        }
-      ],
-      customerInfo: {
-        name: 'عميل - يرجى التواصل للحصول على التفاصيل',
-        phone: '01066334002',
-        street: 'العنوان غير متوفر',
-        buildingNumber: '---',
-        floor: '',
-        area: 'يرجى التواصل مع المكتبة'
-      },
-      paymentMethod: 'cod',
-      subtotal: 0,
-      deliveryFee: 0,
-      paymentFee: 0,
-      total: 0
-    };
+    // بدلاً من إنشاء بيانات خاطئة، نعيد null ونطلب من المستخدم المحاولة مرة أخرى
+    throw new Error('لم يتم العثور على بيانات الفاتورة. يرجى التأكد من صحة الرابط أو المحاولة مرة أخرى.');
   };
 
   // دالة تحميل البيانات مع آلية fallback محسنة
@@ -229,17 +203,8 @@ const Invoice: React.FC = () => {
         console.warn('فشل في تحميل البيانات من API:', apiError);
       }
 
-      // المحاولة الأخيرة: إنشاء طلب احتياطي
-      const fallbackOrder = createFallbackOrder(invoiceId);
-      setOrder(fallbackOrder);
-      const html = generateInvoiceHTML(fallbackOrder);
-      setInvoiceHTML(html);
-      
-      setLoadingState({
-        isLoading: false,
-        error: 'تم العثور على الفاتورة ولكن بعض البيانات قد تكون غير مكتملة. يرجى التواصل مع المكتبة للحصول على التفاصيل الكاملة.',
-        retryCount: 0
-      });
+      // إذا لم نجد البيانات، نُظهر رسالة خطأ واضحة بدلاً من إنشاء بيانات خاطئة
+      throw new Error('لم يتم العثور على بيانات الفاتورة. يرجى التأكد من صحة الرابط أو التواصل مع المكتبة.');
 
     } catch (error) {
       console.error('خطأ في تحميل بيانات الفاتورة:', error);
@@ -410,6 +375,14 @@ const Invoice: React.FC = () => {
       {/* Invoice Preview */}
       <div className="p-4">
         <div className="max-w-4xl mx-auto">
+          {/* إضافة مكون التحقق من صحة البيانات */}
+          {order && (
+            <InvoiceValidation 
+              order={order} 
+              onValidationResult={(isValid, errors) => setValidationResult({ isValid, errors })}
+            />
+          )}
+          
           <div 
             className="bg-white rounded-lg shadow-lg overflow-hidden"
             dangerouslySetInnerHTML={{ __html: invoiceHTML }}
