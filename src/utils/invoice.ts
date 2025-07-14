@@ -339,7 +339,7 @@ export const generateInvoiceHTML = (order: Order): string => {
             ${order.paymentMethod !== 'cod' ? `
             <div class="payment-info">
                 <strong>معلومات الدفع الإلكتروني:</strong><br />
-                ${order.paymentMethod === 'vodafone_cash' ? 'رقم فودافون كاش' : 'رقم انستا باي'}: 01066334002<br />
+                ${order.paymentMethod === 'vodafone_cash' ? 'رقم فودافون كاش' : 'رقم انستا باي'}: 01026274235<br />
                 المبلغ المطلوب: ${order.total} جنيه<br />
                 <small>يرجى الاحتفاظ بإيصال المعاملة</small>
             </div>
@@ -347,7 +347,7 @@ export const generateInvoiceHTML = (order: Order): string => {
 
             <div class="contact-info">
                 <h4>📞 للاستفسارات والمتابعة</h4>
-                <p>رقم المكتبة: <strong>01066334002</strong><br />
+                <p>رقم المكتبة: <strong>01026274235</strong><br />
                 في حالة تأخير الطلب أو أي استفسار، تواصل معنا<br />
                 ساعات العمل: من 9 صباحاً حتى 9 مساءً</p>
             </div>
@@ -382,10 +382,6 @@ export const generateInvoiceText = (order: Order): string => {
     }
   };
 
-  // إنشاء رابط الفاتورة
-  const currentDomain = window.location.origin;
-  const invoiceLink = `${currentDomain}/invoice/${order.id}`;
-
   return `🏪 *مكتبة تفانين - فاتورة جديدة*
 
 📋 *رقم الفاتورة:* ${order.id}
@@ -414,20 +410,18 @@ ${order.paymentFee > 0 ? `• رسوم الدفع الإلكتروني (1%): ${o
 
 ${order.paymentMethod !== 'cod' ? `
 💰 *معلومات الدفع:*
-رقم ${order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}: 01066334002
+رقم ${order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}: 01026274235
 المبلغ المطلوب: ${order.total} جنيه
 ` : ''}
-🧾 *رابط الفاتورة المنسقة:*
-${invoiceLink}
 
-📞 *للاستفسارات:* 01066334002
+📞 *للاستفسارات:* 01026274235
 
 شكراً لاختياركم مكتبة تفانين! 🙏
 نتطلع لخدمتكم مرة أخرى`;
 };
 
 export const sendInvoiceToWhatsApp = (order: Order) => {
-  const phoneNumber = '201066334002';
+  const phoneNumber = '201026274235';
   const invoiceText = generateInvoiceText(order);
   
   // حفظ البيانات قبل الإرسال
