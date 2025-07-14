@@ -67,6 +67,7 @@ export interface PrintingOptions {
   paperSize: 'a4' | 'a3';
   paperType: 'normal' | 'glossy' | 'coated';
   copies: number;
+  pageCount?: number;
 }
 
 export interface PrintingPrices {

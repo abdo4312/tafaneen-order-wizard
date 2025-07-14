@@ -10,12 +10,14 @@ import { PrintingOptions as PrintingOptionsType, Product } from '../types';
 import { PRINTING_PRICES } from '../constants/printing';
 import { useCartStore } from '../store/cart-store';
 import { toast } from '../components/ui/sonner';
+import { FilePageInfo } from '../utils/page-counter';
 
 const DocumentPrinting: React.FC = () => {
   const navigate = useNavigate();
   const { addItem } = useCartStore();
   
   const [file, setFile] = useState<File | null>(null);
+  const [pageInfo, setPageInfo] = useState<FilePageInfo | null>(null);
   const [printingOptions, setPrintingOptions] = useState<PrintingOptionsType>({
     printType: 'single',
     colorType: 'bw',
@@ -24,18 +26,29 @@ const DocumentPrinting: React.FC = () => {
     copies: 1
   });
 
+  const handleFileSelect = (selectedFile: File | null, filePageInfo?: FilePageInfo) => {
+    setFile(selectedFile);
+    setPageInfo(filePageInfo || null);
+  };
+
   const calculatePrice = () => {
-    if (!file) return 0;
+    if (!file || !pageInfo) return 0;
     
     const { printType, colorType, paperSize, paperType, copies } = printingOptions;
     const pricePerPage = PRINTING_PRICES[printType]?.[colorType]?.[paperSize]?.[paperType] || 0;
     
-    return pricePerPage * copies;
+    // حساب التكلفة = عدد الصفحات × سعر الصفحة × عدد النسخ
+    return pageInfo.pageCount * pricePerPage * copies;
   };
 
   const handleConfirmOrder = () => {
     if (!file) {
       toast.error('يرجى رفع ملف أولاً');
+      return;
+    }
+
+    if (!pageInfo) {
+      toast.error('يرجى انتظار انتهاء تحليل الملف');
       return;
     }
 
@@ -52,14 +65,14 @@ const DocumentPrinting: React.FC = () => {
       name: `طباعة مستند - ${file.name}`,
       price: totalPrice,
       image: '/placeholder.svg',
-      description: `طباعة ${printingOptions.copies} نسخة من ${file.name}`,
+      description: `طباعة ${pageInfo.pageCount} صفحة × ${printingOptions.copies} نسخة من ${file.name}`,
       category: 'printing'
     };
 
     // Add to cart with printing options and file
     addItem(printingProduct, 1);
     
-    toast.success('تم إضافة طلب الطباعة للسلة بنجاح!');
+    toast.success(`تم إضافة طلب الطباعة للسلة بنجاح! (${pageInfo.pageCount} صفحة)`);
     
     // Navigate to cart
     navigate('/cart');
@@ -87,7 +100,7 @@ const DocumentPrinting: React.FC = () => {
         {/* Upload Section */}
         <DocumentUpload 
           file={file} 
-          onFileSelect={setFile} 
+          onFileSelect={handleFileSelect} 
         />
 
         {/* Options Section */}
@@ -100,14 +113,15 @@ const DocumentPrinting: React.FC = () => {
         <PriceCalculator 
           options={printingOptions}
           file={file}
+          pageInfo={pageInfo}
         />
 
         {/* Action Button */}
         <div className="flex gap-4">
           <Button
             onClick={handleConfirmOrder}
-            disabled={!file}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-lg font-bold flex items-center justify-center gap-2"
+            disabled={!file || !pageInfo}
+            className="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg text-lg font-bold flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
           >
             <ShoppingCart className="w-5 h-5" />
             تأكيد الطلب وإضافة للسلة
@@ -127,9 +141,12 @@ const DocumentPrinting: React.FC = () => {
           <h4 className="font-bold text-yellow-800 mb-2">تعليمات مهمة:</h4>
           <ul className="text-yellow-700 text-sm space-y-1">
             <li>• تأكد من جودة الملف قبل الرفع</li>
+            <li>• سيتم حساب السعر بناءً على عدد الصفحات الفعلي في الملف</li>
             <li>• الأسعار شاملة جميع الخدمات</li>
             <li>• سيتم مراجعة الملف قبل الطباعة</li>
             <li>• في حالة وجود مشكلة في الملف سيتم التواصل معك</li>
+            <li>• ملفات PDF و Word سيتم حساب صفحاتها تلقائياً</li>
+            <li>• كل صورة تُحسب كصفحة واحدة</li>
           </ul>
         </div>
       </div>
