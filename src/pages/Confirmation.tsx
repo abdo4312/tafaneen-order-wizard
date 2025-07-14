@@ -58,7 +58,7 @@ const Confirmation: React.FC = () => {
       errors.push('اسم العميل مطلوب ولا يمكن أن يكون فارغاً');
     }
     
-    if (!invoiceData.customerInfo?.phone || invoiceData.customerInfo.phone === '01066334002') {
+    if (!invoiceData.customerInfo?.phone || invoiceData.customerInfo.phone === '01026274235') {
       errors.push('رقم هاتف العميل مطلوب ولا يمكن أن يكون رقم المكتبة');
     }
     
@@ -163,21 +163,17 @@ const Confirmation: React.FC = () => {
     // التحقق من حفظ البيانات
     console.log('Saved orders:', JSON.parse(localStorage.getItem('orders') || '[]'));
     
-    // إنشاء رابط الفاتورة
-    const invoiceUrl = `${window.location.origin}/invoice/${orderData.id}`;
-    
     // استخدام نفس دالة إنشاء الرسالة المستخدمة في الفاتورة
     const message = generateInvoiceText(orderData);
     console.log('WhatsApp message:', message);
 
-    // إضافة رابط الفاتورة للرسالة
-    const messageWithInvoice = `${message}
+    // إضافة رقم المكتبة للرسالة (بدون رابط الفاتورة)
+    const messageWithLibraryNumber = `${message}
 
-🧾 رابط الفاتورة الإلكترونية:
-${invoiceUrl}`;
+📞 رقم المكتبة: 01026274235`;
 
-    // إرسال الطلب إلى رقم المكتبة مع رابط الفاتورة
-    const whatsappURL = `https://wa.me/201066334002?text=${encodeURIComponent(messageWithInvoice)}`;
+    // إرسال الطلب إلى رقم المكتبة الجديد (بدون رابط الفاتورة)
+    const whatsappURL = `https://wa.me/201026274235?text=${encodeURIComponent(messageWithLibraryNumber)}`;
     window.open(whatsappURL, '_blank');
     setOrderSent(true);
     
@@ -283,7 +279,7 @@ ${invoiceUrl}`;
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg flex items-center justify-center gap-2"
           >
             <Download className="w-5 h-5" />
-            تحميل الفاتورة
+            يرجى تنزيل الفاتورة وإرسالها إلى المكتبة
           </Button>
           
           <Button
