@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
-import { Upload, FileText, X, Loader2, FileCheck } from 'lucide-react';
+import { Upload, FileText, X, Loader2, FileCheck, AlertTriangle, Eye } from 'lucide-react';
 import { Button } from '../ui/button';
-import { countPages, FilePageInfo, formatFileType } from '../../utils/page-counter';
+import { countPages, FilePageInfo, formatFileType, formatFileSize, getFileTypeError } from '../../utils/page-counter';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 
 interface DocumentUploadProps {
   file: File | null;
@@ -11,15 +12,27 @@ interface DocumentUploadProps {
 const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [pageInfo, setPageInfo] = useState<FilePageInfo | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const analyzeFile = async (selectedFile: File) => {
     setIsAnalyzing(true);
+    setError(null);
+    
     try {
+      // التحقق من نوع وحجم الملف
+      const fileError = getFileTypeError(selectedFile);
+      if (fileError) {
+        throw new Error(fileError);
+      }
+
       const info = await countPages(selectedFile);
       setPageInfo(info);
       onFileSelect(selectedFile, info);
     } catch (error) {
       console.error('خطأ في تحليل الملف:', error);
+      const errorMessage = error instanceof Error ? error.message : 'حدث خطأ في تحليل الملف';
+      setError(errorMessage);
       onFileSelect(selectedFile);
     } finally {
       setIsAnalyzing(false);
@@ -29,27 +42,14 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
   const handleFileChange = useCallback(async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      // Check file type
-      const allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'image/jpeg',
-        'image/jpg',
-        'image/png'
-      ];
-      
-      if (allowedTypes.includes(selectedFile.type)) {
-        await analyzeFile(selectedFile);
-      } else {
-        alert('نوع الملف غير مدعوم. يرجى اختيار ملف PDF أو Word أو صورة');
-      }
+      await analyzeFile(selectedFile);
     }
-  }, [onFileSelect]);
+  }, []);
 
   const handleRemoveFile = () => {
     onFileSelect(null);
     setPageInfo(null);
+    setError(null);
     // Reset the input value to allow selecting the same file again
     const fileInput = document.getElementById('file-upload') as HTMLInputElement;
     if (fileInput) {
@@ -61,33 +61,46 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
     event.preventDefault();
     const droppedFile = event.dataTransfer.files?.[0];
     if (droppedFile) {
-      const allowedTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'image/jpeg',
-        'image/jpg',
-        'image/png'
-      ];
-      
-      if (allowedTypes.includes(droppedFile.type)) {
-        await analyzeFile(droppedFile);
-      } else {
-        alert('نوع الملف غير مدعوم. يرجى اختيار ملف PDF أو Word أو صورة');
-      }
+      await analyzeFile(droppedFile);
     }
-  }, [onFileSelect]);
+  }, []);
 
   const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   }, []);
 
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  const PreviewModal = () => {
+    if (!pageInfo?.preview) return null;
+
+    return (
+      <Dialog open={showPreview} onOpenChange={setShowPreview}>
+        <DialogContent className="max-w-4xl max-h-[80vh] overflow-auto" dir="rtl">
+          <DialogHeader>
+            <DialogTitle>معاينة الملف: {pageInfo.fileName}</DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            {pageInfo.fileType === 'image' ? (
+              <img 
+                src={pageInfo.preview} 
+                alt="معاينة الملف" 
+                className="max-w-full h-auto rounded-lg shadow-lg"
+              />
+            ) : pageInfo.fileType === 'pdf' ? (
+              <img 
+                src={pageInfo.preview} 
+                alt="معاينة الصفحة الأولى" 
+                className="max-w-full h-auto rounded-lg shadow-lg border"
+              />
+            ) : (
+              <div 
+                dangerouslySetInnerHTML={{ __html: pageInfo.preview }} 
+                className="bg-white p-4 rounded-lg shadow-lg border max-h-96 overflow-auto"
+              />
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
   };
 
   return (
@@ -116,6 +129,9 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
               <p className="text-sm text-gray-500 mb-4">
                 الأنواع المدعومة: PDF, Word, JPEG, PNG
               </p>
+              <p className="text-xs text-gray-400 mb-4">
+                الحد الأقصى لحجم الملف: 50 ميجابايت
+              </p>
             </>
           )}
           <input
@@ -142,17 +158,40 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
                 <p className="text-sm text-gray-500">{formatFileSize(file.size)}</p>
               </div>
             </div>
-            <Button
-              onClick={handleRemoveFile}
-              variant="ghost"
-              size="sm"
-              className="text-red-600 hover:text-red-700 hover:bg-red-50"
-            >
-              <X className="w-4 h-4" />
-            </Button>
+            <div className="flex gap-2">
+              {pageInfo?.preview && (
+                <Button
+                  onClick={() => setShowPreview(true)}
+                  variant="outline"
+                  size="sm"
+                  className="text-blue-600 hover:text-blue-700"
+                >
+                  <Eye className="w-4 h-4 mr-1" />
+                  معاينة
+                </Button>
+              )}
+              <Button
+                onClick={handleRemoveFile}
+                variant="ghost"
+                size="sm"
+                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
           
-          {pageInfo && (
+          {error && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+                <span className="font-medium text-red-800">خطأ في تحليل الملف</span>
+              </div>
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
+          )}
+          
+          {pageInfo && !error && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
               <div className="flex items-center gap-2 mb-2">
                 <FileCheck className="w-5 h-5 text-green-600" />
@@ -167,11 +206,24 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
                   <span>عدد الصفحات:</span>
                   <span className="font-bold text-lg text-green-600">{pageInfo.pageCount} صفحة</span>
                 </div>
+                <div className="flex justify-between">
+                  <span>الأوراق المطلوبة (وجه واحد):</span>
+                  <span className="font-medium">{pageInfo.sheetsRequired} ورقة</span>
+                </div>
+                {!pageInfo.isValidSize && (
+                  <div className="bg-yellow-100 border border-yellow-300 rounded p-2 mt-2">
+                    <p className="text-yellow-800 text-xs">
+                      ⚠️ حجم الملف كبير. قد يستغرق التحليل وقتاً أطول.
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           )}
         </div>
       )}
+      
+      <PreviewModal />
     </div>
   );
 };
