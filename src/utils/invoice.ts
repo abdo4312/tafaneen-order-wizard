@@ -339,7 +339,7 @@ export const generateInvoiceHTML = (order: Order): string => {
             ${order.paymentMethod !== 'cod' ? `
             <div class="payment-info">
                 <strong>معلومات الدفع الإلكتروني:</strong><br />
-                ${order.paymentMethod === 'vodafone_cash' ? 'رقم فودافون كاش' : 'رقم انستا باي'}: 01026274235<br />
+                ${order.paymentMethod === 'vodafone_cash' ? 'رقم فودافون كاش' : 'رقم انستا باي'}: 01066334002<br />
                 المبلغ المطلوب: ${order.total} جنيه<br />
                 <small>يرجى الاحتفاظ بإيصال المعاملة</small>
             </div>
@@ -410,7 +410,7 @@ ${order.paymentFee > 0 ? `• رسوم الدفع الإلكتروني (1%): ${o
 
 ${order.paymentMethod !== 'cod' ? `
 💰 *معلومات الدفع:*
-رقم ${order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}: 01026274235
+رقم ${order.paymentMethod === 'vodafone_cash' ? 'فودافون كاش' : 'انستا باي'}: 01066334002
 المبلغ المطلوب: ${order.total} جنيه
 ` : ''}
 
