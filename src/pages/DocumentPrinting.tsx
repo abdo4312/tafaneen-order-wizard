@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Printer, ShoppingCart } from 'lucide-react';
+import { Printer, ShoppingCart, FileText, Calculator } from 'lucide-react';
 import Header from '../components/Header';
 import DocumentUpload from '../components/printing/DocumentUpload';
 import PrintingOptions from '../components/printing/PrintingOptions';
@@ -41,6 +41,16 @@ const DocumentPrinting: React.FC = () => {
     return pageInfo.pageCount * pricePerPage * copies;
   };
 
+  const calculateSheetsRequired = () => {
+    if (!pageInfo) return 0;
+    
+    if (printingOptions.printType === 'single') {
+      return pageInfo.pageCount; // كل صفحة تحتاج ورقة منفصلة
+    } else {
+      return Math.ceil(pageInfo.pageCount / 2); // صفحتان في كل ورقة
+    }
+  };
+
   const handleConfirmOrder = () => {
     if (!file) {
       toast.error('يرجى رفع ملف أولاً');
@@ -59,20 +69,24 @@ const DocumentPrinting: React.FC = () => {
       return;
     }
 
+    const sheetsRequired = calculateSheetsRequired();
+    const printTypeText = printingOptions.printType === 'single' ? 'وجه واحد' : 'وجهين';
+    const colorTypeText = printingOptions.colorType === 'bw' ? 'أبيض وأسود' : 'ملون';
+
     // Create a product for the printing service
     const printingProduct: Product = {
       id: `print-${Date.now()}`,
       name: `طباعة مستند - ${file.name}`,
       price: totalPrice,
       image: '/placeholder.svg',
-      description: `طباعة ${pageInfo.pageCount} صفحة × ${printingOptions.copies} نسخة من ${file.name}`,
+      description: `طباعة ${pageInfo.pageCount} صفحة (${sheetsRequired} ورقة) × ${printingOptions.copies} نسخة - ${printTypeText} - ${colorTypeText}`,
       category: 'printing'
     };
 
     // Add to cart with printing options and file
     addItem(printingProduct, 1);
     
-    toast.success(`تم إضافة طلب الطباعة للسلة بنجاح! (${pageInfo.pageCount} صفحة)`);
+    toast.success(`تم إضافة طلب الطباعة للسلة بنجاح! (${pageInfo.pageCount} صفحة، ${sheetsRequired} ورقة)`);
     
     // Navigate to cart
     navigate('/cart');
@@ -97,11 +111,67 @@ const DocumentPrinting: React.FC = () => {
           </div>
         </div>
 
+        {/* Service Description */}
+        <div className="bg-white rounded-lg shadow-md p-6">
+          <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+            <FileText className="w-5 h-5 text-blue-600" />
+            كيفية استخدام الخدمة
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h4 className="font-bold text-gray-800 mb-3">📁 الملفات المدعومة:</h4>
+              <ul className="text-gray-600 space-y-1 text-sm">
+                <li>• ملفات PDF</li>
+                <li>• مستندات Word (.doc, .docx)</li>
+                <li>• الصور (JPG, PNG)</li>
+                <li>• الحد الأقصى: 50 ميجابايت</li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-bold text-gray-800 mb-3">⚙️ خيارات الطباعة:</h4>
+              <ul className="text-gray-600 space-y-1 text-sm">
+                <li>• <strong>وجه واحد:</strong> كل صفحة في ورقة منفصلة</li>
+                <li>• <strong>وجهين:</strong> صفحتان في كل ورقة</li>
+                <li>• أبيض وأسود أو ملون</li>
+                <li>• أحجام مختلفة (A4, A3)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         {/* Upload Section */}
         <DocumentUpload 
           file={file} 
           onFileSelect={handleFileSelect} 
         />
+
+        {/* File Analysis Results */}
+        {file && pageInfo && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+            <h3 className="font-bold text-lg mb-4 flex items-center gap-2 text-green-800">
+              <Calculator className="w-5 h-5" />
+              نتائج تحليل الملف
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-white rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-blue-600 mb-1">{pageInfo.pageCount}</div>
+                <div className="text-sm text-gray-600">إجمالي الصفحات</div>
+              </div>
+              <div className="bg-white rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-purple-600 mb-1">{calculateSheetsRequired()}</div>
+                <div className="text-sm text-gray-600">
+                  الأوراق المطلوبة
+                  <br />
+                  <span className="text-xs">({printingOptions.printType === 'single' ? 'وجه واحد' : 'وجهين'})</span>
+                </div>
+              </div>
+              <div className="bg-white rounded-lg p-4 text-center">
+                <div className="text-2xl font-bold text-green-600 mb-1">{calculatePrice()}</div>
+                <div className="text-sm text-gray-600">التكلفة الإجمالية (جنيه)</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Options Section */}
         <PrintingOptions 
@@ -138,16 +208,42 @@ const DocumentPrinting: React.FC = () => {
 
         {/* Instructions */}
         <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-          <h4 className="font-bold text-yellow-800 mb-2">تعليمات مهمة:</h4>
-          <ul className="text-yellow-700 text-sm space-y-1">
-            <li>• تأكد من جودة الملف قبل الرفع</li>
-            <li>• سيتم حساب السعر بناءً على عدد الصفحات الفعلي في الملف</li>
-            <li>• الأسعار شاملة جميع الخدمات</li>
-            <li>• سيتم مراجعة الملف قبل الطباعة</li>
-            <li>• في حالة وجود مشكلة في الملف سيتم التواصل معك</li>
-            <li>• ملفات PDF و Word سيتم حساب صفحاتها تلقائياً</li>
-            <li>• كل صورة تُحسب كصفحة واحدة</li>
-          </ul>
+          <h4 className="font-bold text-yellow-800 mb-2">📋 ملاحظات مهمة:</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <ul className="text-yellow-700 text-sm space-y-1">
+              <li>• تأكد من جودة الملف قبل الرفع</li>
+              <li>• سيتم حساب السعر بناءً على عدد الصفحات الفعلي</li>
+              <li>• الأسعار شاملة جميع الخدمات</li>
+              <li>• سيتم مراجعة الملف قبل الطباعة</li>
+            </ul>
+            <ul className="text-yellow-700 text-sm space-y-1">
+              <li>• في حالة وجود مشكلة سيتم التواصل معك</li>
+              <li>• ملفات PDF و Word: حساب تلقائي للصفحات</li>
+              <li>• الصور: كل صورة = صفحة واحدة</li>
+              <li>• الطباعة على وجهين توفر في التكلفة</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Pricing Information */}
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <h4 className="font-bold text-blue-800 mb-3">💰 معلومات الأسعار:</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            <div>
+              <h5 className="font-medium text-blue-700 mb-2">طباعة أبيض وأسود (A4):</h5>
+              <ul className="text-blue-600 space-y-1">
+                <li>• وجه واحد: 1 جنيه/صفحة</li>
+                <li>• وجهين: 1.5 جنيه/صفحة</li>
+              </ul>
+            </div>
+            <div>
+              <h5 className="font-medium text-blue-700 mb-2">طباعة ملونة (A4):</h5>
+              <ul className="text-blue-600 space-y-1">
+                <li>• وجه واحد: 3 جنيه/صفحة</li>
+                <li>• وجهين: 4 جنيه/صفحة</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </div>
