@@ -1,8 +1,9 @@
 import React, { useCallback, useState } from 'react';
-import { Upload, FileText, X, Loader2, FileCheck, AlertTriangle, Eye, Info } from 'lucide-react';
+import { Upload, FileText, X, Loader2, FileCheck, AlertTriangle, Eye, Info, RefreshCw, CheckCircle, XCircle } from 'lucide-react';
 import { Button } from '../ui/button';
-import { countPages, FilePageInfo, formatFileType, formatFileSize, getFileTypeError } from '../../utils/page-counter';
+import { countPages, FilePageInfo, formatFileType, formatFileSize, getFileTypeError, diagnoseFile, FileDiagnostics } from '../../utils/page-counter';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Alert, AlertDescription } from '../ui/alert';
 
 interface DocumentUploadProps {
   file: File | null;
@@ -14,12 +15,22 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
   const [pageInfo, setPageInfo] = useState<FilePageInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
-  const analyzeFile = async (selectedFile: File) => {
+  const analyzeFile = async (selectedFile: File, isRetry: boolean = false) => {
     setIsAnalyzing(true);
     setError(null);
     
+    if (isRetry) {
+      setRetryCount(prev => prev + 1);
+    } else {
+      setRetryCount(0);
+    }
+    
     try {
+      console.log(`🔍 بدء تحليل الملف: ${selectedFile.name} (المحاولة ${retryCount + 1})`);
+      
       // التحقق من نوع وحجم الملف
       const fileError = getFileTypeError(selectedFile);
       if (fileError) {
@@ -27,10 +38,18 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
       }
 
       const info = await countPages(selectedFile);
+      console.log('✅ تم تحليل الملف بنجاح:', info);
+      
       setPageInfo(info);
       onFileSelect(selectedFile, info);
+      
+      // عرض تحذيرات إذا وجدت
+      if (info.diagnostics?.fileIntegrity === 'warning') {
+        console.warn('⚠️ تحذير:', info.diagnostics.errorDetails);
+      }
+      
     } catch (error) {
-      console.error('خطأ في تحليل الملف:', error);
+      console.error('❌ خطأ في تحليل الملف:', error);
       const errorMessage = error instanceof Error ? error.message : 'حدث خطأ في تحليل الملف';
       setError(errorMessage);
       onFileSelect(selectedFile);
@@ -50,10 +69,17 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
     onFileSelect(null);
     setPageInfo(null);
     setError(null);
+    setRetryCount(0);
     // Reset the input value to allow selecting the same file again
     const fileInput = document.getElementById('file-upload') as HTMLInputElement;
     if (fileInput) {
       fileInput.value = '';
+    }
+  };
+
+  const handleRetry = () => {
+    if (file) {
+      analyzeFile(file, true);
     }
   };
 
@@ -68,6 +94,21 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
   const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
     event.preventDefault();
   }, []);
+
+  const runDiagnostics = async () => {
+    if (!file) return;
+    
+    setIsAnalyzing(true);
+    try {
+      const diagnostics = await diagnoseFile(file);
+      console.log('🔧 تشخيص الملف:', diagnostics);
+      setShowDiagnostics(true);
+    } catch (error) {
+      console.error('خطأ في التشخيص:', error);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const PreviewModal = () => {
     if (!pageInfo?.preview) return null;
@@ -103,6 +144,97 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
     );
   };
 
+  const DiagnosticsModal = () => {
+    if (!pageInfo?.diagnostics) return null;
+
+    const diagnostics = pageInfo.diagnostics;
+
+    return (
+      <Dialog open={showDiagnostics} onOpenChange={setShowDiagnostics}>
+        <DialogContent className="max-w-2xl" dir="rtl">
+          <DialogHeader>
+            <DialogTitle>تشخيص الملف: {pageInfo.fileName}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* حالة الملف العامة */}
+            <div className={`p-4 rounded-lg border ${
+              diagnostics.fileIntegrity === 'good' ? 'bg-green-50 border-green-200' :
+              diagnostics.fileIntegrity === 'warning' ? 'bg-yellow-50 border-yellow-200' :
+              'bg-red-50 border-red-200'
+            }`}>
+              <div className="flex items-center gap-2 mb-2">
+                {diagnostics.fileIntegrity === 'good' ? (
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                ) : diagnostics.fileIntegrity === 'warning' ? (
+                  <AlertTriangle className="w-5 h-5 text-yellow-600" />
+                ) : (
+                  <XCircle className="w-5 h-5 text-red-600" />
+                )}
+                <span className="font-medium">
+                  {diagnostics.fileIntegrity === 'good' ? 'الملف سليم' :
+                   diagnostics.fileIntegrity === 'warning' ? 'تحذيرات' : 'مشاكل في الملف'}
+                </span>
+              </div>
+              {diagnostics.errorDetails && (
+                <p className="text-sm">{diagnostics.errorDetails}</p>
+              )}
+            </div>
+
+            {/* تفاصيل التشخيص */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-gray-50 p-3 rounded">
+                <div className="text-sm text-gray-600">حالة الملف</div>
+                <div className="font-medium">
+                  {diagnostics.isCorrupted ? '❌ تالف' : '✅ سليم'}
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-3 rounded">
+                <div className="text-sm text-gray-600">كلمة مرور</div>
+                <div className="font-medium">
+                  {diagnostics.hasPassword ? '🔒 محمي' : '🔓 غير محمي'}
+                </div>
+              </div>
+              
+              <div className="bg-gray-50 p-3 rounded">
+                <div className="text-sm text-gray-600">وقت المعالجة</div>
+                <div className="font-medium">{diagnostics.processingTime}ms</div>
+              </div>
+              
+              {diagnostics.pdfVersion && (
+                <div className="bg-gray-50 p-3 rounded">
+                  <div className="text-sm text-gray-600">إصدار PDF</div>
+                  <div className="font-medium">{diagnostics.pdfVersion}</div>
+                </div>
+              )}
+            </div>
+
+            {/* نصائح الإصلاح */}
+            {diagnostics.fileIntegrity !== 'good' && (
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                <h4 className="font-medium text-blue-800 mb-2">💡 نصائح لحل المشكلة:</h4>
+                <ul className="text-sm text-blue-700 space-y-1">
+                  {diagnostics.isCorrupted && (
+                    <>
+                      <li>• جرب فتح الملف في برنامج PDF أو Word للتأكد من سلامته</li>
+                      <li>• قم بإعادة تحميل الملف من مصدره الأصلي</li>
+                      <li>• تأكد من اكتمال تحميل الملف</li>
+                    </>
+                  )}
+                  {diagnostics.hasPassword && (
+                    <li>• قم بإزالة كلمة المرور من الملف قبل رفعه</li>
+                  )}
+                  <li>• جرب تحويل الملف إلى PDF جديد</li>
+                  <li>• تأكد من تحديث متصفحك إلى أحدث إصدار</li>
+                </ul>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
@@ -124,6 +256,9 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
                 <Loader2 className="w-12 h-12 text-blue-400 mx-auto mb-4 animate-spin" />
                 <p className="text-blue-600 mb-4 font-medium">جاري تحليل الملف وحساب عدد الصفحات...</p>
                 <p className="text-sm text-blue-500">يرجى الانتظار، قد يستغرق هذا بضع ثوانٍ</p>
+                {retryCount > 0 && (
+                  <p className="text-xs text-blue-400 mt-2">المحاولة رقم {retryCount + 1}</p>
+                )}
               </>
             ) : (
               <>
@@ -199,6 +334,17 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
                   معاينة
                 </Button>
               )}
+              {pageInfo?.diagnostics && (
+                <Button
+                  onClick={() => setShowDiagnostics(true)}
+                  variant="outline"
+                  size="sm"
+                  className="text-purple-600 hover:text-purple-700"
+                >
+                  <Info className="w-4 h-4 mr-1" />
+                  تشخيص
+                </Button>
+              )}
               <Button
                 onClick={handleRemoveFile}
                 variant="ghost"
@@ -213,19 +359,53 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
           
           {/* Error Display */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="w-5 h-5 text-red-600" />
-                <span className="font-medium text-red-800">خطأ في تحليل الملف</span>
-              </div>
-              <p className="text-sm text-red-700 mb-3">{error}</p>
-              <Button
-                onClick={() => analyzeFile(file)}
-                className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2"
-              >
-                إعادة المحاولة
-              </Button>
-            </div>
+            <Alert className="border-red-200 bg-red-50">
+              <AlertTriangle className="w-5 h-5 text-red-600" />
+              <AlertDescription>
+                <div className="space-y-3">
+                  <div>
+                    <span className="font-medium text-red-800">خطأ في تحليل الملف:</span>
+                    <p className="text-sm text-red-700 mt-1">{error}</p>
+                  </div>
+                  
+                  {retryCount > 0 && (
+                    <p className="text-xs text-red-600">عدد المحاولات: {retryCount}</p>
+                  )}
+                  
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={handleRetry}
+                      disabled={isAnalyzing}
+                      className="bg-red-600 hover:bg-red-700 text-white text-sm px-4 py-2"
+                    >
+                      <RefreshCw className="w-4 h-4 mr-1" />
+                      إعادة المحاولة
+                    </Button>
+                    
+                    <Button
+                      onClick={runDiagnostics}
+                      disabled={isAnalyzing}
+                      variant="outline"
+                      className="text-sm px-4 py-2"
+                    >
+                      <Info className="w-4 h-4 mr-1" />
+                      تشخيص المشكلة
+                    </Button>
+                  </div>
+                  
+                  {/* نصائح سريعة */}
+                  <div className="bg-red-100 border border-red-200 rounded p-3 mt-3">
+                    <h5 className="font-medium text-red-800 mb-2">💡 نصائح سريعة:</h5>
+                    <ul className="text-xs text-red-700 space-y-1">
+                      <li>• تأكد من أن الملف يفتح بشكل صحيح على جهازك</li>
+                      <li>• جرب ملف أصغر حجماً أو أقل تعقيداً</li>
+                      <li>• تأكد من أن الملف غير محمي بكلمة مرور</li>
+                      <li>• جرب تحويل الملف إلى PDF جديد</li>
+                    </ul>
+                  </div>
+                </div>
+              </AlertDescription>
+            </Alert>
           )}
           
           {/* Success Display */}
@@ -234,6 +414,11 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
               <div className="flex items-center gap-2 mb-3">
                 <FileCheck className="w-5 h-5 text-green-600" />
                 <span className="font-medium text-green-800">تم تحليل الملف بنجاح ✅</span>
+                {pageInfo.diagnostics?.processingTime && (
+                  <span className="text-xs text-green-600">
+                    ({pageInfo.diagnostics.processingTime}ms)
+                  </span>
+                )}
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -253,6 +438,19 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
                 </div>
               </div>
 
+              {/* تحذيرات */}
+              {pageInfo.diagnostics?.fileIntegrity === 'warning' && (
+                <div className="mt-3 bg-yellow-100 border border-yellow-300 rounded p-3">
+                  <div className="flex items-center gap-2">
+                    <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                    <p className="text-yellow-800 text-sm font-medium">تحذير:</p>
+                  </div>
+                  <p className="text-yellow-700 text-sm mt-1">
+                    {pageInfo.diagnostics.errorDetails}
+                  </p>
+                </div>
+              )}
+
               {!pageInfo.isValidSize && (
                 <div className="mt-3 bg-yellow-100 border border-yellow-300 rounded p-3">
                   <p className="text-yellow-800 text-sm">
@@ -266,6 +464,7 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ file, onFileSelect }) =
       )}
       
       <PreviewModal />
+      <DiagnosticsModal />
     </div>
   );
 };

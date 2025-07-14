@@ -1,8 +1,8 @@
 import React from 'react';
-import { Calculator, FileText, Printer, DollarSign } from 'lucide-react';
+import { Calculator, FileText, Printer, DollarSign, AlertTriangle, Info } from 'lucide-react';
 import { PrintingOptions } from '../../types';
 import { PRINTING_PRICES, PRINTING_OPTIONS } from '../../constants/printing';
-import { FilePageInfo, formatFileType } from '../../utils/page-counter';
+import { FilePageInfo, formatFileType, formatFileSize } from '../../utils/page-counter';
 
 interface PriceCalculatorProps {
   options: PrintingOptions;
@@ -68,6 +68,10 @@ const PriceCalculator: React.FC<PriceCalculatorProps> = ({ options, file, pageIn
                   <span className="text-blue-700">نوع الملف:</span>
                   <span className="font-medium text-blue-900">{formatFileType(pageInfo.fileType)}</span>
                 </div>
+                <div className="flex justify-between">
+                  <span className="text-blue-700">حجم الملف:</span>
+                  <span className="font-medium text-blue-900">{formatFileSize(file.size)}</span>
+                </div>
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between">
@@ -78,8 +82,25 @@ const PriceCalculator: React.FC<PriceCalculatorProps> = ({ options, file, pageIn
                   <span className="text-blue-700">الأوراق المطلوبة:</span>
                   <span className="font-bold text-lg text-blue-600">{sheetsRequired} ورقة</span>
                 </div>
+                {pageInfo.diagnostics?.processingTime && (
+                  <div className="flex justify-between">
+                    <span className="text-blue-700">وقت التحليل:</span>
+                    <span className="font-medium text-blue-900">{pageInfo.diagnostics.processingTime}ms</span>
+                  </div>
+                )}
               </div>
             </div>
+            
+            {/* تحذيرات جودة الملف */}
+            {pageInfo.diagnostics?.fileIntegrity === 'warning' && (
+              <div className="mt-3 bg-yellow-100 border border-yellow-300 rounded p-3">
+                <div className="flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-yellow-600" />
+                  <span className="text-yellow-800 text-sm font-medium">تحذير:</span>
+                </div>
+                <p className="text-yellow-700 text-sm mt-1">{pageInfo.diagnostics.errorDetails}</p>
+              </div>
+            )}
           </div>
 
           {/* Printing Options Summary */}
@@ -163,6 +184,22 @@ const PriceCalculator: React.FC<PriceCalculatorProps> = ({ options, file, pageIn
                 <span className="text-xs">
                   (بدلاً من {pageInfo.pageCount} ورقة، ستحتاج فقط {sheetsRequired} ورقة)
                 </span>
+              </div>
+            </div>
+          )}
+          
+          {/* معلومات إضافية للملفات الكبيرة */}
+          {pageInfo.pageCount > 100 && (
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <Info className="w-4 h-4 text-blue-600" />
+                <h4 className="font-medium text-blue-800">ملف كبير</h4>
+              </div>
+              <div className="text-sm text-blue-700 space-y-1">
+                <p>• هذا ملف كبير ({pageInfo.pageCount} صفحة)</p>
+                <p>• قد تستغرق الطباعة وقتاً أطول من المعتاد</p>
+                <p>• يُنصح بتقسيم الملف إلى أجزاء أصغر إذا أمكن</p>
+                <p>• تأكد من توفر الورق الكافي قبل بدء الطباعة</p>
               </div>
             </div>
           )}
