@@ -30,7 +30,7 @@ const Index = () => {
 
   const categories = [
     { id: 'all', name: 'الكل', icon: '📚' },
-    { id: 'pens-ballpoint-roto', name: 'أقلام روتو الجافة', icon: '🖊️' },
+    { id: 'pens-ballpoint-roto', name: 'أقلام ROTO ليكويد بول', icon: '🖊️' },
     { id: 'pens-ballpoint-bravo', name: 'أقلام برافو الجافة', icon: '✒️' },
     { id: 'pens-ballpoint-prima', name: 'أقلام بريما الجافة', icon: '🖋️' },
     { id: 'pens-pencil-faber-castell', name: 'أقلام فابر كاستل الرصاص', icon: '✏️' },

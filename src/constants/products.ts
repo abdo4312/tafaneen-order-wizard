@@ -1,7 +1,63 @@
 
 import { Product } from '../types';
+import rotoLiquidBallBlue from '../assets/pens/roto-liquid-ball-blue.png';
+import rotoLiquidBallRed from '../assets/pens/roto-liquid-ball-red.png';
+import rotoLiquidBallBlack from '../assets/pens/roto-liquid-ball-black.png';
 
 export const PRODUCTS: Product[] = [
+  // أقلام ليكويد بول ROTO
+  {
+    id: 'roto-liquid-ball-blue',
+    name: 'قلم ليكويد بول ROTO - أزرق',
+    nameEn: 'ROTO Liquid Ball Pen - Blue',
+    price: 15,
+    image: rotoLiquidBallBlue,
+    description: 'قلم ليكويد بول من ROTO باللون الأزرق، حبر سائل ناعم وجودة عالية',
+    category: 'pens',
+    subcategory: 'ballpoint',
+    brand: 'roto',
+    inStock: true,
+    featured: true,
+    isNew: true,
+    salesCount: 25,
+    rating: 4.5,
+    tags: ['قلم', 'ليكويد', 'أزرق', 'ROTO']
+  },
+  {
+    id: 'roto-liquid-ball-red',
+    name: 'قلم ليكويد بول ROTO - أحمر',
+    nameEn: 'ROTO Liquid Ball Pen - Red',
+    price: 15,
+    image: rotoLiquidBallRed,
+    description: 'قلم ليكويد بول من ROTO باللون الأحمر، حبر سائل ناعم وجودة عالية',
+    category: 'pens',
+    subcategory: 'ballpoint',
+    brand: 'roto',
+    inStock: true,
+    featured: true,
+    isNew: true,
+    salesCount: 20,
+    rating: 4.5,
+    tags: ['قلم', 'ليكويد', 'أحمر', 'ROTO']
+  },
+  {
+    id: 'roto-liquid-ball-black',
+    name: 'قلم ليكويد بول ROTO - أسود',
+    nameEn: 'ROTO Liquid Ball Pen - Black',
+    price: 15,
+    image: rotoLiquidBallBlack,
+    description: 'قلم ليكويد بول من ROTO باللون الأسود، حبر سائل ناعم وجودة عالية',
+    category: 'pens',
+    subcategory: 'ballpoint',
+    brand: 'roto',
+    inStock: true,
+    featured: true,
+    isNew: true,
+    salesCount: 30,
+    rating: 4.5,
+    tags: ['قلم', 'ليكويد', 'أسود', 'ROTO']
+  },
+  // منتجات أخرى
   {
     id: '1',
     name: 'كروت شخصية',
