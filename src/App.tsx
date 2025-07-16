@@ -9,6 +9,7 @@ import Checkout from "./pages/Checkout";
 import Payment from "./pages/Payment";
 import Confirmation from "./pages/Confirmation";
 import Invoice from "./pages/Invoice";
+import DocumentPrinting from "./pages/DocumentPrinting";
 
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +28,7 @@ const App = () => (
           <Route path="/payment" element={<Payment />} />
           <Route path="/confirmation" element={<Confirmation />} />
           <Route path="/invoice/:orderId" element={<Invoice />} />
+          <Route path="/document-printing" element={<DocumentPrinting />} />
           
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

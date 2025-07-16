@@ -127,7 +127,28 @@ const Index = () => {
                 <Sparkles className="w-6 h-6 text-yellow-500" />
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Other services can be added here */}
+                {/* Document Printing Service */}
+                <div 
+                  className="bg-white rounded-lg shadow-md p-6 cursor-pointer hover:shadow-lg transition-shadow"
+                  onClick={() => navigate('/document-printing')}
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <div className="bg-blue-100 p-3 rounded-full">
+                      <span className="text-2xl">🖨️</span>
+                    </div>
+                    <div>
+                      <h3 className="text-xl font-bold text-blue-800">طباعة المستندات</h3>
+                      <p className="text-blue-600">PDF، Word، صور - وجه واحد أو وجهين</p>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    <p>• رفع الملف وتحليل عدد الصفحات تلقائياً</p>
+                    <p>• حساب التكلفة الإجمالية</p>
+                    <p>• معاينة قبل الطباعة</p>
+                  </div>
+                </div>
+                
+                {/* Other services placeholder */}
                 <div className="bg-white rounded-lg shadow-md p-6 opacity-50">
                   <div className="flex items-center gap-4 mb-4">
                     <div className="bg-gray-100 p-3 rounded-full">
