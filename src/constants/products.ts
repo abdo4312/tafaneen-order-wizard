@@ -1,9 +1,4 @@
-
 import { Product } from '../types';
-import rotoLiquidBallBlue from '../assets/pens/roto-liquid-ball-blue.png';
-import rotoLiquidBallRed from '../assets/pens/roto-liquid-ball-red.png';
-import rotoLiquidBallBlack from '../assets/pens/roto-liquid-ball-black.png';
-
 export const PRODUCTS: Product[] = [
   // أقلام ليكويد بول ROTO
   {
@@ -11,7 +6,7 @@ export const PRODUCTS: Product[] = [
     name: 'قلم ليكويد بول ROTO - أزرق',
     nameEn: 'ROTO Liquid Ball Pen - Blue',
     price: 15,
-    image: rotoLiquidBallBlue,
+    image: '/lovable-uploads/71293346-9ca9-42bd-9823-11e2f170d8c9.png',
     description: 'قلم ليكويد بول من ROTO باللون الأزرق، حبر سائل ناعم وجودة عالية',
     category: 'pens',
     subcategory: 'ballpoint',
@@ -28,7 +23,7 @@ export const PRODUCTS: Product[] = [
     name: 'قلم ليكويد بول ROTO - أحمر',
     nameEn: 'ROTO Liquid Ball Pen - Red',
     price: 15,
-    image: rotoLiquidBallRed,
+    image: '/lovable-uploads/df3ee4db-67ee-42dc-a7b6-a79d2ca4283b.png',
     description: 'قلم ليكويد بول من ROTO باللون الأحمر، حبر سائل ناعم وجودة عالية',
     category: 'pens',
     subcategory: 'ballpoint',
@@ -45,7 +40,7 @@ export const PRODUCTS: Product[] = [
     name: 'قلم ليكويد بول ROTO - أسود',
     nameEn: 'ROTO Liquid Ball Pen - Black',
     price: 15,
-    image: rotoLiquidBallBlack,
+    image: '/lovable-uploads/e4772264-4d3f-498c-9b70-08ad804e4282.png',
     description: 'قلم ليكويد بول من ROTO باللون الأسود، حبر سائل ناعم وجودة عالية',
     category: 'pens',
     subcategory: 'ballpoint',
