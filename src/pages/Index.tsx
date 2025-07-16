@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ShoppingCart, Star, TrendingUp, Sparkles, Printer } from 'lucide-react';
+import { Search, ShoppingCart, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { useCartStore } from '../store/cart-store';
@@ -127,30 +127,6 @@ const Index = () => {
                 <Sparkles className="w-6 h-6 text-yellow-500" />
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {/* Document Printing Service */}
-                <div 
-                  onClick={() => navigate('/document-printing')}
-                  className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer border-2 border-transparent hover:border-blue-200"
-                >
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="bg-blue-100 p-3 rounded-full">
-                      <Printer className="w-8 h-8 text-blue-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-800">طباعة المستندات</h3>
-                      <p className="text-gray-600">ارفع ملفك واطبعه بجودة عالية</p>
-                    </div>
-                  </div>
-                  <div className="text-sm text-gray-500 space-y-1">
-                    <p>• دعم ملفات PDF, Word, JPEG</p>
-                    <p>• خيارات متنوعة للطباعة</p>
-                    <p>• أسعار تنافسية</p>
-                  </div>
-                  <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white">
-                    ابدأ الطباعة
-                  </Button>
-                </div>
-
                 {/* Other services can be added here */}
                 <div className="bg-white rounded-lg shadow-md p-6 opacity-50">
                   <div className="flex items-center gap-4 mb-4">

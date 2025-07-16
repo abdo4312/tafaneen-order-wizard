@@ -22,8 +22,6 @@ export interface CartItem {
   color?: string;
   size?: string;
   notes?: string;
-  printingOptions?: PrintingOptions;
-  uploadedFile?: File;
 }
 
 export interface CustomerInfo {
@@ -59,23 +57,4 @@ export interface PaymentMethod {
   icon: string;
   feePercentage: number;
   number?: string;
-}
-
-export interface PrintingOptions {
-  printType: 'single' | 'double';
-  colorType: 'bw' | 'color';
-  paperSize: 'a4' | 'a3';
-  paperType: 'normal' | 'glossy' | 'coated';
-  copies: number;
-  pageCount?: number;
-}
-
-export interface PrintingPrices {
-  [key: string]: {
-    [key: string]: {
-      [key: string]: {
-        [key: string]: number;
-      };
-    };
-  };
 }
