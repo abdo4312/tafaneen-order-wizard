@@ -103,5 +103,22 @@ export const PRODUCTS: Product[] = [
     salesCount: 12,
     rating: 4.7,
     tags: ['كشكول', 'سلك', 'A5', '80ق', 'محمد', 'اميره', 'فسفوري', 'ملون']
+  },
+  {
+    id: 'spiral-notebook-a5-mohamed-amira-100',
+    name: 'كشكول سلك A5 100 ورقه محمد واميره الوان',
+    nameEn: 'Mohamed & Amira Spiral Notebook A5 100 Pages Colors',
+    price: 33,
+    image: '/lovable-uploads/504b4af6-f0fc-4983-8c85-9268a6a0d96c.png',
+    description: 'كشكول سلك A5 بتصميم محمد وأميرة، 100 ورقة ملونة، جودة عالية',
+    category: 'notebooks',
+    subcategory: 'spiral',
+    brand: 'محمد واميره',
+    inStock: true,
+    featured: true,
+    isNew: true,
+    salesCount: 18,
+    rating: 4.8,
+    tags: ['كشكول', 'سلك', 'A5', '100ق', 'محمد', 'اميره', 'الوان']
   }
 ];
