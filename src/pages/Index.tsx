@@ -147,19 +147,6 @@ const Index = () => {
                     <p>• معاينة قبل الطباعة</p>
                   </div>
                 </div>
-                
-                {/* Other services placeholder */}
-                <div className="bg-white rounded-lg shadow-md p-6 opacity-50">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="bg-gray-100 p-3 rounded-full">
-                      <Star className="w-8 h-8 text-gray-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-xl font-bold text-gray-400">خدمات أخرى</h3>
-                      <p className="text-gray-400">قريباً...</p>
-                    </div>
-                  </div>
-                </div>
               </div>
             </div>
 
