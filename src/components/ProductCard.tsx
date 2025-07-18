@@ -1,10 +1,11 @@
 
-import React from 'react';
-import { ShoppingCart, Star } from 'lucide-react';
+import React, { useState } from 'react';
+import { ShoppingCart, Star, Images } from 'lucide-react';
 import { useCartStore } from '../store/cart-store';
 import { Product } from '../types';
 import { Badge } from './ui/badge';
 import Button from './Button';
+import { ProductImageGallery } from './ProductImageGallery';
 
 interface ProductCardProps {
   product: Product;
@@ -12,6 +13,7 @@ interface ProductCardProps {
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { addItem } = useCartStore();
+  const [isGalleryOpen, setIsGalleryOpen] = useState(false);
 
   const handleAddToCart = () => {
     addItem(product);
@@ -25,12 +27,26 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
 
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-      <div className="relative">
+      <div className="relative group">
         <img 
           src={product.image} 
           alt={product.name}
           className="w-full h-48 object-cover"
         />
+        
+        {/* Multiple Images Indicator */}
+        {product.images && product.images.length > 1 && (
+          <button
+            onClick={() => setIsGalleryOpen(true)}
+            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+          >
+            <div className="flex items-center gap-2 text-white">
+              <Images className="w-6 h-6" />
+              <span>عرض {product.images.length} صور</span>
+            </div>
+          </button>
+        )}
+        
         {product.isNew && (
           <Badge className="absolute top-2 right-2 bg-green-500 text-white">
             جديد
@@ -77,6 +93,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           </Button>
         </div>
       </div>
+      
+      {/* Image Gallery Modal */}
+      {product.images && product.images.length > 1 && (
+        <ProductImageGallery
+          images={product.images}
+          productName={product.name}
+          isOpen={isGalleryOpen}
+          onClose={() => setIsGalleryOpen(false)}
+        />
+      )}
     </div>
   );
 };
