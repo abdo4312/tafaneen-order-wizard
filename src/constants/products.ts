@@ -52,53 +52,22 @@ export const PRODUCTS: Product[] = [
     rating: 4.5,
     tags: ['قلم', 'ليكويد', 'أسود', 'ROTO']
   },
-  // منتجات أخرى
+  // كشاكيل السلك
   {
-    id: '1',
-    name: 'كروت شخصية',
-    price: 50,
-    image: '/placeholder.svg',
-    description: 'كروت شخصية عالية الجودة',
-    category: 'printing'
-  },
-  {
-    id: '2',
-    name: 'بروشور إعلاني',
+    id: 'spiral-notebook-a5-60',
+    name: 'كشكول سلك الاستاذ 60ق A5',
+    nameEn: 'Professor Spiral Notebook A5 60 Pages',
     price: 30,
-    image: '/placeholder.svg',
-    description: 'بروشورات إعلانية ملونة',
-    category: 'advertising'
-  },
-  {
-    id: '3',
-    name: 'ختم شركة',
-    price: 80,
-    image: '/placeholder.svg',
-    description: 'أختام شركات بتصاميم احترافية',
-    category: 'stamps'
-  },
-  {
-    id: '4',
-    name: 'لافتة إعلانية',
-    price: 150,
-    image: '/placeholder.svg',
-    description: 'لافتات إعلانية كبيرة الحجم',
-    category: 'banners'
-  },
-  {
-    id: '5',
-    name: 'كتالوج منتجات',
-    price: 120,
-    image: '/placeholder.svg',
-    description: 'كتالوجات منتجات مطبوعة بجودة عالية',
-    category: 'catalogs'
-  },
-  {
-    id: '6',
-    name: 'ستيكرات ملونة',
-    price: 25,
-    image: '/placeholder.svg',
-    description: 'ستيكرات ملونة بأشكال متنوعة',
-    category: 'stickers'
+    image: '/lovable-uploads/ccf7b48a-dc1f-4ccb-8db2-7a7afa017686.png',
+    description: 'كشكول سلك بحجم A5 يحتوي على 60 صفحة، مثالي للطلاب والمدرسين',
+    category: 'notebooks',
+    subcategory: 'spiral',
+    brand: 'الاستاذ',
+    inStock: true,
+    featured: true,
+    isNew: true,
+    salesCount: 15,
+    rating: 4.7,
+    tags: ['كشكول', 'سلك', 'A5', '60ق', 'الاستاذ']
   }
 ];

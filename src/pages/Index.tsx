@@ -35,6 +35,7 @@ const Index = () => {
     { id: 'pens-ballpoint-prima', name: 'أقلام بريما الجافة', icon: '🖋️' },
     { id: 'pens-pencil-faber-castell', name: 'أقلام فابر كاستل الرصاص', icon: '✏️' },
     { id: 'pens-pencil-doms', name: 'أقلام دومز الرصاص', icon: '📝' },
+    { id: 'notebooks-spiral', name: 'كشاكيل السلك', icon: '📓' },
   ];
 
   const getFilteredProducts = () => {

@@ -18,7 +18,7 @@ interface ProductsState {
 
 const categories = {
   'pens': ['ballpoint', 'pencil'],
-  'notebooks': ['ruled', 'plain', 'graph'],
+  'notebooks': ['spiral', 'ruled', 'plain', 'graph'],
   'accessories': ['erasers', 'rulers', 'sharpeners']
 };
 
