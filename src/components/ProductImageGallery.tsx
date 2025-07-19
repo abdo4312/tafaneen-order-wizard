@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight, X, Download, Upload, ZoomIn, ZoomOut } from 'lucide-react';
 import { Button } from './ui/button';
-import { Dialog, DialogContent } from './ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { toast } from './ui/sonner';
 
 interface ProductImageGalleryProps {
@@ -74,8 +74,8 @@ export const ProductImageGallery = ({ images, productName, isOpen, onClose }: Pr
       <DialogContent className="max-w-4xl h-[90vh] p-0">
         <div className="relative w-full h-full flex flex-col">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b">
-            <h3 className="text-lg font-semibold">{productName}</h3>
+          <DialogHeader className="flex items-center justify-between p-4 border-b">
+            <DialogTitle className="text-lg font-semibold">{productName}</DialogTitle>
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" onClick={downloadImage} title="تحميل الصورة">
                 <Download className="h-5 w-5" />
@@ -90,7 +90,7 @@ export const ProductImageGallery = ({ images, productName, isOpen, onClose }: Pr
                 <X className="h-5 w-5" />
               </Button>
             </div>
-          </div>
+          </DialogHeader>
 
           {/* Main Image Display */}
           <div className="flex-1 relative flex items-center justify-center bg-muted/10 overflow-hidden">
