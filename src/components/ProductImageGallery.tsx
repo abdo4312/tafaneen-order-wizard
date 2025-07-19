@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, X, Download, Upload, ZoomIn, ZoomOut } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, Download, Upload, ZoomIn, ZoomOut, ChevronsLeft, ChevronsRight, SkipBack, SkipForward } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { toast } from './ui/sonner';
@@ -21,6 +21,14 @@ export const ProductImageGallery = ({ images, productName, isOpen, onClose }: Pr
 
   const prevImage = () => {
     setCurrentIndex((prev) => (prev - 1 + images.length) % images.length);
+  };
+
+  const goToFirst = () => {
+    setCurrentIndex(0);
+  };
+
+  const goToLast = () => {
+    setCurrentIndex(images.length - 1);
   };
 
   const goToImage = (index: number) => {
@@ -67,12 +75,39 @@ export const ProductImageGallery = ({ images, productName, isOpen, onClose }: Pr
   const toggleZoom = () => {
     setIsZoomed(!isZoomed);
   };
+
+  // Keyboard navigation
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    switch (e.key) {
+      case 'ArrowLeft':
+        e.preventDefault();
+        if (currentIndex > 0) prevImage();
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        if (currentIndex < images.length - 1) nextImage();
+        break;
+      case 'Home':
+        e.preventDefault();
+        goToFirst();
+        break;
+      case 'End':
+        e.preventDefault();
+        goToLast();
+        break;
+      case 'Escape':
+        e.preventDefault();
+        onClose();
+        break;
+    }
+  };
+
   if (!images || images.length === 0) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl h-[90vh] p-0">
-        <div className="relative w-full h-full flex flex-col">
+        <div className="relative w-full h-full flex flex-col" onKeyDown={handleKeyDown} tabIndex={0}>
           {/* Header */}
           <DialogHeader className="flex items-center justify-between p-4 border-b">
             <DialogTitle className="text-lg font-semibold">{productName}</DialogTitle>
@@ -103,51 +138,109 @@ export const ProductImageGallery = ({ images, productName, isOpen, onClose }: Pr
               onClick={toggleZoom}
             />
 
-            {/* Navigation Buttons */}
+            {/* Enhanced Navigation Controls */}
             {images.length > 1 && (
               <>
+                {/* Go to First Button */}
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background shadow-lg border"
+                  className="absolute left-20 top-1/2 -translate-y-1/2 bg-background/95 hover:bg-background shadow-lg border border-border/50 backdrop-blur-sm"
+                  onClick={goToFirst}
+                  disabled={currentIndex === 0}
+                  title="الذهاب للصورة الأولى"
+                >
+                  <ChevronsLeft className="h-5 w-5" />
+                </Button>
+
+                {/* Previous Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-background/95 hover:bg-background shadow-lg border border-border/50 backdrop-blur-sm"
                   onClick={prevImage}
                   disabled={currentIndex === 0}
+                  title="الصورة السابقة"
                 >
                   <ChevronLeft className="h-6 w-6" />
                 </Button>
+
+                {/* Next Button */}
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background shadow-lg border"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-background/95 hover:bg-background shadow-lg border border-border/50 backdrop-blur-sm"
                   onClick={nextImage}
                   disabled={currentIndex === images.length - 1}
+                  title="الصورة التالية"
                 >
                   <ChevronRight className="h-6 w-6" />
+                </Button>
+
+                {/* Go to Last Button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-20 top-1/2 -translate-y-1/2 bg-background/95 hover:bg-background shadow-lg border border-border/50 backdrop-blur-sm"
+                  onClick={goToLast}
+                  disabled={currentIndex === images.length - 1}
+                  title="الذهاب للصورة الأخيرة"
+                >
+                  <ChevronsRight className="h-5 w-5" />
                 </Button>
               </>
             )}
 
             {/* Image Counter */}
             {images.length > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/90 px-4 py-2 rounded-full text-sm shadow-lg border">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-background/95 px-4 py-2 rounded-full text-sm shadow-lg border border-border/50 backdrop-blur-sm">
                 {currentIndex + 1} / {images.length}
               </div>
             )}
 
-            {/* Navigation Indicators */}
+            {/* Enhanced Navigation Indicators */}
             {images.length > 1 && (
-              <div className="absolute bottom-4 right-4 flex gap-1">
+              <div className="absolute bottom-4 right-4 flex gap-2 bg-background/95 p-2 rounded-full shadow-lg border border-border/50 backdrop-blur-sm">
                 {images.map((_, index) => (
                   <button
                     key={index}
                     onClick={() => goToImage(index)}
-                    className={`w-2 h-2 rounded-full transition-all ${
+                    className={`w-3 h-3 rounded-full transition-all hover:scale-125 ${
                       index === currentIndex 
-                        ? 'bg-primary scale-125' 
-                        : 'bg-background/60 hover:bg-background/80'
+                        ? 'bg-primary scale-125 shadow-md' 
+                        : 'bg-muted hover:bg-muted-foreground/30'
                     }`}
+                    title={`الذهاب للصورة ${index + 1}`}
                   />
                 ))}
+              </div>
+            )}
+
+            {/* Quick Navigation Panel */}
+            {images.length > 1 && (
+              <div className="absolute top-4 left-1/2 -translate-x-1/2 flex gap-2 bg-background/95 p-2 rounded-full shadow-lg border border-border/50 backdrop-blur-sm">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={goToFirst}
+                  disabled={currentIndex === 0}
+                  className="h-8 px-3 text-xs"
+                  title="الأولى"
+                >
+                  <SkipBack className="h-4 w-4 mr-1" />
+                  الأولى
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={goToLast}
+                  disabled={currentIndex === images.length - 1}
+                  className="h-8 px-3 text-xs"
+                  title="الأخيرة"
+                >
+                  الأخيرة
+                  <SkipForward className="h-4 w-4 ml-1" />
+                </Button>
               </div>
             )}
           </div>
@@ -165,6 +258,7 @@ export const ProductImageGallery = ({ images, productName, isOpen, onClose }: Pr
                         ? 'border-primary ring-2 ring-primary/20'
                         : 'border-border hover:border-primary/50'
                     }`}
+                    title={`الذهاب للصورة ${index + 1}`}
                   >
                     <img
                       src={image}
@@ -178,11 +272,16 @@ export const ProductImageGallery = ({ images, productName, isOpen, onClose }: Pr
           )}
 
           {/* Keyboard Navigation Hint */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none">
-            <div className="bg-background/80 px-3 py-1 rounded text-xs text-muted-foreground opacity-0 hover:opacity-100 transition-opacity">
-              استخدم الأسهم ← → للتنقل
+          {images.length > 1 && (
+            <div className="absolute bottom-20 left-1/2 -translate-x-1/2 pointer-events-none">
+              <div className="bg-background/90 px-4 py-2 rounded-lg text-xs text-muted-foreground shadow-lg border border-border/50 backdrop-blur-sm">
+                <div className="text-center space-y-1">
+                  <div>استخدم الأسهم ← → للتنقل</div>
+                  <div>Home/End للذهاب للأولى/الأخيرة</div>
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
