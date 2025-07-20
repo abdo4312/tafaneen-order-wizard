@@ -4,15 +4,9 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
-  base: '/',
-  server: {
-    host: true,
-    port: 3000,
-    hmr: true
-  },
+  base: './',
   define: {
-    __WS_TOKEN__: JSON.stringify(process.env.WS_TOKEN || ''),
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV || 'production'),
   },
   resolve: {
     alias: {
