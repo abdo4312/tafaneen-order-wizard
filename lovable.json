@@ -1,0 +1,25 @@
+{
+  "build": {
+    "command": "npm install && npm run build",
+    "output": "dist/public"
+  },
+  "environment": {
+    "NODE_ENV": "production"
+  },
+  "routes": [
+    {
+      "handle": "filesystem"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html",
+      "headers": {
+        "Cache-Control": "no-store"
+      }
+    }
+  ]
+}
