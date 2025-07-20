@@ -4,13 +4,11 @@ import path from "path";
 
 export default defineConfig({
   plugins: [react()],
-  base: './',
+  base: '/',
   server: {
     host: true,
-    hmr: {
-      clientPort: 443,
-      host: 'tafaneen-order-wizard.lovable.app'
-    }
+    port: 3000,
+    hmr: true
   },
   define: {
     __WS_TOKEN__: JSON.stringify(process.env.WS_TOKEN || ''),
