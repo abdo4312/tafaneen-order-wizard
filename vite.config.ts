@@ -1,29 +1,48 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import react from "@vitejs/plugin-react-swc";
 import path from "path";
+import { componentTagger } from "lovable-tagger";
 
-export default defineConfig({
-  plugins: [react()],
-  base: '/',
+// https://vitejs.dev/config/
+export default defineConfig(({ mode }) => ({
   server: {
-    host: true,
-    port: 3000,
-    hmr: true
+    host: "::",
+    port: 8080,
   },
-  define: {
-    __WS_TOKEN__: JSON.stringify(process.env.WS_TOKEN || ''),
-    'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-  },
+  plugins: [
+    react({
+      // Add SWC configuration for better error handling
+      tsDecorators: true,
+      plugins: [
+        // Add any SWC plugins if needed
+      ],
+    }),
+    mode === 'development' &&
+    componentTagger(),
+  ].filter(Boolean),
   resolve: {
     alias: {
-      "@": path.resolve(import.meta.dirname, "client", "src"),
-      "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+      "@": path.resolve(__dirname, "./src"),
     },
   },
-  root: path.resolve(import.meta.dirname, "client"),
-  build: {
-    outDir: path.resolve(import.meta.dirname, "dist/public"),
-    emptyOutDir: true,
+  // Add esbuild configuration as fallback
+  esbuild: {
+    logOverride: { 'this-is-undefined-in-esm': 'silent' }
   },
-});
+  // Optimize dependencies
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom'],
+    exclude: ['@vitejs/plugin-react-swc']
+  },
+  // Build configuration
+  build: {
+    sourcemap: mode === 'development',
+    rollupOptions: {
+      onwarn(warning, warn) {
+        // Suppress certain warnings
+        if (warning.code === 'THIS_IS_UNDEFINED') return;
+        warn(warning);
+      }
+    }
+  }
+}));

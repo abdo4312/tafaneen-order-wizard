@@ -38,11 +38,11 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         {product.images && product.images.length > 1 && (
           <button
             onClick={() => setIsGalleryOpen(true)}
-            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center"
+            className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
           >
-            <div className="flex items-center gap-2 text-white bg-black/30 px-3 py-2 rounded-lg backdrop-blur-sm">
+            <div className="flex items-center gap-2 text-white">
               <Images className="w-6 h-6" />
-              <span className="font-medium">عرض {product.images.length} صور</span>
+              <span>عرض {product.images.length} صور</span>
             </div>
           </button>
         )}
