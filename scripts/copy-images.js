@@ -8,6 +8,7 @@ const __dirname = path.dirname(__filename);
 // تحديد المسارات
 const sourceDir = path.resolve(__dirname, '../attached_assets');
 const publicDir = path.resolve(__dirname, '../public');
+const clientPublicDir = path.resolve(__dirname, '../client/public');
 const distDir = path.resolve(__dirname, '../dist');
 const imagesDir = 'images';
 
@@ -63,6 +64,9 @@ async function main() {
     try {
         // نسخ الملفات إلى المجلد العام
         await copyFiles(sourceDir, publicDir);
+        
+        // نسخ الملفات إلى مجلد client/public
+        await copyFiles(sourceDir, clientPublicDir);
 
         // نسخ الملفات إلى مجلد dist
         await ensureDirectoryExists(distDir);
