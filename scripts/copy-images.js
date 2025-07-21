@@ -37,15 +37,23 @@ async function copyFiles(source, dest) {
     // قراءة محتويات المجلد المصدر وفلترة الصور
     const files = await fs.readdir(source);
     
+    // تعيين أسماء الملفات الجديدة
+    const fileMapping = {
+        'WhatsApp Image 2025-07-18 at 4.44.59 PM_1753004100081.jpeg': 'bravo-mega-notebook.jpeg',
+        'WhatsApp Image 2025-07-18 at 4.46.10 PM_1753004188486.jpeg': 'bravo-classic-notebook-pen.jpeg',
+        'WhatsApp Image 2025-07-18 at 4.47.14 PM_1753004277535.jpeg': 'bravo-hardcover-notebook-a5.jpeg'
+    };
+    
     // نسخ كل ملف
     for (const file of files) {
         const sourceFile = path.join(source, file);
-        const destFile = path.join(targetDir, file);
+        const newFileName = fileMapping[file] || file;
+        const destFile = path.join(targetDir, newFileName);
 
         // نسخ الملف فقط إذا كان صورة
         if (file.match(/\.(jpg|jpeg|png|gif)$/i)) {
             await fs.copyFile(sourceFile, destFile);
-            console.log(`تم نسخ الملف: ${file}`);
+            console.log(`تم نسخ الملف: ${file} -> ${newFileName}`);
         }
     }
 }
