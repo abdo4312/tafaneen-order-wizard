@@ -19,7 +19,9 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
 
   // تحويل مسار الصورة إلى المسار الصحيح
   const normalizedSrc = src.startsWith('/')
-    ? `./assets/${src.split('/').pop()}`
+    ? `/images/${src.split('/').pop()}`
+    : src.startsWith('./assets/')
+    ? `/images/${src.split('/').pop()}`
     : src;
 
   return (
