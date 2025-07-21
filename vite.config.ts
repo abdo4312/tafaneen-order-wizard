@@ -12,7 +12,15 @@ export default defineConfig({
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
       "@shared": path.resolve(import.meta.dirname, "shared"),
-      "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+      "@assets": path.resolve(import.meta.dirname, "client/public/assets"),
+    },
+  },
+  build: {
+    assetsDir: 'assets',
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name]-[hash][extname]',
+      },
     },
   },
   root: path.resolve(import.meta.dirname, "client"),
@@ -20,4 +28,5 @@ export default defineConfig({
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
   },
+  publicDir: path.resolve(import.meta.dirname, "client", "public"),
 });

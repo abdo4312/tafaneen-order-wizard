@@ -6,6 +6,7 @@ import { Product } from '../types';
 import { Badge } from './ui/badge';
 import Button from './Button';
 import { ProductImageGallery } from './ProductImageGallery';
+import { OptimizedImage } from './OptimizedImage';
 
 interface ProductCardProps {
   product: Product;
@@ -28,7 +29,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative group">
-        <img 
+        <OptimizedImage 
           src={product.image} 
           alt={product.name}
           className="w-full h-48 object-cover"
