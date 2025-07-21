@@ -12,17 +12,25 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   src,
   alt,
   className,
-  fallbackSrc = '/assets/placeholder.jpg',
+  fallbackSrc = '/images/placeholder.jpg',
   ...props
 }) => {
   const [error, setError] = useState(false);
 
   // تحويل مسار الصورة إلى المسار الصحيح
-  const normalizedSrc = src.startsWith('/')
-    ? `/images/${src.split('/').pop()}`
-    : src.startsWith('./assets/')
-    ? `/images/${src.split('/').pop()}`
-    : src;
+  const normalizedSrc = (() => {
+    try {
+      if (src.startsWith('/')) {
+        return `/images/${src.split('/').pop()}`;
+      } else if (src.startsWith('./assets/')) {
+        return `/images/${src.split('/').pop()}`;
+      }
+      return src;
+    } catch (err) {
+      console.error('Error processing image path:', err);
+      return fallbackSrc;
+    }
+  })();
 
   return (
     <img
@@ -30,8 +38,15 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
       alt={alt}
       className={cn('transition-opacity duration-300', className)}
       onError={(e) => {
-        console.error(`Error loading image: ${normalizedSrc}`);
-        setError(true);
+        if (!error) {
+          console.error(`Error loading image: ${normalizedSrc}`);
+          setError(true);
+          // محاولة تحميل الصورة من المسار البديل
+          const img = e.target as HTMLImageElement;
+          if (img.src !== fallbackSrc) {
+            img.src = fallbackSrc;
+          }
+        }
       }}
       loading="lazy"
       {...props}
