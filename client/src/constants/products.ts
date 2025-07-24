@@ -8,6 +8,8 @@ export const PRODUCTS: Product[] = [
     price: 130,
     image: '/images/notebook-wire-4-dividers-200-a4-hello-1.jpg',
     images: [
+      '/assets/files-2723941-1752961293443-4-200-a4-hello-1-1753000650566.jpg',
+      '/assets/files-2723941-1752961293443-4-200-a4-hello-1-1753003363031.jpg',
       '/images/notebook-wire-4-dividers-200-a4-hello-1.jpg'
     ],
     description: 'كشكول سلك بتصميم Hello، حجم A4 مع 4 فواصل، 200 ورقة، مثالي للطلاب والمكتب',

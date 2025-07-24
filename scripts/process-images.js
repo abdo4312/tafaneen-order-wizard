@@ -1,6 +1,10 @@
-const fs = require('fs');
-const path = require('path');
-const sharp = require('sharp');
+import fs from 'fs';
+import path from 'path';
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
+import sharp from 'sharp';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 // تحديد المسارات
 const sourceDir = path.resolve(__dirname, '../attached_assets');
@@ -65,7 +69,7 @@ async function processAndCopyImages(source, dest) {
 }
 
 // التنفيذ الرئيسي
-async function main() {
+export async function processImages() {
     try {
         console.log('بدء معالجة الصور...');
         
@@ -93,4 +97,4 @@ async function main() {
 }
 
 // تشغيل السكريبت
-main();
+processImages();
