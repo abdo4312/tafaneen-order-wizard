@@ -1,155 +1,73 @@
-# مكتبة تفانين - Tafianen Library E-commerce
+# Welcome to your Lovable project
 
-![Arabic E-commerce](https://img.shields.io/badge/Language-Arabic-green)
-![React](https://img.shields.io/badge/React-18.3-blue)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue)
-![Vite](https://img.shields.io/badge/Vite-5.4.19-purple)
-![Express](https://img.shields.io/badge/Express-4.19-yellow)
+## Project info
 
-## نظرة عامة | Overview
+**URL**: https://lovable.dev/projects/9bb2a87e-a936-42b5-8f31-521e5e0e4105
 
-**مكتبة تفانين** is a modern Arabic e-commerce application designed for a library and stationery shop. Built with React, TypeScript, and Express.js, this application provides a complete shopping experience with Arabic RTL support.
+## How can I edit this code?
 
-### المميزات الرئيسية | Key Features
+There are several ways of editing your application.
 
-- 🛍️ **كتالوج المنتجات** - Browse pens, notebooks, and stationery items
-- 🛒 **سلة التسوق** - Add, remove, and modify quantities
-- 💳 **عملية الدفع** - Customer information, delivery areas, payment methods
-- 📝 **إدارة الطلبات** - Invoice generation and WhatsApp integration
-- 🤖 **مساعد المنتجات** - Smart chatbot for product recommendations
-- 🌏 **دعم العربية** - Full Arabic interface with RTL support
+**Use Lovable**
 
-## التقنيات المستخدمة | Tech Stack
+Simply visit the [Lovable Project](https://lovable.dev/projects/9bb2a87e-a936-42b5-8f31-521e5e0e4105) and start prompting.
 
-### Frontend
-- **React 18** with TypeScript
-- **Vite** for build tooling
-- **Tailwind CSS** for styling
-- **shadcn/ui** components
-- **Wouter** for routing
-- **Zustand** for state management
-- **TanStack Query** for data fetching
+Changes made via Lovable will be committed automatically to this repo.
 
-### Backend
-- **Express.js** with TypeScript
-- **PostgreSQL** database
-- **Drizzle ORM** for database operations
-- **In-memory storage** with PostgreSQL fallback
+**Use your preferred IDE**
 
-## البنية المعمارية | Architecture
+If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
 
-```
-├── client/                 # Frontend React application
-│   ├── src/
-│   │   ├── pages/         # Application pages
-│   │   ├── components/    # Reusable UI components
-│   │   ├── store/         # Zustand stores
-│   │   └── lib/          # Utility functions
-├── server/                # Backend Express server
-│   ├── index.ts          # Main server file
-│   ├── routes.ts         # API routes
-│   └── storage.ts        # Storage interface
-├── shared/               # Shared types and schemas
-│   └── schema.ts        # Drizzle database schema
-└── assets/              # Static assets and images
+The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+
+Follow these steps:
+
+```sh
+# Step 1: Clone the repository using the project's Git URL.
+git clone <YOUR_GIT_URL>
+
+# Step 2: Navigate to the project directory.
+cd <YOUR_PROJECT_NAME>
+
+# Step 3: Install the necessary dependencies.
+npm i
+
+# Step 4: Start the development server with auto-reloading and an instant preview.
+npm run dev
 ```
 
-## التثبيت والتشغيل | Installation & Setup
+**Edit a file directly in GitHub**
 
-### المتطلبات | Prerequisites
-- Node.js 18+
-- PostgreSQL database
+- Navigate to the desired file(s).
+- Click the "Edit" button (pencil icon) at the top right of the file view.
+- Make your changes and commit the changes.
 
-### خطوات التثبيت | Installation Steps
+**Use GitHub Codespaces**
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/tafianen-library.git
-   cd tafianen-library
-   ```
+- Navigate to the main page of your repository.
+- Click on the "Code" button (green button) near the top right.
+- Select the "Codespaces" tab.
+- Click on "New codespace" to launch a new Codespace environment.
+- Edit files directly within the Codespace and commit and push your changes once you're done.
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+## What technologies are used for this project?
 
-3. **Set up environment variables**
-   ```bash
-   # Copy environment variables
-   cp .env.example .env
-   
-   # Configure your PostgreSQL database URL
-   DATABASE_URL="postgresql://username:password@localhost:5432/tafianen"
-   ```
+This project is built with:
 
-4. **Push database schema**
-   ```bash
-   npm run db:push
-   ```
+- Vite
+- TypeScript
+- React
+- shadcn-ui
+- Tailwind CSS
 
-5. **Start the development server**
-   ```bash
-   npm run dev
-   ```
+## How can I deploy this project?
 
-The application will be available at `http://localhost:5000`
+Simply open [Lovable](https://lovable.dev/projects/9bb2a87e-a936-42b5-8f31-521e5e0e4105) and click on Share -> Publish.
 
-## الأوامر المتاحة | Available Scripts
+## Can I connect a custom domain to my Lovable project?
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run db:push` - Push database schema changes
-- `npm run db:studio` - Open Drizzle Studio for database management
+Yes, you can!
 
-## قاعدة البيانات | Database Schema
+To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
 
-### الجداول | Tables
-
-- **users** - معلومات المستخدمين | User authentication
-- **products** - كتالوج المنتجات | Product catalog with categories and pricing
-- **orders** - تتبع الطلبات | Order tracking with customer information
-
-## الصفحات الرئيسية | Main Pages
-
-1. **الصفحة الرئيسية** (`/`) - Product catalog and featured items
-2. **سلة التسوق** (`/cart`) - Shopping cart management
-3. **عملية الدفع** (`/checkout`) - Customer information form
-4. **الدفع** (`/payment`) - Payment method selection
-5. **تأكيد الطلب** (`/confirmation`) - Order confirmation
-6. **الفاتورة** (`/invoice`) - Digital invoice with WhatsApp sharing
-
-## التحديثات الأخيرة | Recent Updates
-
-### يناير 2025 | January 2025
-
-- ✅ **تحديث أمني** - Fixed CVE-2025-30208 vulnerability (Vite 5.4.14 → 5.4.19)
-- ✅ **انتقال إلى Replit** - Migrated from Lovable platform
-- ✅ **تحسين التوجيه** - Replaced react-router-dom with Wouter
-- ✅ **تطوير الخادم** - Migrated to Express.js from Edge Functions
-- ✅ **قاعدة البيانات** - PostgreSQL with Drizzle ORM integration
-
-## المساهمة | Contributing
-
-نرحب بالمساهمات! الرجاء اتباع الخطوات التالية:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## الترخيص | License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## التواصل | Contact
-
-- **الموقع الإلكتروني** | Website: [Coming Soon]
-- **البريد الإلكتروني** | Email: info@tafianen.com
-- **واتساب** | WhatsApp: +966XXXXXXXX
-
----
-
-<div align="center">
-Built with ❤️ for Arabic e-commerce | مبني بحب للتجارة الإلكترونية العربية
-</div>
+Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
