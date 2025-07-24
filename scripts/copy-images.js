@@ -42,7 +42,9 @@ async function copyFiles(source, dest) {
     const fileMapping = {
         'WhatsApp Image 2025-07-18 at 4.44.59 PM_1753004100081.jpeg': 'bravo-mega-notebook.jpeg',
         'WhatsApp Image 2025-07-18 at 4.46.10 PM_1753004188486.jpeg': 'bravo-classic-notebook-pen.jpeg',
-        'WhatsApp Image 2025-07-18 at 4.47.14 PM_1753004277535.jpeg': 'bravo-hardcover-notebook-a5.jpeg'
+        'WhatsApp Image 2025-07-18 at 4.47.14 PM_1753004277535.jpeg': 'bravo-hardcover-notebook-a5.jpeg',
+        'files_2723941-1752961293443-كشكول سلك 4 فواصل 200 A4 Hello-صورة-1_1753003363031.jpg': 'notebook-wire-4-dividers-200-a4-hello-1.jpg',
+        'files_2723941-1752961293443-كشكول سلك 4 فواصل 200 A4 Hello-صورة-1_1753000650566.jpg': 'notebook-wire-4-dividers-200-a4-hello-2.jpg'
     };
     
     // نسخ كل ملف
