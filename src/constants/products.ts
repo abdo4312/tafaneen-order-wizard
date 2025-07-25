@@ -6,10 +6,10 @@ export const PRODUCTS: Product[] = [
     name: 'كشكول سلك 4 فواصل 200 A4 Hello',
     nameEn: 'Hello Spiral Notebook 4 Dividers 200 A4',
     price: 170,
-    image: '/attached_assets/files_2723941-1752961293443-كشكول سلك 4 فواصل 200 A4 Hello-صورة-1_1753000650566.jpg',
+    image: '/images/products/notebooks/hello-spiral-200-a4-1.jpg',
     images: [
-      '/attached_assets/files_2723941-1752961293443-كشكول سلك 4 فواصل 200 A4 Hello-صورة-1_1753000650566.jpg',
-      '/attached_assets/files_2723941-1752961293443-كشكول سلك 4 فواصل 200 A4 Hello-صورة-1_1753003363031.jpg'
+      '/images/products/notebooks/hello-spiral-200-a4-1.jpg',
+      '/images/products/notebooks/hello-spiral-200-a4-2.jpg'
     ],
     description: 'كشكول سلك بتصميم Hello، حجم A4 مع 4 فواصل، 200 ورقة، مثالي للطلاب والمكتب',
     category: 'notebooks',
@@ -27,11 +27,11 @@ export const PRODUCTS: Product[] = [
     name: 'قلم روتو ليكويد بول',
     nameEn: 'Roto Liquid Ball Pen',
     price: 12,
-    image: '/client/src/assets/pens/roto-liquid-ball-blue.png',
+    image: '/images/products/pens/roto-liquid-ball-blue.png',
     images: [
-      '/client/src/assets/pens/roto-liquid-ball-blue.png',
-      '/client/src/assets/pens/roto-liquid-ball-black.png',
-      '/client/src/assets/pens/roto-liquid-ball-red.png'
+      '/images/products/pens/roto-liquid-ball-blue.png',
+      '/images/products/pens/roto-liquid-ball-black.png',
+      '/images/products/pens/roto-liquid-ball-red.png'
     ],
     description: 'قلم روتو ليكويد بول بحبر سائل وسن دقيق، كتابة سلسة ومريحة',
     category: 'pens',
@@ -49,9 +49,10 @@ export const PRODUCTS: Product[] = [
     name: 'قلم برافو كلاسيك',
     nameEn: 'Bravo Classic Pen',
     price: 5,
-    image: '/client/src/assets/pens/bravo-classic-notebook-pen.jpeg',
+    image: '/images/products/pens/bravo-classic-pen.jpg',
     images: [
-      '/client/src/assets/pens/bravo-classic-notebook-pen.jpeg'
+      '/images/products/pens/bravo-classic-pen.jpg',
+      '/images/products/pens/bravo-classic-pen-pack.jpg'
     ],
     description: 'قلم برافو كلاسيك للكتابة اليومية، متوفر باللون الأزرق والأسود والأحمر',
     category: 'pens',
