@@ -11,11 +11,8 @@ export default defineConfig(({ mode }) => ({
   },
   plugins: [
     react({
-      // Add SWC configuration for better error handling
       tsDecorators: true,
-      plugins: [
-        // Add any SWC plugins if needed
-      ],
+      plugins: [],
     }),
     mode === 'development' &&
     componentTagger(),

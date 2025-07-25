@@ -6,10 +6,10 @@ export const PRODUCTS: Product[] = [
     name: 'كشكول سلك 4 فواصل 200 A4 Hello',
     nameEn: 'Hello Spiral Notebook 4 Dividers 200 A4',
     price: 170,
-    image: '/products/hello-notebook-1.jpg',
+    image: '/images/hello-notebook.jpg',
     images: [
-      '/products/hello-notebook-1.jpg',
-      '/products/hello-notebook-2.jpg'
+      '/images/hello-notebook.jpg',
+      '/images/hello-notebook-2.jpg'
     ],
     description: 'كشكول سلك بتصميم Hello، حجم A4 مع 4 فواصل، 200 ورقة، مثالي للطلاب والمكتب',
     category: 'notebooks',
@@ -27,11 +27,11 @@ export const PRODUCTS: Product[] = [
     name: 'قلم روتو ليكويد بول',
     nameEn: 'Roto Liquid Ball Pen',
     price: 12,
-    image: '/products/roto-liquid-ball-blue.png',
+    image: '/images/roto-liquid-blue.jpg',
     images: [
-      '/products/roto-liquid-ball-blue.png',
-      '/products/roto-liquid-ball-black.png',
-      '/products/roto-liquid-ball-red.png'
+      '/images/roto-liquid-blue.jpg',
+      '/images/roto-liquid-black.jpg',
+      '/images/roto-liquid-red.jpg'
     ],
     description: 'قلم روتو ليكويد بول بحبر سائل وسن دقيق، كتابة سلسة ومريحة',
     category: 'pens',
@@ -49,9 +49,9 @@ export const PRODUCTS: Product[] = [
     name: 'قلم برافو كلاسيك',
     nameEn: 'Bravo Classic Pen',
     price: 5,
-    image: '/products/bravo-classic-pen.jpg',
+    image: '/images/bravo-classic.jpg',
     images: [
-      '/products/bravo-classic-pen.jpg'
+      '/images/bravo-classic.jpg'
     ],
     description: 'قلم برافو كلاسيك للكتابة اليومية، متوفر باللون الأزرق والأسود والأحمر',
     category: 'pens',
@@ -69,10 +69,10 @@ export const PRODUCTS: Product[] = [
     name: 'قلم بريما جل',
     nameEn: 'Prima Gel Pen',
     price: 8,
-    image: '/products/prima-gel-pen-1.jpg',
+    image: '/images/prima-gel-1.jpg',
     images: [
-      '/products/prima-gel-pen-1.jpg',
-      '/products/prima-gel-pen-2.jpg'
+      '/images/prima-gel-1.jpg',
+      '/images/prima-gel-2.jpg'
     ],
     description: 'قلم بريما جل بحبر سلس وألوان زاهية، مثالي للكتابة والرسم',
     category: 'pens',
@@ -90,9 +90,9 @@ export const PRODUCTS: Product[] = [
     name: 'قلم رصاص فابر كاستل',
     nameEn: 'Faber-Castell Pencil',
     price: 7,
-    image: '/products/faber-castell-pencil.jpg',
+    image: '/images/faber-castell.jpg',
     images: [
-      '/products/faber-castell-pencil.jpg'
+      '/images/faber-castell.jpg'
     ],
     description: 'قلم رصاص فابر كاستل عالي الجودة، متوفر بدرجات مختلفة من HB إلى 6B',
     category: 'pens',
