@@ -5,11 +5,10 @@ export const PRODUCTS: Product[] = [
     id: 'hello-spiral-notebook-200-a4',
     name: 'كشكول سلك 4 فواصل 200 A4 Hello',
     nameEn: 'Hello Spiral Notebook 4 Dividers 200 A4',
-    price: 170,
-    image: '/images/hello-notebook.jpg',
+    price: 130,
+    image: '/lovable-uploads/كشكول سلك 4 فواصل 200 A4 Hello-صورة-1.jpg',
     images: [
-      '/images/hello-notebook.jpg',
-      '/images/hello-notebook-2.jpg'
+      '/lovable-uploads/كشكول سلك 4 فواصل 200 A4 Hello-صورة-1.jpg'
     ],
     description: 'كشكول سلك بتصميم Hello، حجم A4 مع 4 فواصل، 200 ورقة، مثالي للطلاب والمكتب',
     category: 'notebooks',
