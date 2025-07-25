@@ -26,11 +26,11 @@ export const PRODUCTS: Product[] = [
     name: 'قلم روتو ليكويد بول',
     nameEn: 'Roto Liquid Ball Pen',
     price: 12,
-    image: '/images/roto-liquid-blue.jpg',
+    image: '/images/roto-liquid-ball-blue.png',
     images: [
-      '/images/roto-liquid-blue.jpg',
-      '/images/roto-liquid-black.jpg',
-      '/images/roto-liquid-red.jpg'
+      '/images/roto-liquid-ball-blue.png',
+      '/images/roto-liquid-ball-black.png',
+      '/images/roto-liquid-ball-red.png'
     ],
     description: 'قلم روتو ليكويد بول بحبر سائل وسن دقيق، كتابة سلسة ومريحة',
     category: 'pens',
@@ -48,9 +48,9 @@ export const PRODUCTS: Product[] = [
     name: 'قلم برافو كلاسيك',
     nameEn: 'Bravo Classic Pen',
     price: 5,
-    image: '/images/bravo-classic.jpg',
+    image: '/images/download.jpeg',
     images: [
-      '/images/bravo-classic.jpg'
+      '/images/download.jpeg'
     ],
     description: 'قلم برافو كلاسيك للكتابة اليومية، متوفر باللون الأزرق والأسود والأحمر',
     category: 'pens',
@@ -68,10 +68,10 @@ export const PRODUCTS: Product[] = [
     name: 'قلم بريما جل',
     nameEn: 'Prima Gel Pen',
     price: 8,
-    image: '/images/prima-gel-1.jpg',
+    image: '/images/images.jpeg',
     images: [
-      '/images/prima-gel-1.jpg',
-      '/images/prima-gel-2.jpg'
+      '/images/images.jpeg',
+      '/images/17228727836410.jpg'
     ],
     description: 'قلم بريما جل بحبر سلس وألوان زاهية، مثالي للكتابة والرسم',
     category: 'pens',
@@ -89,9 +89,9 @@ export const PRODUCTS: Product[] = [
     name: 'قلم رصاص فابر كاستل',
     nameEn: 'Faber-Castell Pencil',
     price: 7,
-    image: '/images/faber-castell.jpg',
+    image: '/images/17228727836410.jpg',
     images: [
-      '/images/faber-castell.jpg'
+      '/images/17228727836410.jpg'
     ],
     description: 'قلم رصاص فابر كاستل عالي الجودة، متوفر بدرجات مختلفة من HB إلى 6B',
     category: 'pens',
