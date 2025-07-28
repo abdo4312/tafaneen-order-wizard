@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { CheckCircle, Download, MessageCircle } from 'lucide-react';
+import { CheckCircle, Download, MessageCircle, Sparkles, Gift, Clock, Star, Heart } from 'lucide-react';
 import Header from '../components/Header';
 import Button from '../components/Button';
 import FeedbackModal from '../components/feedback/FeedbackModal';
@@ -23,6 +23,15 @@ const Confirmation: React.FC = () => {
   const [orderSent, setOrderSent] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [orderId] = useState(`TFN-${Date.now()}`);
+  const [isAnimating, setIsAnimating] = useState(true);
+
+  // Animation effect on mount
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsAnimating(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const getDeliveryFee = () => {
     const area = AREAS.find(a => a.name === customerInfo.area);
@@ -111,7 +120,6 @@ const Confirmation: React.FC = () => {
     const validation = validateInvoiceData(orderData);
     if (!validation.isValid) {
       console.error('أخطاء في بيانات الفاتورة:', validation.errors);
-      // يمكن إظهار رسالة تحذير للمستخدم هنا
       alert('تحذير: توجد أخطاء في بيانات الفاتورة:\n' + validation.errors.join('\n'));
     }
 
@@ -120,23 +128,15 @@ const Confirmation: React.FC = () => {
 
   const downloadInvoice = () => {
     const orderData = generateOrderData();
-    
-    // حفظ البيانات قبل التحميل
     validateAndSaveOrder(orderData);
-    
     downloadInvoiceHTML(orderData);
   };
 
   const sendToWhatsApp = () => {
     const orderData = generateOrderData();
     
-    // إضافة logging للتحقق من البيانات
     console.log('Order Data being sent:', orderData);
-    console.log('Customer Info:', orderData.customerInfo);
-    console.log('Items:', orderData.items);
-    console.log('Total:', orderData.total);
     
-    // التحقق من صحة البيانات وحفظها - الآن بطرق متعددة
     const saveSuccess = validateAndSaveOrder(orderData);
     if (!saveSuccess) {
       console.error('فشل في حفظ بيانات الطلب');
@@ -144,160 +144,204 @@ const Confirmation: React.FC = () => {
       return;
     }
     
-    // حفظ إضافي متقدم للبيانات
     try {
-      // حفظ مخصص بمعرف الفاتورة
       localStorage.setItem(`invoice_${orderData.id}`, JSON.stringify(orderData));
-      
-      // حفظ في sessionStorage للجلسة الحالية
       sessionStorage.setItem('currentInvoice', JSON.stringify(orderData));
-      
-      // حفظ آخر فاتورة
       localStorage.setItem('lastInvoiceData', JSON.stringify(orderData));
-      
       console.log('تم حفظ البيانات بنجاح في جميع المواقع');
     } catch (error) {
       console.error('خطأ في الحفظ الإضافي:', error);
     }
     
-    // التحقق من حفظ البيانات
-    console.log('Saved orders:', JSON.parse(localStorage.getItem('orders') || '[]'));
-    
-    // استخدام نفس دالة إنشاء الرسالة المستخدمة في الفاتورة
     const message = generateInvoiceText(orderData);
-    console.log('WhatsApp message:', message);
-
-    // إضافة رقم المكتبة للرسالة (بدون رابط الفاتورة)
     const messageWithLibraryNumber = `${message}
 
 📞 رقم المكتبة: 01026274235`;
 
-    // إرسال الطلب إلى رقم المكتبة الجديد (بدون رابط الفاتورة)
     const whatsappURL = `https://wa.me/201026274235?text=${encodeURIComponent(messageWithLibraryNumber)}`;
     window.open(whatsappURL, '_blank');
     setOrderSent(true);
     
-    // Show feedback modal after order is sent
     setTimeout(() => {
       setShowFeedback(true);
     }, 2000);
   };
 
   const handleNewOrder = () => {
+    // إقرار السلة تلقائياً وإفراغ البيانات
     clearCart();
     reset();
     navigate('/');
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-yellow-50">
       <Header 
         title="تأكيد الطلب" 
         onBack={() => navigate('/payment')}
       />
       
-      <div className="p-4 space-y-4">
-        {/* Success Message */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
-          <CheckCircle className="w-12 h-12 text-green-600 mx-auto mb-3" />
-          <h2 className="text-xl font-bold text-green-800 mb-2">تم تأكيد طلبك بنجاح!</h2>
-          <p className="text-green-600">سيتم التواصل معك قريباً لتأكيد موعد التوصيل</p>
-          <p className="text-sm text-green-600 mt-2">رقم الطلب: {orderId}</p>
+      <div className="p-6 space-y-6 max-w-2xl mx-auto">
+        {/* Success Animation */}
+        <div className={`text-center mb-8 ${isAnimating ? 'animate-bounce' : ''}`}>
+          <div className="relative">
+            <div className="w-20 h-20 mx-auto bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mb-4 shadow-lg">
+              <CheckCircle className="w-10 h-10 text-white" />
+            </div>
+            <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center animate-pulse">
+              <Sparkles className="w-4 h-4 text-white" />
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold text-green-800 mb-2">تم تأكيد طلبك بنجاح!</h2>
+          <p className="text-green-600 flex items-center justify-center gap-2">
+            <Clock className="w-4 h-4" />
+            سيتم التواصل معك قريباً لتأكيد موعد التوصيل
+          </p>
+          <div className="mt-4 bg-green-100 rounded-full px-4 py-2 inline-block">
+            <p className="text-sm text-green-700 font-medium">رقم الطلب: {orderId}</p>
+          </div>
         </div>
 
         {/* Order Details */}
-        <div className="bg-white rounded-lg shadow-md p-4">
-          <h3 className="font-bold text-lg mb-4">تفاصيل الطلب</h3>
+        <div className="bg-white rounded-2xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+              <Gift className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="font-bold text-lg text-gray-800">تفاصيل الطلب</h3>
+          </div>
           
-          <div className="space-y-3">
-            <div>
-              <h4 className="font-medium text-gray-700">معلومات العميل</h4>
-              <p className="text-gray-600">{customerInfo.name}</p>
-              <p className="text-gray-600">{customerInfo.phone}</p>
+          <div className="space-y-4">
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h4 className="font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                معلومات العميل
+              </h4>
+              <p className="text-gray-600 flex items-center gap-2">
+                <span>👤</span>
+                {customerInfo.name}
+              </p>
+              <p className="text-gray-600 flex items-center gap-2">
+                <span>📞</span>
+                {customerInfo.phone}
+              </p>
             </div>
             
-            <div>
-              <h4 className="font-medium text-gray-700">عنوان التوصيل</h4>
-              <p className="text-gray-600">
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h4 className="font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                عنوان التوصيل
+              </h4>
+              <p className="text-gray-600 flex items-center gap-2">
+                <span>📍</span>
                 {customerInfo.street}، رقم العقار {customerInfo.buildingNumber}
                 {customerInfo.floor && `، الدور ${customerInfo.floor}`}، {customerInfo.area}
               </p>
             </div>
             
-            <div>
-              <h4 className="font-medium text-gray-700">طريقة الدفع</h4>
-              <p className="text-gray-600">{getPaymentMethodName()}</p>
+            <div className="bg-gray-50 rounded-xl p-4">
+              <h4 className="font-medium text-gray-700 mb-2 flex items-center gap-2">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                طريقة الدفع
+              </h4>
+              <p className="text-gray-600 flex items-center gap-2">
+                <span>💳</span>
+                {getPaymentMethodName()}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Order Items */}
-        <div className="bg-white rounded-lg shadow-md p-4">
-          <h3 className="font-bold text-lg mb-4">المنتجات المطلوبة</h3>
-          <div className="space-y-3">
-            {items.map((item) => (
-              <div key={item.product.id} className="flex justify-between items-center">
+        <div className="bg-white rounded-2xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+              <Star className="w-5 h-5 text-white" />
+            </div>
+            <h3 className="font-bold text-lg text-gray-800">المنتجات المطلوبة</h3>
+          </div>
+          
+          <div className="space-y-4">
+            {items.map((item, index) => (
+              <div key={item.product.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
                 <div>
-                  <p className="font-medium">{item.product.name}</p>
-                  <p className="text-gray-600 text-sm">الكمية: {item.quantity} × {item.product.price} جنيه</p>
+                  <p className="font-medium text-gray-800">{item.product.name}</p>
+                  <p className="text-gray-600 text-sm flex items-center gap-1">
+                    <span>الكمية: {item.quantity}</span>
+                    <span>×</span>
+                    <span>{item.product.price} جنيه</span>
+                  </p>
                 </div>
-                <p className="font-bold">{item.product.price * item.quantity} جنيه</p>
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+                  <p className="font-bold text-red-600">{item.product.price * item.quantity} جنيه</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
 
         {/* Total */}
-        <div className="bg-white rounded-lg shadow-md p-4">
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span>المجموع الفرعي</span>
-              <span>{getSubtotal()} جنيه</span>
+        <div className="bg-white rounded-2xl shadow-lg p-6 transform hover:scale-105 transition-all duration-300">
+          <div className="space-y-3">
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">المجموع الفرعي</span>
+              <span className="font-medium">{getSubtotal()} جنيه</span>
             </div>
-            <div className="flex justify-between">
-              <span>رسوم التوصيل ({customerInfo.area})</span>
-              <span>{getDeliveryFee()} جنيه</span>
+            <div className="flex justify-between items-center">
+              <span className="text-gray-600">رسوم التوصيل ({customerInfo.area})</span>
+              <span className="font-medium">{getDeliveryFee()} جنيه</span>
             </div>
             {getPaymentFee() > 0 && (
-              <div className="flex justify-between text-orange-600">
+              <div className="flex justify-between items-center text-orange-600">
                 <span>رسوم الدفع الإلكتروني (1%)</span>
-                <span>{getPaymentFee()} جنيه</span>
+                <span className="font-medium">{getPaymentFee()} جنيه</span>
               </div>
             )}
-            <hr className="my-2" />
-            <div className="flex justify-between font-bold text-lg">
+            <div className="h-px bg-gray-200 my-3"></div>
+            <div className="flex justify-between items-center font-bold text-lg">
               <span>المجموع الكلي</span>
-              <span>{getTotalAmount()} جنيه</span>
+              <span className="text-red-600 text-xl">{getTotalAmount()} جنيه</span>
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           <Button
             onClick={downloadInvoice}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 rounded-xl flex items-center justify-center gap-2 transform hover:scale-105 transition-all duration-300 shadow-lg"
           >
             <Download className="w-5 h-5" />
-            يرجى تنزيل الفاتورة وإرسالها إلى المكتبة
+            تحميل الفاتورة وإرسالها إلى المكتبة
           </Button>
           
           <Button
             onClick={sendToWhatsApp}
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg flex items-center justify-center gap-2"
+            className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-4 rounded-xl flex items-center justify-center gap-2 transform hover:scale-105 transition-all duration-300 shadow-lg"
           >
             <MessageCircle className="w-5 h-5" />
             إرسال الطلب للمكتبة
           </Button>
           
           {orderSent && (
-            <button
+            <Button
               onClick={handleNewOrder}
-              className="w-full border border-gray-300 text-gray-600 py-3 rounded-lg bg-white hover:bg-gray-50"
+              className="w-full border-2 border-red-300 text-red-600 hover:bg-red-50 py-4 rounded-xl bg-white transform hover:scale-105 transition-all duration-300 flex items-center justify-center gap-2"
             >
+              <Heart className="w-5 h-5" />
               طلب جديد
-            </button>
+            </Button>
           )}
+        </div>
+
+        {/* Progress indicator */}
+        <div className="flex justify-center items-center gap-2 mt-6">
+          <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+          <div className="w-8 h-1 bg-gray-200 rounded-full"></div>
+          <div className="w-3 h-3 bg-gray-300 rounded-full"></div>
+          <div className="w-8 h-1 bg-gray-200 rounded-full"></div>
+          <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
         </div>
       </div>
 
