@@ -34,6 +34,7 @@ export default defineConfig(({ mode }) => ({
   },
   // Build configuration
   build: {
+    outDir: 'build',
     sourcemap: mode === 'development',
     rollupOptions: {
       onwarn(warning, warn) {
