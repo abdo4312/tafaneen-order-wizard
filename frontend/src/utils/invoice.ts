@@ -434,19 +434,22 @@ export const sendInvoiceToWhatsApp = (order: Order) => {
 export const downloadInvoiceHTML = (order: Order) => {
   const htmlContent = generateInvoiceHTML(order);
   
-  // إنشاء نافذة جديدة للطباعة
-  const printWindow = window.open('', '_blank');
+  // إنشاء نافذة جديدة للطباعة بحجم مناسب
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  
   if (printWindow) {
     printWindow.document.write(htmlContent);
     printWindow.document.close();
     
     // انتظار تحميل المحتوى ثم طباعة
     printWindow.onload = () => {
-      printWindow.print();
-      // إغلاق النافذة بعد الطباعة
-      printWindow.onafterprint = () => {
-        printWindow.close();
-      };
+      setTimeout(() => {
+        printWindow.print();
+        // إغلاق النافذة بعد الطباعة
+        printWindow.onafterprint = () => {
+          printWindow.close();
+        };
+      }, 500);
     };
   }
 };
