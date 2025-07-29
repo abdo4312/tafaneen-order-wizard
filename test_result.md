@@ -193,6 +193,42 @@ frontend:
         -agent: "main"
         -comment: "Added auto confirmation feature that automatically confirms cart and clears form data after payment"
 
+  - task: "Invoice PDF Download Function"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/utils/invoice.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Modified invoice download to open print dialog for PDF generation as requested, maintaining original functionality"
+
+  - task: "WhatsApp Message Format"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/utils/invoice.ts"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Verified WhatsApp message format remains exactly as original design with proper formatting and library number"
+
+  - task: "Remove Free Delivery Text"
+    implemented: true
+    working: true
+    file: "/app/frontend/src/pages/Index.tsx"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        -working: true
+        -agent: "main"
+        -comment: "Removed 'توصيل مجاني للطلبات الكبيرة' text from homepage as requested"
+
   - task: "Enhanced Header Component"
     implemented: true
     working: true
