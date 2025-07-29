@@ -433,13 +433,20 @@ export const sendInvoiceToWhatsApp = (order: Order) => {
 
 export const downloadInvoiceHTML = (order: Order) => {
   const htmlContent = generateInvoiceHTML(order);
-  const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `فاتورة-${order.id}.html`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
+  
+  // إنشاء نافذة جديدة للطباعة
+  const printWindow = window.open('', '_blank');
+  if (printWindow) {
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    
+    // انتظار تحميل المحتوى ثم طباعة
+    printWindow.onload = () => {
+      printWindow.print();
+      // إغلاق النافذة بعد الطباعة
+      printWindow.onafterprint = () => {
+        printWindow.close();
+      };
+    };
+  }
 };
