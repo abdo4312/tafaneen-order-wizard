@@ -169,9 +169,19 @@ const Confirmation: React.FC = () => {
 
   const handleNewOrder = () => {
     // إقرار السلة تلقائياً وإفراغ البيانات
+    const { autoConfirmOrder } = useCheckoutStore.getState();
+    
+    // تنفيذ الإقرار التلقائي
+    autoConfirmOrder();
+    
+    // إفراغ السلة
     clearCart();
-    reset();
+    
+    // الانتقال للصفحة الرئيسية
     navigate('/');
+    
+    // إظهار رسالة تأكيد
+    console.log('تم إقرار الطلب تلقائياً وإفراغ جميع البيانات');
   };
 
   return (
