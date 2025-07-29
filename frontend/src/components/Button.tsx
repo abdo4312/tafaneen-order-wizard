@@ -6,8 +6,10 @@ interface ButtonProps extends ShadcnButtonProps {
 }
 
 const Button: React.FC<ButtonProps> = ({ children, className, variant, size, ...props }) => {
+  const enhancedClassName = `${className} transition-all duration-300 transform hover:scale-105 hover:shadow-lg active:scale-95`;
+  
   return (
-    <ShadcnButton className={className} variant={variant} size={size} {...props}>
+    <ShadcnButton className={enhancedClassName} variant={variant} size={size} {...props}>
       {children}
     </ShadcnButton>
   );
