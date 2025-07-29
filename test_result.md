@@ -204,6 +204,9 @@ frontend:
         -working: true
         -agent: "main"
         -comment: "Modified invoice download to open print dialog for PDF generation as requested, maintaining original functionality"
+        -working: true
+        -agent: "main"
+        -comment: "Added html2pdf.js library and implemented proper PDF generation with optimized styling for A4 format. Invoice now downloads as organized PDF file as requested."
 
   - task: "WhatsApp Message Format"
     implemented: true
