@@ -323,7 +323,7 @@ const Confirmation: React.FC = () => {
             className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white py-4 rounded-xl flex items-center justify-center gap-2 transform hover:scale-105 transition-all duration-300 shadow-lg"
           >
             <Download className="w-5 h-5" />
-            تحميل الفاتورة وإرسالها إلى المكتبة
+            تحميل الفاتورة PDF
           </Button>
           
           <Button
