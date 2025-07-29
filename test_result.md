@@ -292,3 +292,5 @@ agent_communication:
     -message: "Completed comprehensive UI enhancements to make the application more lively with red and yellow color scheme. Added animations, gradient backgrounds, hover effects, and auto cart confirmation feature. Ready for UI testing to verify all enhancements work correctly."
     -agent: "testing"
     -message: "Backend testing completed successfully. All API endpoints are working correctly: root endpoint, status creation/retrieval, MongoDB persistence, CORS configuration, and service status verified. Created comprehensive backend_test.py for future use. Backend is stable and ready for production."
+    -agent: "main"
+    -message: "Applied user-requested changes: 1) Removed free delivery text from homepage, 2) Modified invoice download to properly generate PDF through print dialog, 3) Verified WhatsApp message format remains exactly as original. All core functionalities preserved while maintaining enhanced UI design."
