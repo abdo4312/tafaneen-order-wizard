@@ -112,144 +112,156 @@ export const generateInvoiceHTML = (order: Order): string => {
         body {
             font-family: 'Cairo', Arial, sans-serif;
             margin: 0;
-            padding: 20px;
-            background-color: #f5f5f5;
+            padding: 10px;
+            background-color: white;
             direction: rtl;
+            font-size: 14px;
+            line-height: 1.4;
         }
         .invoice-container {
-            max-width: 800px;
+            max-width: 700px;
             margin: 0 auto;
             background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             overflow: hidden;
         }
         .invoice-header {
             background: linear-gradient(135deg, #dc2626, #b91c1c);
             color: white;
-            padding: 30px;
+            padding: 20px;
             text-align: center;
         }
         .logo {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
         .subtitle {
-            font-size: 14px;
+            font-size: 12px;
             opacity: 0.9;
         }
         .invoice-info {
             display: flex;
             justify-content: space-between;
-            padding: 20px 30px;
+            padding: 15px 20px;
             background-color: #f8f9fa;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 1px solid #e9ecef;
         }
         .invoice-details {
-            padding: 30px;
+            padding: 20px;
         }
         .section-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             color: #dc2626;
-            margin-bottom: 15px;
-            padding-bottom: 5px;
+            margin-bottom: 10px;
+            padding-bottom: 3px;
             border-bottom: 2px solid #dc2626;
         }
         .customer-info {
             background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
         }
         .info-row {
             display: flex;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
         .info-label {
             font-weight: bold;
             color: #495057;
-            min-width: 100px;
+            min-width: 80px;
         }
         .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin: 15px 0;
             background: white;
-            border-radius: 8px;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         .items-table th {
             background-color: #dc2626;
             color: white;
-            padding: 15px;
+            padding: 10px;
             text-align: center;
             font-weight: bold;
+            font-size: 13px;
         }
         .items-table td {
-            padding: 12px 15px;
+            padding: 8px 10px;
             text-align: center;
             border-bottom: 1px solid #e9ecef;
+            font-size: 12px;
         }
         .items-table tr:hover {
             background-color: #f8f9fa;
         }
         .total-section {
             background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 15px;
         }
         .total-row {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 10px;
-            padding: 5px 0;
+            margin-bottom: 8px;
+            padding: 3px 0;
+            font-size: 13px;
         }
         .total-row.final {
             font-weight: bold;
-            font-size: 18px;
+            font-size: 16px;
             color: #dc2626;
             border-top: 2px solid #dc2626;
-            padding-top: 15px;
-            margin-top: 15px;
+            padding-top: 10px;
+            margin-top: 10px;
         }
         .payment-info {
             background-color: #e3f2fd;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 12px;
         }
         .footer {
             text-align: center;
-            padding: 20px;
+            padding: 15px;
             background-color: #f8f9fa;
             color: #6c757d;
-            font-size: 14px;
+            font-size: 12px;
         }
         .contact-info {
             background-color: #fff3cd;
             border: 1px solid #ffeaa7;
-            padding: 15px;
-            border-radius: 8px;
-            margin: 20px 0;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 15px 0;
             text-align: center;
         }
         .contact-info h4 {
             color: #856404;
-            margin-bottom: 10px;
-            font-size: 16px;
+            margin-bottom: 8px;
+            font-size: 14px;
         }
         .contact-info p {
             color: #856404;
-            margin: 5px 0;
-            font-size: 14px;
+            margin: 4px 0;
+            font-size: 12px;
         }
         @media print {
-            body { background: white; }
-            .invoice-container { box-shadow: none; }
+            body { 
+                background: white;
+                font-size: 12px;
+            }
+            .invoice-container { 
+                box-shadow: none;
+                max-width: none;
+            }
         }
     </style>
 </head>
