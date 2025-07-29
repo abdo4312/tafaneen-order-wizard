@@ -444,44 +444,40 @@ export const sendInvoiceToWhatsApp = (order: Order) => {
 };
 
 export const downloadInvoiceHTML = (order: Order) => {
-  const htmlContent = generateInvoiceHTML(order);
-  
-  // إنشاء عنصر div مؤقت لتحويل HTML إلى PDF
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = htmlContent;
-  tempDiv.style.position = 'absolute';
-  tempDiv.style.left = '-9999px';
-  tempDiv.style.width = '210mm'; // A4 width
-  document.body.appendChild(tempDiv);
-  
-  // إعدادات PDF
-  const opt = {
-    margin: 1,
-    filename: `فاتورة-${order.id}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { 
-      scale: 2,
-      useCORS: true,
-      allowTaint: true,
-      scrollX: 0,
-      scrollY: 0
-    },
-    jsPDF: { 
-      unit: 'in', 
-      format: 'a4', 
-      orientation: 'portrait' 
+  try {
+    const htmlContent = generateInvoiceHTML(order);
+    
+    // إنشاء نافذة جديدة لعرض الفاتورة
+    const newWindow = window.open('', '_blank', 'width=800,height=600');
+    
+    if (newWindow) {
+      newWindow.document.write(htmlContent);
+      newWindow.document.close();
+      
+      // انتظار تحميل المحتوى ثم الطباعة
+      newWindow.onload = () => {
+        setTimeout(() => {
+          newWindow.print();
+          // يمكن للمستخدم إغلاق النافذة بعد الطباعة
+          newWindow.onafterprint = () => {
+            newWindow.close();
+          };
+        }, 500);
+      };
+    } else {
+      // إذا لم تفتح النافذة، قم بتحميل الفاتورة كملف HTML
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `فاتورة-${order.id}.html`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     }
-  };
-  
-  // تحويل HTML إلى PDF وتحميله
-  html2pdf().set(opt).from(tempDiv).save().then(() => {
-    // إزالة العنصر المؤقت
-    document.body.removeChild(tempDiv);
-  }).catch((error) => {
-    console.error('خطأ في تحميل PDF:', error);
-    // إزالة العنصر المؤقت حتى في حالة الخطأ
-    if (document.body.contains(tempDiv)) {
-      document.body.removeChild(tempDiv);
-    }
-  });
+  } catch (error) {
+    console.error('خطأ في تحميل الفاتورة:', error);
+    alert('حدث خطأ في تحميل الفاتورة. يرجى المحاولة مرة أخرى.');
+  }
 };
