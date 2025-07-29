@@ -433,14 +433,27 @@ ${order.paymentMethod !== 'cod' ? `
 };
 
 export const sendInvoiceToWhatsApp = (order: Order) => {
-  const phoneNumber = '201026274235';
-  const invoiceText = generateInvoiceText(order);
-  
-  // حفظ البيانات قبل الإرسال
-  validateAndSaveOrder(order);
-  
-  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(invoiceText)}`;
-  window.open(whatsappUrl, '_blank');
+  try {
+    const phoneNumber = '201026274235';
+    const invoiceText = generateInvoiceText(order);
+    
+    // حفظ البيانات قبل الإرسال
+    validateAndSaveOrder(order);
+    
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(invoiceText)}`;
+    console.log('فتح واتساب:', whatsappUrl);
+    
+    // فتح واتساب
+    const opened = window.open(whatsappUrl, '_blank');
+    
+    if (!opened) {
+      // إذا لم يفتح الرابط، اعرض رسالة للمستخدم
+      alert('يرجى السماح بفتح النوافذ المنبثقة لإرسال الطلب عبر الواتساب');
+    }
+  } catch (error) {
+    console.error('خطأ في إرسال الواتساب:', error);
+    alert('حدث خطأ في إرسال الطلب. يرجى المحاولة مرة أخرى.');
+  }
 };
 
 export const downloadInvoiceHTML = (order: Order) => {
