@@ -1,4 +1,5 @@
 import { Order } from '../types';
+import html2pdf from 'html2pdf.js';
 
 // دالة حفظ البيانات مع نسخ احتياطية متعددة
 export const saveInvoiceData = (order: Order): void => {
