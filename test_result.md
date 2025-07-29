@@ -279,6 +279,9 @@ test_plan:
     - "Enhanced Payment Page UI"
     - "Enhanced Confirmation Page UI"
     - "Auto Cart Confirmation Feature"
+    - "Invoice PDF Download Function"
+    - "WhatsApp Message Format"
+    - "Remove Free Delivery Text"
     - "Custom CSS Animations"
   stuck_tasks: []
   test_all: true
