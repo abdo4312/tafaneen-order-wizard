@@ -146,10 +146,6 @@ const Index = () => {
                   <p className="text-red-100 text-lg mb-4">كل اللي محتاجه في مكان واحد</p>
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-1 bg-yellow-400/20 px-3 py-1 rounded-full">
-                      <Gift className="w-4 h-4 text-yellow-400" />
-                      <span className="text-sm">توصيل مجاني للطلبات الكبيرة</span>
-                    </div>
-                    <div className="flex items-center gap-1 bg-yellow-400/20 px-3 py-1 rounded-full">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
                       <span className="text-sm">جودة عالية مضمونة</span>
                     </div>
