@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, ShoppingCart, Star, TrendingUp, Sparkles, Zap, Heart, Gift } from 'lucide-react';
+import { Search, ShoppingCart, Star, TrendingUp, Sparkles, Zap, Gift, Menu } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { useCartStore } from '../store/cart-store';
@@ -15,7 +15,7 @@ const Index = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   
-  const { items, getTotalItems } = useCartStore();
+  const { getTotalItems } = useCartStore();
   const { 
     getFeaturedProducts, 
     getNewProducts, 
@@ -56,74 +56,68 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-yellow-50" dir="rtl">
+    <div className="min-h-screen bg-background text-foreground" dir="rtl">
       {/* Header */}
-      <header className="bg-white shadow-lg sticky top-0 z-40 backdrop-blur-sm bg-white/95">
+      <header className="bg-background/80 shadow-sm sticky top-0 z-40 backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             <div className="flex items-center gap-4">
-              <div className="relative">
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-700 bg-clip-text text-transparent">
-                  مكتبة تفانين
-                </h1>
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
-              </div>
-              <div className="flex items-center gap-1 text-yellow-500">
-                <Sparkles className="w-4 h-4 animate-pulse" />
-                <span className="text-sm font-medium text-gray-600">أجود المنتجات</span>
-              </div>
+              <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                مكتبة تفانين
+              </h1>
             </div>
             
-            <div className="flex-1 max-w-lg mx-8">
+            <div className="flex-1 max-w-xl mx-8 hidden md:block">
               <div className="relative group">
-                <Search className="absolute right-3 top-3 h-4 w-4 text-gray-400 group-hover:text-red-500 transition-colors" />
+                <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                 <Input
                   type="text"
-                  placeholder="ابحث عن المنتجات..."
+                  placeholder="ابحث عن كشاكيل، أقلام، والمزيد..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pr-10 w-full border-2 border-gray-200 hover:border-red-300 focus:border-red-500 transition-all duration-300 rounded-full"
+                  className="pr-10 w-full bg-secondary hover:bg-background focus:ring-2 focus:ring-primary transition-all duration-300 rounded-full text-lg py-6"
                 />
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500/10 to-yellow-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
               </div>
             </div>
 
-            <div className="flex items-center">
+            <div className="flex items-center gap-4">
               <div className="relative cursor-pointer group" onClick={handleCartClick}>
-                <div className="relative p-2 rounded-full transition-all duration-300 hover:bg-gradient-to-r hover:from-red-50 hover:to-yellow-50">
-                  <ShoppingCart className="w-6 h-6 text-gray-600 group-hover:text-red-600 transition-colors" />
+                <div className="relative p-3 rounded-full transition-colors duration-300 hover:bg-secondary">
+                  <ShoppingCart className="w-6 h-6 text-foreground/80 group-hover:text-primary transition-colors" />
                   {getTotalItems() > 0 && (
-                    <Badge className="absolute -top-2 -left-2 bg-gradient-to-r from-red-500 to-red-600 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center animate-bounce">
+                    <Badge className="absolute -top-1 -left-1 bg-primary text-primary-foreground text-xs rounded-full w-6 h-6 flex items-center justify-center border-2 border-background">
                       {getTotalItems()}
                     </Badge>
                   )}
                 </div>
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-red-500/20 to-yellow-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 scale-110"></div>
               </div>
+              <Button variant="ghost" size="icon" className="md:hidden">
+                <Menu className="w-6 h-6" />
+              </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Search Results */}
         {searchQuery && (
           <div className="mb-8 animate-fade-in">
-            <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
+            <h2 className="text-3xl font-bold mb-8 flex items-center gap-3">
               <span>نتائج البحث عن "{searchQuery}"</span>
-              <Zap className="w-6 h-6 text-yellow-500 animate-pulse" />
+              <Zap className="w-7 h-7 text-accent" />
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
               {searchProducts(searchQuery).map((product, index) => (
-                <div key={product.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                <div key={product.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.05}s` }}>
                   <ProductCard product={product} />
                 </div>
               ))}
             </div>
             {searchProducts(searchQuery).length === 0 && (
-              <div className="text-center py-12">
-                <div className="text-6xl mb-4 opacity-50">🔍</div>
-                <p className="text-gray-500 text-lg">لم يتم العثور على منتجات مطابقة</p>
+              <div className="text-center py-16">
+                <div className="text-7xl mb-6 opacity-40">🔍</div>
+                <p className="text-muted-foreground text-xl">لم يتم العثور على منتجات مطابقة</p>
               </div>
             )}
           </div>
@@ -132,49 +126,44 @@ const Index = () => {
         {!searchQuery && (
           <>
             {/* Welcome Section */}
-            <div className="relative bg-gradient-to-r from-red-600 via-red-700 to-red-800 rounded-3xl p-8 text-white mb-8 overflow-hidden group hover:shadow-2xl transition-all duration-500 cursor-pointer">
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/20 to-orange-400/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              <div className="absolute top-0 right-0 w-32 h-32 bg-yellow-400/10 rounded-full -mr-16 -mt-16 group-hover:scale-150 transition-transform duration-700"></div>
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-yellow-400/10 rounded-full -ml-12 -mb-12 group-hover:scale-150 transition-transform duration-700"></div>
+            <div className="relative bg-gradient-to-br from-secondary to-background rounded-3xl p-8 md:p-12 text-foreground mb-12 overflow-hidden group transition-all duration-500">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/10 rounded-full transition-transform duration-700 group-hover:scale-[3]"></div>
+              <div className="absolute -bottom-12 -left-12 w-32 h-32 bg-accent/10 rounded-full transition-transform duration-700 group-hover:scale-[4]"></div>
               
               <div className="flex items-center justify-between relative z-10">
                 <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Heart className="w-6 h-6 text-yellow-400 animate-pulse" />
-                    <h1 className="text-3xl font-bold">مرحباً بك في مكتبة تفانين</h1>
-                  </div>
-                  <p className="text-red-100 text-lg mb-4">كل اللي محتاجه في مكان واحد</p>
+                  <h1 className="text-4xl md:text-5xl font-extrabold mb-3">أهلاً بك في مكتبة تفانين</h1>
+                  <p className="text-muted-foreground text-lg md:text-xl mb-6">الجودة والإتقان في كل ما تحتاجه.</p>
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-1 bg-yellow-400/20 px-3 py-1 rounded-full">
-                      <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="text-sm">جودة عالية مضمونة</span>
+                    <div className="flex items-center gap-2 bg-background/80 px-4 py-2 rounded-full border">
+                      <Star className="w-5 h-5 text-accent fill-current" />
+                      <span className="font-semibold">منتجات عالية الجودة</span>
                     </div>
                   </div>
                 </div>
-                <div className="text-8xl group-hover:scale-110 transition-transform duration-500 animate-bounce">🖊️</div>
+                <div className="hidden md:block text-8xl text-primary/60 group-hover:text-primary group-hover:scale-110 transition-all duration-500">
+                  <Gift />
+                </div>
               </div>
             </div>
 
             {/* Categories */}
-            <div className="mb-8">
-              <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
-                <span>الأقسام</span>
-                <Sparkles className="w-6 h-6 text-yellow-500 animate-spin" />
+            <div className="mb-12">
+              <h2 className="text-3xl font-bold mb-6 flex items-center gap-3">
+                <span>تصفح الأقسام</span>
+                <Sparkles className="w-7 h-7 text-accent" />
               </h2>
-              <div className="flex gap-4 overflow-x-auto pb-4">
+              <div className="flex gap-3 overflow-x-auto pb-4 -mx-4 px-4">
                 {categories.map((category, index) => (
                   <Button
                     key={category.id}
                     onClick={() => setSelectedCategory(category.id)}
-                    className={`flex items-center gap-2 whitespace-nowrap transition-all duration-300 hover:scale-105 ${
-                      selectedCategory === category.id
-                        ? 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 shadow-lg'
-                        : 'bg-white text-gray-700 hover:bg-gradient-to-r hover:from-red-50 hover:to-yellow-50 hover:text-red-600 border-2 border-gray-200 hover:border-red-300'
-                    }`}
-                    style={{ animationDelay: `${index * 0.1}s` }}
+                    variant={selectedCategory === category.id ? 'default' : 'secondary'}
+                    className="flex items-center gap-3 whitespace-nowrap transition-all duration-300 hover:scale-105 py-6 px-5 rounded-xl"
+                    style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    <span className="text-lg">{category.icon}</span>
-                    <span>{category.name}</span>
+                    <span className="text-2xl">{category.icon}</span>
+                    <span className="font-semibold">{category.name}</span>
                   </Button>
                 ))}
               </div>
@@ -182,14 +171,14 @@ const Index = () => {
 
             {/* Category Products */}
             {selectedCategory !== 'all' && (
-              <div className="mb-8 animate-fade-in">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+              <div className="mb-12 animate-fade-in">
+                <h3 className="text-2xl font-bold mb-6 flex items-center gap-2">
                   <span>{categories.find(c => c.id === selectedCategory)?.name}</span>
-                  <div className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></div>
+                  <div className="w-2.5 h-2.5 bg-accent rounded-full"></div>
                 </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {getFilteredProducts().map((product, index) => (
-                    <div key={product.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <div key={product.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.05}s` }}>
                       <ProductCard product={product} />
                     </div>
                   ))}
@@ -198,25 +187,25 @@ const Index = () => {
             )}
 
             <Tabs defaultValue="featured" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 mb-8 bg-gradient-to-r from-gray-100 to-yellow-50 p-1 rounded-full">
-                <TabsTrigger value="featured" className="flex items-center gap-2 rounded-full transition-all duration-300 hover:bg-gradient-to-r hover:from-red-100 hover:to-yellow-100">
-                  <Star className="w-4 h-4 text-yellow-500" />
+              <TabsList className="grid w-full grid-cols-3 mb-10 bg-secondary p-2 rounded-xl">
+                <TabsTrigger value="featured" className="flex items-center gap-2 rounded-lg text-lg py-3 transition-all duration-300">
+                  <Star className="w-5 h-5 text-accent" />
                   المميزة
                 </TabsTrigger>
-                <TabsTrigger value="bestsellers" className="flex items-center gap-2 rounded-full transition-all duration-300 hover:bg-gradient-to-r hover:from-red-100 hover:to-yellow-100">
-                  <TrendingUp className="w-4 h-4 text-red-500" />
+                <TabsTrigger value="bestsellers" className="flex items-center gap-2 rounded-lg text-lg py-3 transition-all duration-300">
+                  <TrendingUp className="w-5 h-5 text-primary" />
                   الأكثر مبيعاً
                 </TabsTrigger>
-                <TabsTrigger value="new" className="flex items-center gap-2 rounded-full transition-all duration-300 hover:bg-gradient-to-r hover:from-red-100 hover:to-yellow-100">
-                  <Sparkles className="w-4 h-4 text-yellow-500" />
-                  الجديد
+                <TabsTrigger value="new" className="flex items-center gap-2 rounded-lg text-lg py-3 transition-all duration-300">
+                  <Sparkles className="w-5 h-5 text-accent" />
+                  وصل حديثًا
                 </TabsTrigger>
               </TabsList>
 
               <TabsContent value="featured" className="mt-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {featuredProducts.map((product, index) => (
-                    <div key={product.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <div key={product.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.05}s` }}>
                       <ProductCard product={product} />
                     </div>
                   ))}
@@ -224,9 +213,9 @@ const Index = () => {
               </TabsContent>
 
               <TabsContent value="bestsellers" className="mt-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {bestSellers.map((product, index) => (
-                    <div key={product.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <div key={product.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.05}s` }}>
                       <ProductCard product={product} />
                     </div>
                   ))}
@@ -234,9 +223,9 @@ const Index = () => {
               </TabsContent>
 
               <TabsContent value="new" className="mt-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                   {newProducts.map((product, index) => (
-                    <div key={product.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.1}s` }}>
+                    <div key={product.id} className="animate-slide-up" style={{ animationDelay: `${index * 0.05}s` }}>
                       <ProductCard product={product} />
                     </div>
                   ))}
@@ -245,7 +234,7 @@ const Index = () => {
             </Tabs>
           </>
         )}
-      </div>
+      </main>
       
       {/* Add Product Assistant */}
       <ProductAssistant />

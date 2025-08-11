@@ -1,4 +1,6 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,82 +9,86 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 40 33% 97%;
+    --foreground: 215 25% 20%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 35 50% 95%;
+    --card-foreground: 215 25% 20%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 35 50% 95%;
+    --popover-foreground: 215 25% 20%;
 
-    --primary: 0 84% 45%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 205 70% 40%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 35 45% 90%;
+    --secondary-foreground: 215 25% 25%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 35 45% 90%;
+    --muted-foreground: 215 15% 55%;
 
-    --accent: 0 84% 45%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 38 92% 50%;
+    --accent-foreground: 215 25% 20%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 0 84% 45%;
+    --border: 35 30% 85%;
+    --input: 35 30% 85%;
+    --ring: 205 70% 40%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem; /* Slightly larger radius for a softer look */
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 0 84% 45%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 0 84% 45%;
+    /* Custom sidebar variables if needed, for now, they can inherit or be redefined */
+    --sidebar-background: 35 45% 90%;
+    --sidebar-foreground: 215 25% 25%;
+    --sidebar-primary: 205 70% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 35 50% 95%;
+    --sidebar-accent-foreground: 215 25% 20%;
+    --sidebar-border: 35 30% 85%;
+    --sidebar-ring: 205 70% 40%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 215 28% 18%;
+    --foreground: 35 45% 90%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 215 25% 22%;
+    --card-foreground: 35 45% 90%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 215 25% 22%;
+    --popover-foreground: 35 45% 90%;
 
-    --primary: 0 84% 55%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 205 65% 55%;
+    --primary-foreground: 215 25% 20%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 215 20% 30%;
+    --secondary-foreground: 35 45% 90%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 215 20% 30%;
+    --muted-foreground: 35 30% 70%;
 
-    --accent: 0 84% 55%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 38 92% 60%;
+    --accent-foreground: 215 25% 20%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 0 84% 55%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 0 84% 55%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 0 84% 55%;
+    --border: 215 20% 30%;
+    --input: 215 20% 30%;
+    --ring: 205 65% 55%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 215 25% 22%;
+    --sidebar-foreground: 35 45% 90%;
+    --sidebar-primary: 205 65% 55%;
+    --sidebar-primary-foreground: 215 25% 20%;
+    --sidebar-accent: 215 20% 30%;
+    --sidebar-accent-foreground: 35 45% 90%;
+    --sidebar-border: 215 20% 30%;
+    --sidebar-ring: 205 65% 55%;
   }
 }
 
